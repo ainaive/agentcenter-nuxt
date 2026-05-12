@@ -14,12 +14,25 @@ const { data } = await useFetch("/api/internal/extension-detail", {
   query: computed(() => ({ slug: slug.value })),
 })
 
-if (!data.value) {
+if (!data.value || !data.value.ext) {
   throw createError({ statusCode: 404, statusMessage: "Extension not found" })
 }
 
 const ext = computed(() => data.value!.ext)
 const related = computed(() => data.value!.related ?? [])
+
+function safeExternalUrl(url: string | null | undefined): string | null {
+  if (!url) return null
+  try {
+    const parsed = new URL(url)
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") return url
+    return null
+  } catch {
+    return null
+  }
+}
+const safeHomepageUrl = computed(() => safeExternalUrl(ext.value.homepageUrl))
+const safeRepoUrl = computed(() => safeExternalUrl(ext.value.repoUrl))
 
 const name = computed(() =>
   locale.value === "zh" && ext.value.nameZh ? ext.value.nameZh : ext.value.name,
@@ -101,10 +114,10 @@ function formatCount(n: number): string {
               <dd class="text-(--color-ink)">{{ new Date(ext.publishedAt).toISOString().slice(0, 10) }}</dd>
             </div>
           </dl>
-          <div v-if="ext.homepageUrl || ext.repoUrl" class="mt-4 pt-4 border-t border-(--color-border) space-y-2">
+          <div v-if="safeHomepageUrl || safeRepoUrl" class="mt-4 pt-4 border-t border-(--color-border) space-y-2">
             <a
-              v-if="ext.homepageUrl"
-              :href="ext.homepageUrl"
+              v-if="safeHomepageUrl"
+              :href="safeHomepageUrl"
               target="_blank"
               rel="noopener noreferrer"
               class="flex items-center gap-2 text-sm text-(--color-ink) hover:text-(--color-accent)"
@@ -113,8 +126,8 @@ function formatCount(n: number): string {
               {{ t("extensions.homepage") }}
             </a>
             <a
-              v-if="ext.repoUrl"
-              :href="ext.repoUrl"
+              v-if="safeRepoUrl"
+              :href="safeRepoUrl"
               target="_blank"
               rel="noopener noreferrer"
               class="flex items-center gap-2 text-sm text-(--color-ink) hover:text-(--color-accent)"

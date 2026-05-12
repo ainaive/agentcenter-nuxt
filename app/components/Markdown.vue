@@ -19,7 +19,7 @@ const rendered = computed(() => {
       "blockquote","hr","br","img","table","thead","tbody","tr","th","td","span","div",
     ],
     ALLOWED_ATTR: ["href","title","alt","src","class"],
-    ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto):|[^a-z]|[a-z+.-]+(?:[^a-z+.:-]|$))/i,
+    ALLOWED_URI_REGEXP: /^(?:https?:|mailto:|\/|\.\.?\/)/i,
   })
 })
 </script>

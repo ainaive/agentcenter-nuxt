@@ -9,8 +9,8 @@ const { data } = await useFetch("/api/internal/extensions", {
   default: () => ({ items: [], total: 0, filters: {} }),
 })
 
-const trending = computed(() => (data.value?.items ?? []).slice(0, 8))
-const totalCount = computed(() => data.value?.total ?? 0)
+const trending = computed(() => data.value.items.slice(0, 8))
+const totalCount = computed(() => data.value.total)
 </script>
 
 <template>

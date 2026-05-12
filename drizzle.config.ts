@@ -14,13 +14,19 @@ if (existsSync(envPath)) {
   }
 }
 
+const databaseUrl = process.env.DATABASE_URL
+if (!databaseUrl) {
+  throw new Error(
+    "Missing DATABASE_URL env var required for Drizzle Kit. " +
+      "Set it in .env or your shell before running db:* scripts.",
+  )
+}
+
 export default defineConfig({
   schema: "./shared/db/schema/index.ts",
   out: "./drizzle",
   dialect: "postgresql",
-  dbCredentials: {
-    url: process.env.DATABASE_URL!,
-  },
+  dbCredentials: { url: databaseUrl },
   casing: "snake_case",
   verbose: true,
   strict: true,
