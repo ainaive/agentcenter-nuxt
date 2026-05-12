@@ -29,6 +29,18 @@
     "viewExtension": "View extension",
     "installsCount": "{count} installs"
   },
+  "extensions": {
+    "browseTitle": "Browse all",
+    "count": "{count} extensions",
+    "empty": {
+      "noResultsFor": "No results for \"{query}\"",
+      "noResultsFiltered": "No extensions match these filters",
+      "noExtensionsYet": "No extensions yet",
+      "hintAdjust": "Try a different search or relax some filters.",
+      "hintCheckBack": "New extensions land here as the marketplace grows.",
+      "clearFilters": "Clear filters"
+    }
+  },
   "sidebar": {
     "browse": "Browse",
     "categories": "Categories",

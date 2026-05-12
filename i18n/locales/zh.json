@@ -29,6 +29,18 @@
     "viewExtension": "查看扩展",
     "installsCount": "{count} 次安装"
   },
+  "extensions": {
+    "browseTitle": "浏览全部",
+    "count": "{count} 个扩展",
+    "empty": {
+      "noResultsFor": "没有\"{query}\"的结果",
+      "noResultsFiltered": "没有符合当前筛选条件的扩展",
+      "noExtensionsYet": "暂无扩展",
+      "hintAdjust": "试试其他关键词或调整筛选条件。",
+      "hintCheckBack": "市场不断扩充中，请稍后再来看看。",
+      "clearFilters": "清除筛选"
+    }
+  },
   "sidebar": {
     "browse": "浏览",
     "categories": "分类",
