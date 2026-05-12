@@ -1,0 +1,114 @@
+{
+  "common": {
+    "install": "Install",
+    "installing": "Installing…",
+    "installed": "Installed",
+    "save": "Save",
+    "saved": "Saved",
+    "addToGroup": "Add to group"
+  },
+  "nav": {
+    "explore": "Explore",
+    "publish": "Publish",
+    "docs": "Docs",
+    "skipToContent": "Skip to main content",
+    "toggleSidebar": "Toggle sidebar",
+    "searchLabel": "Search the marketplace",
+    "switchToDark": "Switch to dark theme",
+    "switchToIvory": "Switch to ivory theme",
+    "switchToZh": "Switch to Chinese",
+    "switchToEn": "Switch to English",
+    "userMenu": "Account menu",
+    "comingSoon": "Coming soon"
+  },
+  "home": {
+    "featuredLabel": "Featured this week",
+    "featuredDescription": "Marketplace for AI agent extensions — Skills, MCP servers, slash commands, and plugins.",
+    "trendingTitle": "Trending",
+    "browseAll": "Browse all {count}",
+    "viewExtension": "View extension",
+    "installsCount": "{count} installs"
+  },
+  "sidebar": {
+    "browse": "Browse",
+    "categories": "Categories",
+    "collections": "Collections",
+    "mine": "MINE",
+    "allExtensions": "All Extensions",
+    "skills": "Skills",
+    "mcpServers": "MCP Servers",
+    "slashCommands": "Slash Commands",
+    "plugins": "Plugins",
+    "all": "All",
+    "saved": "Saved",
+    "newGroup": "New Group"
+  },
+  "search": {
+    "placeholder": "Search skills, MCP servers, slash commands…"
+  },
+  "filters": {
+    "dept": {
+      "expand": "Expand",
+      "collapse": "Collapse"
+    }
+  },
+  "taxonomy": {
+    "funcCat": {
+      "workTask": "Work Task",
+      "business": "Business",
+      "tools": "Tools"
+    },
+    "l1": {
+      "systemDesign": "System Design",
+      "softDev": "Software Dev",
+      "testing": "Testing & QA",
+      "network": "Network Protocols",
+      "embedded": "Embedded Systems",
+      "cloud": "Cloud Services",
+      "docs": "Document Ops",
+      "data": "Data Processing",
+      "vcs": "Version Control"
+    },
+    "l2": {
+      "reqAnalysis": "Requirements Analysis",
+      "funcDesign": "Functional Design",
+      "archDesign": "Architecture Design",
+      "frontend": "Front-End Dev",
+      "backend": "Back-End Dev",
+      "devops": "DevOps",
+      "unitTest": "Unit Testing",
+      "intTest": "Integration Testing",
+      "perfTest": "Performance Testing",
+      "http": "HTTP / REST",
+      "grpc": "gRPC",
+      "mqtt": "MQTT",
+      "rtos": "RTOS",
+      "firmware": "Firmware",
+      "drivers": "Drivers",
+      "aws": "AWS",
+      "azure": "Azure",
+      "k8s": "Kubernetes",
+      "markdown": "Markdown",
+      "pdf": "PDF Processing",
+      "wiki": "Wiki Management",
+      "csv": "CSV Analysis",
+      "sql": "SQL Query",
+      "viz": "Data Visualization",
+      "git": "Git Operations",
+      "pr": "Code Review",
+      "cicd": "CI / CD"
+    }
+  },
+  "auth": {
+    "userMenu": {
+      "signIn": "Sign in",
+      "signOut": "Sign out",
+      "settings": "Settings",
+      "profile": "Profile"
+    }
+  },
+  "locale": {
+    "en": "English",
+    "zh": "中文"
+  }
+}
