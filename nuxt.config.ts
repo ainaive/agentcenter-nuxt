@@ -8,7 +8,8 @@ export default defineNuxtConfig({
   nitro: { preset: "node-server" },
   css: ["~/assets/css/tailwind.css"],
   vite: { plugins: [tailwindcss()] },
-  modules: ["@nuxtjs/i18n", "@nuxt/fonts"],
+  modules: ["@nuxtjs/i18n", "@nuxt/fonts", "@nuxt/eslint"],
+  eslint: { config: { stylistic: false } },
   fonts: {
     families: [
       { name: "Inter", provider: "google" },
