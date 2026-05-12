@@ -1,16 +1,14 @@
 // @vitest-environment nuxt
 import { describe, it, expect } from "vitest"
 import { mountSuspended } from "@nuxt/test-utils/runtime"
-import { h } from "vue"
+import { defineComponent } from "vue"
 import Sidebar from "./Sidebar.vue"
 
-const NuxtLinkStub = {
+const NuxtLinkStub = defineComponent({
   name: "NuxtLink",
-  props: ["to"],
-  setup(props: { to: string }, { slots }: { slots: Record<string, () => unknown> }) {
-    return () => h("a", { href: props.to }, slots.default?.())
-  },
-}
+  props: { to: { type: String, required: true } },
+  template: "<a :href=\"to\"><slot /></a>",
+})
 
 const mountOpts = {
   props: { collapsed: false },
