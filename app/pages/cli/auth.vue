@@ -22,11 +22,12 @@ async function handleSubmit() {
     })
     if (result.ok) {
       success.value = true
+    } else if (result.error === "invalid_code") {
+      error.value = t("cliAuth.errorInvalid")
+    } else if (result.error === "expired") {
+      error.value = t("cliAuth.errorExpired")
     } else {
-      error.value =
-        result.error === "invalid_code" || result.error === "expired"
-          ? t("cliAuth.errorInvalid")
-          : t("cliAuth.errorGeneric")
+      error.value = t("cliAuth.errorGeneric")
     }
   } catch {
     error.value = t("cliAuth.errorGeneric")

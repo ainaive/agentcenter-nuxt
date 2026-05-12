@@ -44,25 +44,25 @@ export default defineEventHandler(async (event) => {
   const cliToken = crypto.randomUUID()
   const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
 
-  await db.insert(sessions).values({
-    id: crypto.randomUUID(),
-    userId: user.id,
-    token: cliToken,
-    expiresAt,
-  })
-
-  await db
-    .update(verifications)
-    .set({
-      value: JSON.stringify({
-        authorized: true,
-        token: cliToken,
-        userId: user.id,
-      }),
+  await db.transaction(async (tx) => {
+    await tx.insert(sessions).values({
+      id: crypto.randomUUID(),
+      userId: user.id,
+      token: cliToken,
+      expiresAt,
     })
-    .where(eq(verifications.id, pollRow.id))
-
-  await db.delete(verifications).where(eq(verifications.id, lookup.id))
+    await tx
+      .update(verifications)
+      .set({
+        value: JSON.stringify({
+          authorized: true,
+          token: cliToken,
+          userId: user.id,
+        }),
+      })
+      .where(eq(verifications.id, pollRow.id))
+    await tx.delete(verifications).where(eq(verifications.id, lookup.id))
+  })
 
   return { ok: true as const }
 })

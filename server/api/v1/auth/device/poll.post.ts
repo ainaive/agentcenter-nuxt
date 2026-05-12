@@ -3,6 +3,10 @@ import { z } from "zod"
 import { verifications } from "~~/shared/db/schema/auth"
 
 const PollBody = z.object({ deviceCode: z.string().uuid() })
+const stateSchema = z.object({
+  authorized: z.boolean(),
+  token: z.string().nullable(),
+})
 
 export default defineEventHandler(async (event) => {
   let body: z.infer<typeof PollBody>
@@ -26,9 +30,17 @@ export default defineEventHandler(async (event) => {
 
   if (!row) return { status: "expired" }
 
-  const state = JSON.parse(row.value) as { authorized: boolean; token: string | null }
-  if (!state.authorized) return { status: "pending" }
+  const parsed = stateSchema.safeParse(JSON.parse(row.value))
+  if (!parsed.success) {
+    console.error("[device/poll] malformed verification value", parsed.error)
+    return { status: "expired" }
+  }
+  if (!parsed.data.authorized) return { status: "pending" }
 
-  await db.delete(verifications).where(eq(verifications.id, row.id))
-  return { status: "authorized", token: state.token }
+  try {
+    await db.delete(verifications).where(eq(verifications.id, row.id))
+  } catch (err) {
+    console.error("[device/poll] cleanup delete failed", err)
+  }
+  return { status: "authorized", token: parsed.data.token }
 })

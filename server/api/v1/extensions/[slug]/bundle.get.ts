@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm"
+import { and, desc, eq, sql } from "drizzle-orm"
 import {
   extensions,
   extensionVersions,
@@ -19,8 +19,13 @@ export default defineEventHandler(async (event) => {
     .from(extensionVersions)
     .innerJoin(files, eq(files.id, extensionVersions.bundleFileId))
     .innerJoin(extensions, eq(extensions.id, extensionVersions.extensionId))
-    .where(eq(extensions.slug, slug))
-    .orderBy(extensionVersions.createdAt)
+    .where(
+      and(eq(extensions.slug, slug), eq(extensionVersions.status, "ready")),
+    )
+    .orderBy(
+      sql`${extensionVersions.publishedAt} DESC NULLS LAST`,
+      desc(extensionVersions.createdAt),
+    )
     .limit(1)
 
   if (!row?.r2Key) {

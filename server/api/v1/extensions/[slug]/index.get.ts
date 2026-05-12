@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
       repoUrl: ext.repoUrl,
       compatibilityJson: ext.compatibilityJson,
       downloadsCount: ext.downloadsCount,
-      starsAvg: Number(ext.starsAvg).toFixed(1),
+      starsAvg: ext.starsAvg != null ? Number(ext.starsAvg).toFixed(1) : "0.0",
       ratingsCount: ext.ratingsCount,
       publishedAt: ext.publishedAt,
       version: "latest",

@@ -185,7 +185,8 @@
     "codePlaceholder": "XXXX-YYYY",
     "submit": "Authorize",
     "success": "CLI authorized! You can close this window and return to your terminal.",
-    "errorInvalid": "Invalid or expired code. Please run agentcenter login again.",
+    "errorInvalid": "Invalid code. Please run agentcenter login again.",
+    "errorExpired": "Code has expired. Please run agentcenter login again.",
     "errorGeneric": "Something went wrong. Please try again."
   },
   "locale": {

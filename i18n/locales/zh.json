@@ -185,7 +185,8 @@
     "codePlaceholder": "XXXX-YYYY",
     "submit": "授权",
     "success": "CLI 已授权！你可以关闭此窗口并返回终端。",
-    "errorInvalid": "代码无效或已过期，请重新运行 agentcenter login。",
+    "errorInvalid": "代码无效，请重新运行 agentcenter login。",
+    "errorExpired": "代码已过期，请重新运行 agentcenter login。",
     "errorGeneric": "出现错误，请重试。"
   },
   "locale": {

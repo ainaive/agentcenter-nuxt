@@ -16,17 +16,19 @@ export default defineEventHandler(async (event) => {
   const db = useDb()
 
   try {
-    await db.insert(verifications).values({
-      id: crypto.randomUUID(),
-      identifier: `dc:poll:${deviceCode}`,
-      value: JSON.stringify({ userCode, authorized: false, token: null, userId: null }),
-      expiresAt,
-    })
-    await db.insert(verifications).values({
-      id: crypto.randomUUID(),
-      identifier: `dc:user:${userCode}`,
-      value: deviceCode,
-      expiresAt,
+    await db.transaction(async (tx) => {
+      await tx.insert(verifications).values({
+        id: crypto.randomUUID(),
+        identifier: `dc:poll:${deviceCode}`,
+        value: JSON.stringify({ userCode, authorized: false, token: null, userId: null }),
+        expiresAt,
+      })
+      await tx.insert(verifications).values({
+        id: crypto.randomUUID(),
+        identifier: `dc:user:${userCode}`,
+        value: deviceCode,
+        expiresAt,
+      })
     })
   } catch (err) {
     console.error("[device/code] db error:", err)

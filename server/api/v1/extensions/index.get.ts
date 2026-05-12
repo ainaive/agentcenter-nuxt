@@ -41,7 +41,7 @@ export default defineEventHandler(async (event) => {
         subCat: ext.subCat,
         l2: ext.l2,
         downloadsCount: ext.downloadsCount,
-        starsAvg: Number(ext.starsAvg).toFixed(1),
+        starsAvg: ext.starsAvg != null ? Number(ext.starsAvg).toFixed(1) : "0.0",
       })),
       total,
       page: filters.page,

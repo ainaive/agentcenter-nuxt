@@ -1,5 +1,6 @@
-// Pluggable storage backend. Supabase Storage is the default (locked decision);
-// R2 via S3 SDK is activated when R2_ACCOUNT_ID is set instead of SUPABASE_URL.
+// Pluggable storage backend. Activated by env: setting R2_ACCOUNT_ID picks
+// the Cloudflare R2 backend; otherwise SUPABASE_URL picks Supabase Storage.
+// R2 wins when both are configured — explicit R2 envs are treated as opt-in.
 
 interface StorageBackend {
   bundleKey(slug: string, version: string): string
