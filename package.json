@@ -8,8 +8,7 @@
     "dev": "nuxt dev",
     "build": "nuxt build",
     "preview": "nuxt preview",
-    "prepare": "nuxt prepare",
-    "postinstall": "nuxt prepare",
+    "prepare": "husky && nuxt prepare",
     "lint": "eslint .",
     "typecheck": "nuxt typecheck",
     "test": "vitest run",
@@ -28,6 +27,8 @@
     "vue-router": "^4.4.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.0.0",
+    "@commitlint/config-conventional": "^21.0.0",
     "@nuxt/eslint": "^1.15.2",
     "@nuxt/test-utils": "^4.0.3",
     "@playwright/test": "^1.60.0",
@@ -38,8 +39,13 @@
     "@vue/test-utils": "^2.4.10",
     "eslint": "^10.3.0",
     "happy-dom": "^20.9.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.4",
     "tailwindcss": "^4",
     "typescript": "^5.6.0",
     "vitest": "^4.1.6"
+  },
+  "lint-staged": {
+    "*.{ts,vue,mjs,js}": "eslint --fix"
   }
 }
