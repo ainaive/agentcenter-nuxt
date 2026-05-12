@@ -8,7 +8,14 @@ const { t } = useI18n()
 const localePath = useLocalePath()
 
 onMounted(() => {
-  console.error("[app/error]", props.error)
+  if (import.meta.dev) {
+    console.error("[app/error]", props.error)
+  } else {
+    console.error("[app/error]", {
+      statusCode: props.error.statusCode,
+      message: props.error.message,
+    })
+  }
 })
 
 async function handleRetry() {

@@ -51,7 +51,7 @@ The `db:apply-fts` step requires `psql` on PATH. It runs `drizzle/0002_fts_searc
 
 1. Create an Inngest app (cloud) and copy `INNGEST_EVENT_KEY` + `INNGEST_SIGNING_KEY`
 2. After deploying, register the webhook URL in the Inngest dashboard:
-   ```
+   ```text
    https://yourdomain.com/api/inngest
    ```
 3. Inngest will verify by calling the endpoint; `scan-bundle` and `reindex-search` will appear as registered functions
