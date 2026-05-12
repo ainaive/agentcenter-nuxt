@@ -120,6 +120,9 @@ function formatCount(n: number): string {
           {{ formatCount(ext.downloadsCount) }}
         </span>
       </div>
+      <div class="relative z-10 ml-auto">
+        <InstallButton :extension-id="ext.id" size="sm" />
+      </div>
     </div>
   </article>
 </template>
