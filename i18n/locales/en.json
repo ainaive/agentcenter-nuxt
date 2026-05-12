@@ -29,6 +29,26 @@
     "viewExtension": "View extension",
     "installsCount": "{count} installs"
   },
+  "extensions": {
+    "browseTitle": "Browse all",
+    "count": "{count} extensions",
+    "noReadme": "No README has been published for this extension yet.",
+    "about": "About",
+    "license": "License",
+    "scope": "Scope",
+    "published": "Published",
+    "homepage": "Homepage",
+    "repository": "Repository",
+    "related": "Related",
+    "empty": {
+      "noResultsFor": "No results for \"{query}\"",
+      "noResultsFiltered": "No extensions match these filters",
+      "noExtensionsYet": "No extensions yet",
+      "hintAdjust": "Try a different search or relax some filters.",
+      "hintCheckBack": "New extensions land here as the marketplace grows.",
+      "clearFilters": "Clear filters"
+    }
+  },
   "sidebar": {
     "browse": "Browse",
     "categories": "Categories",
@@ -47,6 +67,27 @@
     "placeholder": "Search skills, MCP servers, slash commands…"
   },
   "filters": {
+    "sortLabel": "Sort by",
+    "scopeLabel": "Scope",
+    "filtersLabel": "Filters",
+    "sort": {
+      "downloads": "Downloads",
+      "stars": "Stars",
+      "recent": "Recently Added"
+    },
+    "scope": {
+      "all": "All",
+      "personal": "Personal",
+      "org": "Organization",
+      "enterprise": "Enterprise"
+    },
+    "chips": {
+      "all": "All",
+      "trending": "Trending",
+      "new": "New",
+      "official": "Official",
+      "free": "Open Source"
+    },
     "dept": {
       "expand": "Expand",
       "collapse": "Collapse"

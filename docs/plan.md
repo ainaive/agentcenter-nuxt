@@ -10,7 +10,9 @@ This document is the living plan. When a binding decision changes, update it in 
 
 ## 1. Project layout
 
-File-based routing under `app/pages/`, Nitro server under `server/`, and a cross-cutting `shared/` directory that both sides import from. Single Nuxt app, server-side rendering by default. Routes are localized; everything user-facing lives behind `[locale]`. The CLI is a sibling directory (`cli/`) carried over verbatim from the original repo.
+File-based routing under `app/pages/`, Nitro server under `server/`, and a cross-cutting `shared/` directory that both sides import from. Single Nuxt app, server-side rendering by default. The CLI is a sibling directory (`cli/`) carried over verbatim from the original repo.
+
+**Locale prefixing**: `@nuxtjs/i18n` with `strategy: "prefix"` auto-prefixes every page route with `/en` and `/zh` — pages live at `app/pages/index.vue`, **not** `app/pages/[locale]/index.vue`. URLs are always prefixed (`/en/...`, `/zh/...`); the locale segment is owned by the i18n module, not the file system. This is a structural difference from the original Next.js layout, which used an explicit `[locale]` directory segment.
 
 ```
 agentcenter-nuxt/
@@ -21,26 +23,24 @@ agentcenter-nuxt/
 ├── app/
 │   ├── layouts/
 │   │   └── default.vue                # NuxtIntl boundary, TopBar + Sidebar shell
-│   ├── pages/
-│   │   ├── index.vue                  # redirects to default locale via middleware
-│   │   └── [locale]/
-│   │       ├── index.vue              # Home: featured + browse grid
-│   │       ├── extensions/
-│   │       │   ├── index.vue          # Browse all (filters via query string)
-│   │       │   └── [slug].vue         # Detail page
-│   │       ├── sign-in.vue
-│   │       ├── sign-up.vue
-│   │       ├── onboard.vue            # Pick department after sign-up
-│   │       ├── collections/
-│   │       │   ├── index.vue
-│   │       │   └── [id].vue
-│   │       ├── publish/
-│   │       │   ├── index.vue          # Publisher dashboard
-│   │       │   ├── new.vue            # Upload wizard — new draft
-│   │       │   └── [id]/edit.vue      # Upload wizard — resume / edit
-│   │       ├── cli/auth.vue           # Device-code authorization page
-│   │       └── profile/
-│   │           └── index.vue          # My Workspace
+│   ├── pages/                         # @nuxtjs/i18n auto-prefixes every route with /en, /zh
+│   │   ├── index.vue                  # Home: featured + browse grid
+│   │   ├── extensions/
+│   │   │   ├── index.vue              # Browse all (filters via query string)
+│   │   │   └── [slug].vue             # Detail page
+│   │   ├── sign-in.vue
+│   │   ├── sign-up.vue
+│   │   ├── onboard.vue                # Pick department after sign-up
+│   │   ├── collections/
+│   │   │   ├── index.vue
+│   │   │   └── [id].vue
+│   │   ├── publish/
+│   │   │   ├── index.vue              # Publisher dashboard
+│   │   │   ├── new.vue                # Upload wizard — new draft
+│   │   │   └── [id]/edit.vue          # Upload wizard — resume / edit
+│   │   ├── cli/auth.vue               # Device-code authorization page
+│   │   └── profile/
+│   │       └── index.vue              # My Workspace
 │   ├── components/
 │   │   ├── ui/                        # shadcn-vue primitives (button, dialog,
 │   │   │                              #   dropdown, popover, select, checkbox,
@@ -839,7 +839,7 @@ A handful of patterns from the original repo don't have a direct Nuxt equivalent
 
 | Next.js pattern | Nuxt translation |
 |---|---|
-| `app/[locale]/.../page.tsx` (RSC) | `app/pages/[locale]/.../index.vue` with `useAsyncData` for SSR fetches |
+| `app/[locale]/.../page.tsx` (RSC) | `app/pages/.../index.vue` with `useAsyncData` for SSR fetches (`@nuxtjs/i18n` auto-prefixes the locale) |
 | `"use client"` component | A `.vue` SFC that uses reactivity normally; mark client-only branches with `<ClientOnly>` or use `.client.vue` if the whole component is browser-only |
 | Server action (`'use server'`) called from form | POST endpoint at `server/api/internal/...` called with `$fetch` (use vee-validate + Zod on submit) |
 | `revalidateTag('extensions')` after mutation | Either: (a) call `refresh()` on the page's `useAsyncData` handle, or (b) for cross-route invalidation use Nitro `defineCachedEventHandler` with versioned cache keys and bump the version |

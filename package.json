@@ -15,17 +15,27 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "validate": "bun run prepare && bun run lint && bun run typecheck && bun run test"
+    "validate": "bun run prepare && bun run lint && bun run typecheck && bun run test",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:apply-fts": "psql \"$DATABASE_URL\" -f drizzle/0002_fts_search_vector.sql",
+    "db:seed": "bun run scripts/seed.ts"
   },
   "dependencies": {
     "@nuxt/fonts": "^0.14.0",
     "@nuxtjs/i18n": "^10.3.0",
     "@pinia/nuxt": "^0.11.3",
+    "drizzle-orm": "^0.45.2",
+    "isomorphic-dompurify": "^3.12.0",
     "lucide-vue-next": "^1.0.0",
+    "markdown-it": "^14.1.1",
     "nuxt": "^4.0.0",
     "pinia": "^3.0.4",
+    "postgres": "^3.4.9",
     "vue": "^3.5.0",
-    "vue-router": "^4.4.0"
+    "vue-router": "^4.4.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.0.0",
@@ -34,10 +44,12 @@
     "@nuxt/test-utils": "^4.0.3",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/vite": "^4",
+    "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.10.0",
     "@typescript-eslint/parser": "^8.59.3",
     "@vitest/coverage-v8": "^4.1.6",
     "@vue/test-utils": "^2.4.10",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^10.3.0",
     "happy-dom": "^20.9.0",
     "husky": "^9.1.7",
