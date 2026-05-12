@@ -1,3 +1,113 @@
 {
-  "_meta": "顶层键将在后续阶段中从原型 T 对象移植。"
+  "common": {
+    "install": "安装",
+    "installing": "安装中…",
+    "installed": "已安装",
+    "save": "收藏",
+    "saved": "已收藏",
+    "addToGroup": "添加到分组"
+  },
+  "nav": {
+    "explore": "探索",
+    "publish": "发布",
+    "docs": "文档",
+    "skipToContent": "跳到主内容",
+    "toggleSidebar": "切换侧边栏",
+    "searchLabel": "搜索市场",
+    "switchToDark": "切换到深色主题",
+    "switchToIvory": "切换到浅色主题",
+    "switchToZh": "切换到中文",
+    "switchToEn": "切换到英文",
+    "userMenu": "账号菜单",
+    "comingSoon": "敬请期待"
+  },
+  "home": {
+    "featuredLabel": "本周精选",
+    "trendingTitle": "热门",
+    "browseAll": "浏览全部 {count} 个",
+    "viewExtension": "查看扩展",
+    "installsCount": "{count} 次安装"
+  },
+  "sidebar": {
+    "browse": "浏览",
+    "categories": "分类",
+    "collections": "收藏夹",
+    "mine": "我的",
+    "allExtensions": "全部扩展",
+    "skills": "Skill",
+    "mcpServers": "MCP",
+    "slashCommands": "斜杠命令",
+    "plugins": "插件",
+    "all": "全部",
+    "saved": "已收藏",
+    "newGroup": "新建分组"
+  },
+  "search": {
+    "placeholder": "搜索 Skill、MCP、斜杠命令…"
+  },
+  "filters": {
+    "dept": {
+      "expand": "展开",
+      "collapse": "折叠"
+    }
+  },
+  "taxonomy": {
+    "funcCat": {
+      "workTask": "工作任务",
+      "business": "业务",
+      "tools": "工具"
+    },
+    "l1": {
+      "systemDesign": "系统设计",
+      "softDev": "软件开发",
+      "testing": "测试与 QA",
+      "network": "网络协议",
+      "embedded": "嵌入式系统",
+      "cloud": "云服务",
+      "docs": "文档操作",
+      "data": "数据处理",
+      "vcs": "版本控制"
+    },
+    "l2": {
+      "reqAnalysis": "需求分析",
+      "funcDesign": "功能设计",
+      "archDesign": "架构设计",
+      "frontend": "前端开发",
+      "backend": "后端开发",
+      "devops": "DevOps",
+      "unitTest": "单元测试",
+      "intTest": "集成测试",
+      "perfTest": "性能测试",
+      "http": "HTTP / REST",
+      "grpc": "gRPC",
+      "mqtt": "MQTT",
+      "rtos": "RTOS",
+      "firmware": "固件",
+      "drivers": "驱动程序",
+      "aws": "AWS",
+      "azure": "Azure",
+      "k8s": "Kubernetes",
+      "markdown": "Markdown",
+      "pdf": "PDF 处理",
+      "wiki": "Wiki 管理",
+      "csv": "CSV 分析",
+      "sql": "SQL 查询",
+      "viz": "数据可视化",
+      "git": "Git 操作",
+      "pr": "代码评审",
+      "cicd": "CI / CD"
+    }
+  },
+  "auth": {
+    "userMenu": {
+      "signIn": "登录",
+      "signOut": "退出",
+      "settings": "设置",
+      "profile": "个人资料"
+    }
+  },
+  "locale": {
+    "en": "English",
+    "zh": "中文"
+  }
 }
