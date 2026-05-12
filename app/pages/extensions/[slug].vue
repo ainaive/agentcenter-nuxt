@@ -86,18 +86,18 @@ function formatCount(n: number): string {
 
       <aside class="space-y-6">
         <div class="rounded-(--radius-card) border border-(--color-border) bg-(--color-card) p-5">
-          <h2 class="text-sm font-semibold mb-3 text-(--color-ink)">{{ t("nav.explore") }}</h2>
+          <h2 class="text-sm font-semibold mb-3 text-(--color-ink)">{{ t("extensions.about") }}</h2>
           <dl class="space-y-2 text-sm">
             <div v-if="ext.licenseSpdx" class="flex justify-between">
-              <dt class="text-(--color-ink-muted)">License</dt>
+              <dt class="text-(--color-ink-muted)">{{ t("extensions.license") }}</dt>
               <dd class="font-mono text-(--color-ink)">{{ ext.licenseSpdx }}</dd>
             </div>
             <div class="flex justify-between">
-              <dt class="text-(--color-ink-muted)">Scope</dt>
+              <dt class="text-(--color-ink-muted)">{{ t("extensions.scope") }}</dt>
               <dd class="text-(--color-ink) capitalize">{{ ext.scope }}</dd>
             </div>
             <div v-if="ext.publishedAt" class="flex justify-between">
-              <dt class="text-(--color-ink-muted)">Published</dt>
+              <dt class="text-(--color-ink-muted)">{{ t("extensions.published") }}</dt>
               <dd class="text-(--color-ink)">{{ new Date(ext.publishedAt).toISOString().slice(0, 10) }}</dd>
             </div>
           </dl>
@@ -110,7 +110,7 @@ function formatCount(n: number): string {
               class="flex items-center gap-2 text-sm text-(--color-ink) hover:text-(--color-accent)"
             >
               <ExternalLink :size="14" aria-hidden="true" />
-              Homepage
+              {{ t("extensions.homepage") }}
             </a>
             <a
               v-if="ext.repoUrl"
@@ -120,13 +120,13 @@ function formatCount(n: number): string {
               class="flex items-center gap-2 text-sm text-(--color-ink) hover:text-(--color-accent)"
             >
               <Github :size="14" aria-hidden="true" />
-              Repository
+              {{ t("extensions.repository") }}
             </a>
           </div>
         </div>
 
         <div v-if="related.length > 0" class="rounded-(--radius-card) border border-(--color-border) bg-(--color-card) p-5">
-          <h2 class="text-sm font-semibold mb-3 text-(--color-ink)">Related</h2>
+          <h2 class="text-sm font-semibold mb-3 text-(--color-ink)">{{ t("extensions.related") }}</h2>
           <ul class="space-y-2">
             <li v-for="r in related" :key="r.id">
               <NuxtLink
