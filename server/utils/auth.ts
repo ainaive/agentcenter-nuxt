@@ -60,10 +60,20 @@ type SessionPayload = Awaited<
 >
 export type SessionUser = NonNullable<SessionPayload>["user"]
 
+function toFetchHeaders(raw: Record<string, string | string[] | undefined>): Headers {
+  const headers = new Headers()
+  for (const [key, value] of Object.entries(raw)) {
+    if (value === undefined) continue
+    headers.append(key, Array.isArray(value) ? value.join(", ") : value)
+  }
+  return headers
+}
+
 export async function getSessionUser(event: H3Event): Promise<SessionUser | null> {
   const auth = useAuthServer()
-  const headers = getRequestHeaders(event) as Record<string, string>
-  const session = await auth.api.getSession({ headers: new Headers(headers) })
+  const session = await auth.api.getSession({
+    headers: toFetchHeaders(getRequestHeaders(event)),
+  })
   return session?.user ?? null
 }
 

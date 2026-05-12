@@ -169,7 +169,8 @@
       "subtitle": "这将帮助 AgentCenter 为你推荐与团队相关的扩展。你可以稍后在设置中更改。",
       "submit": "继续",
       "skip": "暂时跳过",
-      "placeholder": "选择部门…"
+      "placeholder": "选择部门…",
+      "error": "保存部门失败，请重试。"
     },
     "userMenu": {
       "signIn": "登录",

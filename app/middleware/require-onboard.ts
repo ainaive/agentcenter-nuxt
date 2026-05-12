@@ -1,13 +1,20 @@
 type UserShape = { defaultDeptId?: string | null }
 
+function toFetchHeaders(raw: Record<string, string | undefined>): Headers {
+  const headers = new Headers()
+  for (const [key, value] of Object.entries(raw)) {
+    if (value !== undefined) headers.append(key, value)
+  }
+  return headers
+}
+
 export default defineNuxtRouteMiddleware(async (to) => {
   const auth = useAuth()
 
   let rawUser: unknown = null
   if (import.meta.server) {
-    const headers = useRequestHeaders(["cookie"])
     const result = await auth.getSession({
-      fetchOptions: { headers: new Headers(headers as Record<string, string>) },
+      fetchOptions: { headers: toFetchHeaders(useRequestHeaders(["cookie"])) },
     })
     rawUser = result.data?.user ?? null
   } else {

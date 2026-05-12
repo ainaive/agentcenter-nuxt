@@ -169,7 +169,8 @@
       "subtitle": "This lets AgentCenter surface extensions relevant to your team. You can change it later in settings.",
       "submit": "Continue",
       "skip": "Skip for now",
-      "placeholder": "Select a department…"
+      "placeholder": "Select a department…",
+      "error": "Couldn't save your department. Please try again."
     },
     "userMenu": {
       "signIn": "Sign in",
