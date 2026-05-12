@@ -1,0 +1,21 @@
+/review
+
+---
+
+please post the review comments and fix them
+
+---
+
+why remove .claude/scheduled_tasks.lock from gitignore? the file seems should not be commit to the repo
+
+---
+
+continue
+
+---
+
+continue
+
+---
+
+continue
