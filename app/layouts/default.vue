@@ -24,13 +24,11 @@ function toggleSidebar() {
 
     <div class="flex flex-1 min-h-0">
       <aside
-        class="border-r border-(--color-border) bg-(--color-sidebar) overflow-y-auto transition-[width] duration-200"
+        class="border-r border-(--color-border) bg-(--color-sidebar) overflow-hidden flex flex-col transition-[width] duration-200"
         :class="sidebarCollapsed ? 'w-0' : 'w-[240px]'"
         role="navigation"
       >
-        <div v-if="!sidebarCollapsed" class="p-4 text-sm text-(--color-ink-muted)">
-          Sidebar lands in step 9
-        </div>
+        <Sidebar :collapsed="sidebarCollapsed" />
       </aside>
 
       <main id="main-content" tabindex="-1" class="flex-1 overflow-y-auto focus:outline-none">

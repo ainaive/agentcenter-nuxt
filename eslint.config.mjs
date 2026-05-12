@@ -5,7 +5,10 @@ export default withNuxt(
     rules: {
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-floating-promises": "off",
-      "vue/multi-word-component-names": "error",
+      "vue/multi-word-component-names": [
+        "error",
+        { ignores: ["Sidebar", "Markdown"] },
+      ],
       "vue/require-explicit-emits": "error",
     },
   },
