@@ -4,8 +4,8 @@ import type { ExtensionListItem } from "~~/shared/db/queries-types"
 
 const props = defineProps<{
   items: ExtensionListItem[]
-  query?: string
-  clearFiltersHref?: string
+  query?: string | undefined
+  clearFiltersHref?: string | undefined
 }>()
 
 const { t } = useI18n()

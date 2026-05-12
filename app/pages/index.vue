@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { ArrowRight, Download } from "lucide-vue-next"
+import { ArrowRight } from "lucide-vue-next"
 
 const { t } = useI18n()
 const localePath = useLocalePath()
 
-const { data: countData } = await useFetch("/api/internal/extensions-count", {
-  default: () => ({ count: 0 }),
+const { data } = await useFetch("/api/internal/extensions", {
+  query: { sort: "downloads" },
+  default: () => ({ items: [], total: 0, filters: {} }),
 })
-const totalCount = computed(() => countData.value?.count ?? 0)
 
-const skeletonCount = 6
+const trending = computed(() => (data.value?.items ?? []).slice(0, 8))
+const totalCount = computed(() => data.value?.total ?? 0)
 </script>
 
 <template>
   <div class="px-6 py-8 max-w-7xl mx-auto">
-    <!-- Featured banner placeholder -->
     <section
       class="relative overflow-hidden rounded-(--radius-card) border border-(--color-border) bg-gradient-to-br from-(--color-accent)/10 via-(--color-card) to-(--color-card) p-8 mb-10"
     >
@@ -36,7 +36,6 @@ const skeletonCount = 6
       </NuxtLink>
     </section>
 
-    <!-- Trending heading + browse all -->
     <header class="flex items-baseline justify-between mb-5">
       <h2 class="font-serif text-2xl tracking-tight text-(--color-ink)">
         {{ t("home.trendingTitle") }}
@@ -50,22 +49,6 @@ const skeletonCount = 6
       </NuxtLink>
     </header>
 
-    <!-- Skeleton grid (lands in P3 with real data) -->
-    <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
-      <div
-        v-for="i in skeletonCount"
-        :key="i"
-        class="rounded-(--radius-card) border border-(--color-border) bg-(--color-card) p-5 min-h-[180px] flex flex-col gap-3"
-      >
-        <div class="h-6 w-3/4 bg-(--color-sidebar) rounded animate-pulse" />
-        <div class="h-4 w-full bg-(--color-sidebar) rounded animate-pulse" />
-        <div class="h-4 w-5/6 bg-(--color-sidebar) rounded animate-pulse" />
-        <div class="flex-1" />
-        <div class="flex items-center gap-2 text-xs text-(--color-ink-muted)">
-          <Download :size="12" aria-hidden="true" />
-          <span>{{ t("home.installsCount", { count: "—" }) }}</span>
-        </div>
-      </div>
-    </div>
+    <ExtGrid :items="trending" />
   </div>
 </template>
