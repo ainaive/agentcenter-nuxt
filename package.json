@@ -32,7 +32,8 @@
     "pinia": "^3.0.4",
     "postgres": "^3.4.9",
     "vue": "^3.5.0",
-    "vue-router": "^4.4.0"
+    "vue-router": "^4.4.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.0.0",
