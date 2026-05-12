@@ -31,6 +31,8 @@ const filtersActive = computed(() => {
       </p>
     </header>
 
+    <FilterBar />
+
     <ExtGrid
       :items="items"
       :query="query"

@@ -59,6 +59,27 @@
     "placeholder": "Search skills, MCP servers, slash commands…"
   },
   "filters": {
+    "sortLabel": "Sort by",
+    "scopeLabel": "Scope",
+    "filtersLabel": "Filters",
+    "sort": {
+      "downloads": "Downloads",
+      "stars": "Stars",
+      "recent": "Recently Added"
+    },
+    "scope": {
+      "all": "All",
+      "personal": "Personal",
+      "org": "Organization",
+      "enterprise": "Enterprise"
+    },
+    "chips": {
+      "all": "All",
+      "trending": "Trending",
+      "new": "New",
+      "official": "Official",
+      "free": "Open Source"
+    },
     "dept": {
       "expand": "Expand",
       "collapse": "Collapse"

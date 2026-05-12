@@ -59,6 +59,27 @@
     "placeholder": "搜索 Skill、MCP、斜杠命令…"
   },
   "filters": {
+    "sortLabel": "排序",
+    "scopeLabel": "范围",
+    "filtersLabel": "筛选",
+    "sort": {
+      "downloads": "下载量",
+      "stars": "评分",
+      "recent": "最新发布"
+    },
+    "scope": {
+      "all": "全部",
+      "personal": "个人",
+      "org": "组织",
+      "enterprise": "企业"
+    },
+    "chips": {
+      "all": "全部",
+      "trending": "热门",
+      "new": "新发布",
+      "official": "官方",
+      "free": "开源"
+    },
     "dept": {
       "expand": "展开",
       "collapse": "折叠"
