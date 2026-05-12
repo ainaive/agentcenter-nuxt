@@ -30,6 +30,7 @@
   "devDependencies": {
     "@nuxt/eslint": "^1.15.2",
     "@nuxt/test-utils": "^4.0.3",
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/vite": "^4",
     "@types/node": "^22.10.0",
     "@typescript-eslint/parser": "^8.59.3",
