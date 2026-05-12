@@ -103,6 +103,7 @@ export type AttachFileResult =
   | { ok: false; error: string }
 
 export async function attachFile(
+  userId: string,
   versionId: string,
   r2Key: string,
   size: number,
@@ -110,6 +111,17 @@ export async function attachFile(
 ): Promise<AttachFileResult> {
   const fileId = crypto.randomUUID()
   const db = useDb()
+
+  const [owner] = await db
+    .select({ publisherUserId: extensions.publisherUserId })
+    .from(extensionVersions)
+    .innerJoin(extensions, eq(extensions.id, extensionVersions.extensionId))
+    .where(eq(extensionVersions.id, versionId))
+    .limit(1)
+  if (!owner || owner.publisherUserId !== userId) {
+    return { ok: false, error: "not_found" }
+  }
+
   try {
     await db.transaction(async (tx) => {
       await tx.insert(files).values({
@@ -120,10 +132,12 @@ export async function attachFile(
         mimeType: "application/zip",
         scanStatus: "pending",
       })
-      await tx
+      const updated = await tx
         .update(extensionVersions)
         .set({ bundleFileId: fileId })
         .where(eq(extensionVersions.id, versionId))
+        .returning({ id: extensionVersions.id })
+      if (updated.length === 0) throw new Error("version_disappeared")
     })
   } catch (err) {
     console.error("[publish] attachFile failed", err)
@@ -136,14 +150,24 @@ export type SubmitResult =
   | { ok: true }
   | { ok: false; error: string }
 
-export async function submitForReview(versionId: string): Promise<SubmitResult> {
+export async function submitForReview(
+  userId: string,
+  versionId: string,
+): Promise<SubmitResult> {
   const db = useDb()
   const [version] = await db
-    .select({ bundleFileId: extensionVersions.bundleFileId })
+    .select({
+      bundleFileId: extensionVersions.bundleFileId,
+      publisherUserId: extensions.publisherUserId,
+    })
     .from(extensionVersions)
+    .innerJoin(extensions, eq(extensions.id, extensionVersions.extensionId))
     .where(eq(extensionVersions.id, versionId))
     .limit(1)
-  if (!version?.bundleFileId) return { ok: false, error: "no_bundle" }
+  if (!version || version.publisherUserId !== userId) {
+    return { ok: false, error: "not_found" }
+  }
+  if (!version.bundleFileId) return { ok: false, error: "no_bundle" }
 
   try {
     await submit(versionId)

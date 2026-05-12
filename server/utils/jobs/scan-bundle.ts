@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm"
 import { unzipSync } from "fflate"
 import { parse } from "smol-toml"
+import { z } from "zod"
 import { files } from "~~/shared/db/schema"
 import { BundleManifestSchema } from "~~/shared/validators/manifest"
 import { inngest } from "../inngest"
@@ -9,13 +10,23 @@ import {
   VersionStateError,
 } from "../extensions-state"
 
+const eventDataSchema = z.object({
+  versionId: z.string().min(1),
+  fileId: z.string().min(1),
+})
+
 export const scanBundle = inngest.createFunction(
   {
     id: "scan-bundle",
     triggers: [{ event: "extension/scan.requested" }],
   },
   async ({ event, step }) => {
-    const { versionId, fileId } = event.data as { versionId: string; fileId: string }
+    const parsedEvent = eventDataSchema.safeParse(event.data)
+    if (!parsedEvent.success) {
+      console.error("[scan-bundle] invalid event payload", parsedEvent.error)
+      return { ok: false, reason: "invalid_event" }
+    }
+    const { versionId, fileId } = parsedEvent.data
 
     const scanResult = await step.run("download-and-scan", async () => {
       const db = useDb()
@@ -38,7 +49,13 @@ export const scanBundle = inngest.createFunction(
         .map((b) => b.toString(16).padStart(2, "0"))
         .join("")
 
-      const entries = unzipSync(uint8)
+      let entries: ReturnType<typeof unzipSync>
+      try {
+        entries = unzipSync(uint8)
+      } catch (err) {
+        console.error("[scan-bundle] unzip failed", err)
+        return { ok: false as const, reason: "invalid_zip", checksum }
+      }
       const manifestEntry = entries["manifest.toml"]
       if (!manifestEntry) {
         return { ok: false as const, reason: "missing_manifest", checksum }
@@ -85,7 +102,12 @@ export const scanBundle = inngest.createFunction(
           })
         }
       } catch (err) {
-        if (err instanceof VersionStateError) return
+        if (err instanceof VersionStateError) {
+          console.warn(
+            `[scan-bundle] version ${versionId} state transition rejected (${err.code}); treating as idempotent retry`,
+          )
+          return
+        }
         throw err
       }
     })

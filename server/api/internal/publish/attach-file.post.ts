@@ -9,11 +9,18 @@ const bodySchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  await requireUser(event)
+  const user = await requireUser(event)
   const body = await readValidatedBody(event, (raw) => bodySchema.parse(raw))
-  const result = await attachFile(body.versionId, body.r2Key, body.size, body.checksumSha256)
+  const result = await attachFile(
+    user.id,
+    body.versionId,
+    body.r2Key,
+    body.size,
+    body.checksumSha256,
+  )
   if (!result.ok) {
-    throw createError({ statusCode: 500, statusMessage: result.error })
+    const status = result.error === "not_found" ? 404 : 500
+    throw createError({ statusCode: status, statusMessage: result.error })
   }
   return result
 })

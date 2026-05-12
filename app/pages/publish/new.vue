@@ -148,18 +148,18 @@ async function handleSubmit() {
         <label class="flex flex-col gap-1">
           <span class="text-sm font-semibold text-(--color-ink)">{{ t("publish.fields.category") }}</span>
           <select v-model="form.category" class="rounded-lg border border-(--color-border) bg-(--color-bg) px-3 py-2 text-sm">
-            <option value="skills">Skills</option>
-            <option value="mcp">MCP</option>
-            <option value="slash">Slash</option>
-            <option value="plugins">Plugins</option>
+            <option value="skills">{{ t("publish.options.category.skills") }}</option>
+            <option value="mcp">{{ t("publish.options.category.mcp") }}</option>
+            <option value="slash">{{ t("publish.options.category.slash") }}</option>
+            <option value="plugins">{{ t("publish.options.category.plugins") }}</option>
           </select>
         </label>
         <label class="flex flex-col gap-1">
           <span class="text-sm font-semibold text-(--color-ink)">{{ t("publish.fields.scope") }}</span>
           <select v-model="form.scope" class="rounded-lg border border-(--color-border) bg-(--color-bg) px-3 py-2 text-sm">
-            <option value="personal">Personal</option>
-            <option value="org">Organization</option>
-            <option value="enterprise">Enterprise</option>
+            <option value="personal">{{ t("publish.options.scope.personal") }}</option>
+            <option value="org">{{ t("publish.options.scope.org") }}</option>
+            <option value="enterprise">{{ t("publish.options.scope.enterprise") }}</option>
           </select>
         </label>
       </div>

@@ -196,6 +196,19 @@
       "summary": "简介",
       "bundle": "Bundle (zip)"
     },
+    "options": {
+      "category": {
+        "skills": "Skill",
+        "mcp": "MCP",
+        "slash": "斜杠命令",
+        "plugins": "插件"
+      },
+      "scope": {
+        "personal": "个人",
+        "org": "组织",
+        "enterprise": "企业"
+      }
+    },
     "stage": {
       "published": "已发布",
       "ready": "等待审核",

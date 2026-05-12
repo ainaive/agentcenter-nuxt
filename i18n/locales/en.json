@@ -196,6 +196,19 @@
       "summary": "Summary",
       "bundle": "Bundle (zip)"
     },
+    "options": {
+      "category": {
+        "skills": "Skills",
+        "mcp": "MCP",
+        "slash": "Slash command",
+        "plugins": "Plugin"
+      },
+      "scope": {
+        "personal": "Personal",
+        "org": "Organization",
+        "enterprise": "Enterprise"
+      }
+    },
     "stage": {
       "published": "Published",
       "ready": "Awaiting review",

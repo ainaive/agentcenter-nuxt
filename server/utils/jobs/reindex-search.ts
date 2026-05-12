@@ -1,5 +1,8 @@
+import { z } from "zod"
 import { inngest } from "../inngest"
 import { publishVersion, VersionStateError } from "../extensions-state"
+
+const eventDataSchema = z.object({ versionId: z.string().min(1) })
 
 export const reindexSearch = inngest.createFunction(
   {
@@ -7,7 +10,12 @@ export const reindexSearch = inngest.createFunction(
     triggers: [{ event: "extension/index.requested" }],
   },
   async ({ event, step }) => {
-    const { versionId } = event.data as { versionId: string }
+    const parsed = eventDataSchema.safeParse(event.data)
+    if (!parsed.success) {
+      console.error("[reindex-search] invalid event payload", parsed.error)
+      return { ok: false, reason: "invalid_event" }
+    }
+    const { versionId } = parsed.data
 
     let extensionId: string
     try {
