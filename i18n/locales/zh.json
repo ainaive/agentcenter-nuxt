@@ -32,6 +32,7 @@
   "extensions": {
     "browseTitle": "浏览全部",
     "count": "{count} 个扩展",
+    "noReadme": "该扩展尚未提供 README 文档。",
     "empty": {
       "noResultsFor": "没有\"{query}\"的结果",
       "noResultsFiltered": "没有符合当前筛选条件的扩展",

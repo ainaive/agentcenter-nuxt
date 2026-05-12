@@ -32,6 +32,7 @@
   "extensions": {
     "browseTitle": "Browse all",
     "count": "{count} extensions",
+    "noReadme": "No README has been published for this extension yet.",
     "empty": {
       "noResultsFor": "No results for \"{query}\"",
       "noResultsFiltered": "No extensions match these filters",
