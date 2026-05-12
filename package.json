@@ -19,7 +19,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "db:apply-fts": "psql \"$DATABASE_URL\" -f drizzle/0002_fts_search_vector.sql"
+    "db:apply-fts": "psql \"$DATABASE_URL\" -f drizzle/0002_fts_search_vector.sql",
+    "db:seed": "bun run scripts/seed.ts"
   },
   "dependencies": {
     "@nuxt/fonts": "^0.14.0",

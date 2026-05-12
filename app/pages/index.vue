@@ -4,6 +4,11 @@ import { ArrowRight, Download } from "lucide-vue-next"
 const { t } = useI18n()
 const localePath = useLocalePath()
 
+const { data: countData } = await useFetch("/api/internal/extensions-count", {
+  default: () => ({ count: 0 }),
+})
+const totalCount = computed(() => countData.value?.count ?? 0)
+
 const skeletonCount = 6
 </script>
 
@@ -40,7 +45,7 @@ const skeletonCount = 6
         :to="localePath('/extensions')"
         class="text-sm text-(--color-ink-muted) hover:text-(--color-ink) inline-flex items-center gap-1"
       >
-        {{ t("home.browseAll", { count: "—" }) }}
+        {{ t("home.browseAll", { count: totalCount }) }}
         <ArrowRight :size="12" aria-hidden="true" />
       </NuxtLink>
     </header>
