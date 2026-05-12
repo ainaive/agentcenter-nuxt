@@ -11,6 +11,13 @@ const localePath = useLocalePath()
 
 const q = ref<string>(typeof route.query.q === "string" ? route.query.q : "")
 
+watch(
+  () => route.query.q,
+  (next) => {
+    q.value = typeof next === "string" ? next : ""
+  },
+)
+
 function onSubmit() {
   const query: Record<string, string> = {}
   for (const [k, v] of Object.entries(route.query)) {

@@ -56,6 +56,13 @@ if (activeFuncCat.value) expansion.funcCats[activeFuncCat.value] = true
 else expansion.funcCats.workTask = true
 if (activeSubCat.value) expansion.l1[activeSubCat.value] = true
 
+watch(activeFuncCat, (next) => {
+  if (next) expansion.funcCats[next] = true
+})
+watch(activeSubCat, (next) => {
+  if (next) expansion.l1[next] = true
+})
+
 function buildHref(updates: Record<string, string | null>): string {
   const params = new URLSearchParams()
   for (const [k, v] of Object.entries(route.query)) {

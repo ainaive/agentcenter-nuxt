@@ -23,6 +23,7 @@
   },
   "home": {
     "featuredLabel": "本周精选",
+    "featuredDescription": "AI 智能体扩展市场 — Skill、MCP、斜杠命令与插件。",
     "trendingTitle": "热门",
     "browseAll": "浏览全部 {count} 个",
     "viewExtension": "查看扩展",

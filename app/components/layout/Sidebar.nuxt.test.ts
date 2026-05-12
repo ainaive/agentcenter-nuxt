@@ -24,13 +24,13 @@ describe("Sidebar", () => {
     expect(html).toContain("collection")
   })
 
-  it("renders at least 5 browse links with locale-prefixed hrefs", async () => {
+  it("renders at least 5 browse links targeting /extensions", async () => {
     const wrapper = await mountSuspended(Sidebar, mountOpts)
     const links = wrapper.findAll("a")
     expect(links.length).toBeGreaterThanOrEqual(5)
     for (const link of links) {
       const href = link.attributes("href") ?? ""
-      expect(href.startsWith("/")).toBe(true)
+      expect(href).toContain("/extensions")
     }
   })
 

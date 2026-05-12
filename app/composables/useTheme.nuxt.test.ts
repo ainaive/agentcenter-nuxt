@@ -17,7 +17,7 @@ describe("useTheme", () => {
     expect(theme.value).toBe("ivory")
   })
 
-  it("set writes the cookie directly", () => {
+  it("set updates the current theme value", () => {
     const { theme, set } = useTheme()
     set("dark")
     expect(theme.value).toBe("dark")

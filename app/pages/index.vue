@@ -20,7 +20,7 @@ const skeletonCount = 6
         AgentCenter
       </h1>
       <p class="text-(--color-ink-muted) max-w-xl mb-6">
-        Marketplace for AI agent extensions — Skills, MCP servers, slash commands, and plugins.
+        {{ t("home.featuredDescription") }}
       </p>
       <NuxtLink
         :to="localePath('/extensions')"

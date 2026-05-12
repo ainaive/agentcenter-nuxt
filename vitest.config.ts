@@ -4,7 +4,6 @@ export default defineVitestConfig({
   test: {
     environment: "happy-dom",
     globals: false,
-    passWithNoTests: true,
     include: [
       "shared/**/*.test.ts",
       "server/**/*.test.ts",
