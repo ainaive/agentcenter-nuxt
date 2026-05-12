@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const { t } = useI18n()
-
 const sidebarCollapsed = ref(false)
 function toggleSidebar() {
   sidebarCollapsed.value = !sidebarCollapsed.value
@@ -20,17 +19,7 @@ function toggleSidebar() {
       class="sticky top-0 z-10 h-[52px] border-b border-(--color-border) bg-(--color-card) flex items-center px-4 gap-3"
       role="banner"
     >
-      <button
-        type="button"
-        class="p-2 rounded hover:bg-(--color-sidebar) focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-accent)"
-        :aria-label="t('nav.toggleSidebar')"
-        @click="toggleSidebar"
-      >
-        ☰
-      </button>
-      <span class="font-serif text-lg tracking-tight">AgentCenter</span>
-      <div class="flex-1" />
-      <span class="text-sm text-(--color-ink-muted)">TopBar lands in step 8</span>
+      <TopBar :collapsed="sidebarCollapsed" @toggle-sidebar="toggleSidebar" />
     </header>
 
     <div class="flex flex-1 min-h-0">
