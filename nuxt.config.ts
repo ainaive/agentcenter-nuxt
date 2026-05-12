@@ -8,7 +8,14 @@ export default defineNuxtConfig({
   nitro: { preset: "node-server" },
   css: ["~/assets/css/tailwind.css"],
   vite: { plugins: [tailwindcss()] },
-  modules: ["@nuxtjs/i18n"],
+  modules: ["@nuxtjs/i18n", "@nuxt/fonts"],
+  fonts: {
+    families: [
+      { name: "Inter", provider: "google" },
+      { name: "Fraunces", provider: "google" },
+      { name: "JetBrains Mono", provider: "google" },
+    ],
+  },
   i18n: {
     strategy: "prefix",
     defaultLocale: "en",
