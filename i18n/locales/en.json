@@ -29,10 +29,24 @@
     "viewExtension": "View extension",
     "installsCount": "{count} installs"
   },
+  "errors": {
+    "generic": {
+      "title": "Something went wrong",
+      "body": "An unexpected error occurred. Please try again — if it keeps happening, share the code below with support.",
+      "retry": "Try again",
+      "home": "Back to home"
+    }
+  },
   "extensions": {
     "browseTitle": "Browse all",
     "count": "{count} extensions",
     "noReadme": "No README has been published for this extension yet.",
+    "errorBoundary": {
+      "title": "Couldn't load extensions",
+      "body": "We hit a snag reaching the marketplace. This is usually temporary — try again in a moment.",
+      "retry": "Try again",
+      "back": "Back to home"
+    },
     "about": "About",
     "license": "License",
     "scope": "Scope",
