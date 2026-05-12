@@ -19,6 +19,12 @@ export default withNuxt(
     },
   },
   {
+    files: ["app/layouts/**", "app/pages/**", "app/error.vue", "app/app.vue"],
+    rules: {
+      "vue/multi-word-component-names": "off",
+    },
+  },
+  {
     files: ["server/**"],
     rules: {
       "no-restricted-imports": [
