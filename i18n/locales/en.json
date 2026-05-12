@@ -179,6 +179,57 @@
       "profile": "Profile"
     }
   },
+  "publish": {
+    "title": "Publish",
+    "new": "New extension",
+    "newTitle": "Publish a new extension",
+    "submit": "Submit for review",
+    "discard": "Discard",
+    "confirmDiscard": "Discard this draft? This cannot be undone.",
+    "emptyDashboard": "You haven't started any drafts yet. Click \"New extension\" to begin.",
+    "fields": {
+      "name": "Name",
+      "slug": "Slug",
+      "version": "Version",
+      "category": "Category",
+      "scope": "Scope",
+      "summary": "Summary",
+      "bundle": "Bundle (zip)"
+    },
+    "options": {
+      "category": {
+        "skills": "Skills",
+        "mcp": "MCP",
+        "slash": "Slash command",
+        "plugins": "Plugin"
+      },
+      "scope": {
+        "personal": "Personal",
+        "org": "Organization",
+        "enterprise": "Enterprise"
+      }
+    },
+    "stage": {
+      "published": "Published",
+      "ready": "Awaiting review",
+      "rejected": "Rejected",
+      "scanning": "Awaiting scan",
+      "readyToSubmit": "Ready to submit",
+      "needsBundle": "Needs bundle upload"
+    },
+    "stages": {
+      "idle": "",
+      "creating": "Creating draft",
+      "signing": "Signing upload",
+      "uploading": "Uploading bundle",
+      "attaching": "Attaching file",
+      "submitting": "Submitting for review"
+    },
+    "errors": {
+      "bundleRequired": "Please pick a zip bundle to upload.",
+      "generic": "Publish failed. Please try again."
+    }
+  },
   "cliAuth": {
     "title": "Authorize CLI",
     "subtitle": "Enter the code shown in your terminal to connect the AgentCenter CLI to your account.",

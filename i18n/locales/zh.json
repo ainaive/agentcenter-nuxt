@@ -179,6 +179,57 @@
       "profile": "个人资料"
     }
   },
+  "publish": {
+    "title": "发布",
+    "new": "新建扩展",
+    "newTitle": "发布新扩展",
+    "submit": "提交审核",
+    "discard": "丢弃",
+    "confirmDiscard": "确定要丢弃此草稿吗？此操作不可撤销。",
+    "emptyDashboard": "还没有任何草稿。点击\"新建扩展\"开始。",
+    "fields": {
+      "name": "名称",
+      "slug": "标识",
+      "version": "版本",
+      "category": "类型",
+      "scope": "范围",
+      "summary": "简介",
+      "bundle": "Bundle (zip)"
+    },
+    "options": {
+      "category": {
+        "skills": "Skill",
+        "mcp": "MCP",
+        "slash": "斜杠命令",
+        "plugins": "插件"
+      },
+      "scope": {
+        "personal": "个人",
+        "org": "组织",
+        "enterprise": "企业"
+      }
+    },
+    "stage": {
+      "published": "已发布",
+      "ready": "等待审核",
+      "rejected": "已拒绝",
+      "scanning": "扫描中",
+      "readyToSubmit": "可提交",
+      "needsBundle": "需上传 Bundle"
+    },
+    "stages": {
+      "idle": "",
+      "creating": "创建草稿",
+      "signing": "签名上传",
+      "uploading": "上传 Bundle",
+      "attaching": "关联文件",
+      "submitting": "提交审核"
+    },
+    "errors": {
+      "bundleRequired": "请选择要上传的 zip 文件。",
+      "generic": "发布失败，请重试。"
+    }
+  },
   "cliAuth": {
     "title": "授权 CLI",
     "subtitle": "输入终端中显示的代码，将 AgentCenter CLI 连接到你的账号。",
