@@ -1,0 +1,33 @@
+# Nuxt build artifacts
+.nuxt
+.output
+.nitro
+.cache
+dist
+
+# Node
+node_modules
+*.log
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Editor / agent
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea
+.DS_Store
+.claude/settings.local.json
+
+# Tests
+coverage
+.vitest-cache
+test-results
+playwright-report
+playwright/.cache
+
+# TypeScript
+*.tsbuildinfo
