@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "9097c302db31",
+  "strategy": "manual-commit",
+  "branch": "feat/p4-publishing",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/90/97c302db31/0/metadata.json",
+      "transcript": "/90/97c302db31/0/full.jsonl",
+      "content_hash": "/90/97c302db31/0/content_hash.txt",
+      "prompt": "/90/97c302db31/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 10210,
+    "cache_creation_tokens": 914923,
+    "cache_read_tokens": 159605700,
+    "output_tokens": 406626,
+    "api_call_count": 408
+  }
+}

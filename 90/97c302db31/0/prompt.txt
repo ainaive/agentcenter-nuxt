@@ -1,0 +1,53 @@
+check the PR
+
+---
+
+check the PR
+
+---
+
+ok, go ahead
+
+---
+
+the PR is clean, merge it
+
+---
+
+continue: check PR #2 CI status and merge if green
+
+---
+
+ok, go ahead
+
+---
+
+I have closed the PR, please reopen a new PR
+
+---
+
+check the PR
+
+---
+
+check the PR
+
+---
+
+the PR seems clean, let's merge it
+
+---
+
+ok, go ahead
+
+---
+
+check the code reviews by coderabbit on PR #5
+
+---
+
+the PR is clean, let's merge it.
+
+---
+
+ok, go ahead
