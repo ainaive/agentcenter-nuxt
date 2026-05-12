@@ -1,9 +1,15 @@
 import { eq } from "drizzle-orm"
 import { z } from "zod"
+import { findDept } from "~~/shared/data/departments"
 import { users } from "~~/shared/db/schema/auth"
 
 const bodySchema = z.object({
-  deptId: z.string().trim().min(1).max(120),
+  deptId: z
+    .string()
+    .trim()
+    .min(1)
+    .max(120)
+    .refine((id) => findDept(id) !== null, { message: "Unknown department" }),
 })
 
 export default defineEventHandler(async (event) => {

@@ -1,6 +1,5 @@
 export default defineNuxtRouteMiddleware(async (to) => {
   const auth = useAuth()
-  const session = auth.useSession()
 
   if (import.meta.server) {
     const headers = useRequestHeaders(["cookie"])
@@ -15,6 +14,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
       })
     }
   } else {
+    const session = auth.useSession()
     if (!session.value.data?.user) {
       const localePath = useLocalePath()
       return navigateTo({
