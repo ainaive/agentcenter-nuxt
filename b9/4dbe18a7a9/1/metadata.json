@@ -1,0 +1,48 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "b94dbe18a7a9",
+  "session_id": "9bddaece-50a8-46fc-8223-297e87425025",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-13T03:25:54.521225Z",
+  "branch": "feat/profile-and-polish",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/extension/ExtAboutCard.vue",
+    "app/components/extension/ExtHero.vue",
+    "app/components/extension/ExtRelatedList.vue",
+    "app/components/extension/ExtTabs.vue",
+    "app/components/extension/InstallCommand.vue",
+    "app/components/extension/SaveButton.vue",
+    "app/components/extension/ShareButton.vue",
+    "app/pages/extensions/[slug].vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "7cf11645cc1d",
+  "checkpoint_transcript_start": 183,
+  "transcript_lines_at_start": 183,
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-13T03:25:54.510353Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 329,
+    "human_modified": 119,
+    "human_removed": 0,
+    "total_committed": 329,
+    "total_lines_changed": 448,
+    "agent_percentage": 0,
+    "metric_version": 2
+  }
+}
