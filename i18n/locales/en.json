@@ -366,7 +366,6 @@
   },
   "profile": {
     "title": "My workspace",
-    "role": "Senior Engineer",
     "deptUnset": "No department",
     "joined": "Joined {date}",
     "installsShort": "installs",

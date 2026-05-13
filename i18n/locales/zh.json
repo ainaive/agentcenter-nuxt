@@ -366,7 +366,6 @@
   },
   "profile": {
     "title": "我的工作台",
-    "role": "高级工程师",
     "deptUnset": "未设置部门",
     "joined": "{date} 加入",
     "installsShort": "次安装",

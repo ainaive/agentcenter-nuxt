@@ -29,10 +29,9 @@ test.describe("navigation", () => {
   test("locale switch flips /en/extensions to /zh/extensions", async ({ page }) => {
     await page.goto("/en/extensions")
     const zhSwitch = page.getByRole("link", { name: "中文" }).first()
-    if (await zhSwitch.isVisible()) {
-      await zhSwitch.click()
-      await expect(page).toHaveURL(/\/zh\/extensions/)
-    }
+    await expect(zhSwitch).toBeVisible()
+    await zhSwitch.click()
+    await expect(page).toHaveURL(/\/zh\/extensions/)
   })
 
   test("/en/extensions/non-existent-slug 404s without leaking to /en", async ({ request }) => {

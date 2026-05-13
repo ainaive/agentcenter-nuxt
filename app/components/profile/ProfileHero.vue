@@ -55,8 +55,6 @@ const fmtCount = computed(() => {
       <div class="min-w-0 flex-1">
         <h1 class="truncate font-serif text-2xl text-(--color-ink)">{{ displayName }}</h1>
         <p class="mt-1 text-sm text-(--color-ink-muted)">
-          <span>{{ t("profile.role") }}</span>
-          <span class="mx-2">·</span>
           <span>{{ deptLabel }}</span>
           <span class="mx-2">·</span>
           <span>{{ joinedLabel }}</span>

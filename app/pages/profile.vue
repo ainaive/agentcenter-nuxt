@@ -1,12 +1,4 @@
 <script setup lang="ts">
-import type {
-  ProfileActivityEvent,
-  ProfileDraftRow,
-  ProfileInstalledRow,
-  ProfilePublishedRow,
-  ProfileSavedRow,
-  ProfileStats,
-} from "~~/shared/types"
 import type { ProfileSectionKey } from "~/components/profile/SectionRail.vue"
 
 definePageMeta({ middleware: ["require-auth", "require-onboard"] })
@@ -30,26 +22,10 @@ const active = computed<ProfileSectionKey>(() => {
     : "installed"
 })
 
-interface MeResponse {
-  user: {
-    id: string
-    email: string
-    name: string | null
-    bio: string | null
-    defaultDeptId: string | null
-    createdAt: string
-  }
-  stats: ProfileStats
-}
-
-type SectionResponse =
-  | { section: "installed"; rows: ProfileInstalledRow[] }
-  | { section: "published"; rows: ProfilePublishedRow[] }
-  | { section: "drafts"; rows: ProfileDraftRow[] }
-  | { section: "saved"; rows: ProfileSavedRow[] }
-  | { section: "activity"; rows: ProfileActivityEvent[] }
-
-const { data: me, refresh: refreshMe } = await useFetch<MeResponse>(
+// Response types are inferred from server/api/internal/profile/{me,section}.get.ts
+// via Nuxt's auto-generated InternalApi map (see .nuxt/types/nitro-routes.d.ts).
+// No manual duplication needed.
+const { data: me, error: meError, refresh: refreshMe } = await useFetch(
   "/api/internal/profile/me",
 )
 
@@ -57,7 +33,7 @@ const sectionQuery = computed(() =>
   active.value === "settings" ? null : { section: active.value },
 )
 
-const { data: section } = await useFetch<SectionResponse | null>(
+const { data: section, error: sectionError } = await useFetch(
   "/api/internal/profile/section",
   {
     query: sectionQuery,
@@ -69,53 +45,70 @@ const { data: section } = await useFetch<SectionResponse | null>(
 
 <template>
   <div class="px-6 py-8 max-w-6xl mx-auto">
-    <ProfileHero
-      v-if="me"
-      :name="me.user.name"
-      :email="me.user.email"
-      :default-dept-id="me.user.defaultDeptId"
-      :created-at="me.user.createdAt"
-      :stats="me.stats"
-    />
-
-    <div class="mt-6 grid gap-6 md:grid-cols-[220px_1fr]">
-      <SectionRail :active="active" />
-
-      <main class="min-w-0">
-        <h2 class="mb-4 font-serif text-xl text-(--color-ink)">
-          {{ t(`profile.sections.${active}`) }}
-        </h2>
-
-        <SectionInstalled
-          v-if="active === 'installed' && section?.section === 'installed'"
-          :rows="section.rows"
-        />
-        <SectionPublished
-          v-else-if="active === 'published' && section?.section === 'published'"
-          :rows="section.rows"
-        />
-        <SectionDrafts
-          v-else-if="active === 'drafts' && section?.section === 'drafts'"
-          :rows="section.rows"
-        />
-        <SectionSaved
-          v-else-if="active === 'saved' && section?.section === 'saved'"
-          :rows="section.rows"
-        />
-        <SectionActivity
-          v-else-if="active === 'activity' && section?.section === 'activity'"
-          :rows="section.rows"
-        />
-        <ProfileSettingsForm
-          v-else-if="active === 'settings' && me"
-          :initial-name="me.user.name ?? ''"
-          :email="me.user.email"
-          :initial-dept-id="me.user.defaultDeptId ?? ''"
-          :initial-bio="me.user.bio ?? ''"
-          :created-at="me.user.createdAt"
-          @saved="refreshMe"
-        />
-      </main>
+    <div
+      v-if="meError"
+      class="rounded-(--radius-card) border border-red-300/40 bg-red-50/40 p-6 text-sm text-red-700 dark:bg-red-900/10"
+    >
+      <p class="font-medium">{{ t("profile.errors.generic") }}</p>
+      <p class="mt-1 font-mono text-xs opacity-70">{{ meError.statusMessage ?? meError.message }}</p>
     </div>
+
+    <template v-else>
+      <ProfileHero
+        v-if="me"
+        :name="me.user.name"
+        :email="me.user.email"
+        :default-dept-id="me.user.defaultDeptId"
+        :created-at="me.user.createdAt"
+        :stats="me.stats"
+      />
+
+      <div class="mt-6 grid gap-6 md:grid-cols-[220px_1fr]">
+        <SectionRail :active="active" />
+
+        <main class="min-w-0">
+          <h2 class="mb-4 font-serif text-xl text-(--color-ink)">
+            {{ t(`profile.sections.${active}`) }}
+          </h2>
+
+          <p
+            v-if="sectionError && active !== 'settings'"
+            class="text-sm text-red-600"
+          >
+            {{ t("profile.errors.generic") }}
+          </p>
+
+          <SectionInstalled
+            v-else-if="active === 'installed' && section?.section === 'installed'"
+            :rows="section.rows"
+          />
+          <SectionPublished
+            v-else-if="active === 'published' && section?.section === 'published'"
+            :rows="section.rows"
+          />
+          <SectionDrafts
+            v-else-if="active === 'drafts' && section?.section === 'drafts'"
+            :rows="section.rows"
+          />
+          <SectionSaved
+            v-else-if="active === 'saved' && section?.section === 'saved'"
+            :rows="section.rows"
+          />
+          <SectionActivity
+            v-else-if="active === 'activity' && section?.section === 'activity'"
+            :rows="section.rows"
+          />
+          <ProfileSettingsForm
+            v-else-if="active === 'settings' && me"
+            :initial-name="me.user.name ?? ''"
+            :email="me.user.email"
+            :initial-dept-id="me.user.defaultDeptId ?? ''"
+            :initial-bio="me.user.bio ?? ''"
+            :created-at="me.user.createdAt"
+            @saved="refreshMe"
+          />
+        </main>
+      </div>
+    </template>
   </div>
 </template>
