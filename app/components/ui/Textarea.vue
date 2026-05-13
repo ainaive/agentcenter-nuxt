@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from "vue"
 import { cn } from "~/lib/utils"
 
 const props = defineProps<{
   modelValue?: string | null
-  class?: string
+  class?: HTMLAttributes["class"]
 }>()
 
 defineEmits<{

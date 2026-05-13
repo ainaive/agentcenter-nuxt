@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from "vue"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Primitive, type PrimitiveProps } from "reka-ui"
 import { cn } from "~/lib/utils"
@@ -32,7 +33,7 @@ const props = withDefaults(
   defineProps<PrimitiveProps & {
     variant?: ButtonVariants["variant"]
     size?: ButtonVariants["size"]
-    class?: string
+    class?: HTMLAttributes["class"]
   }>(),
   { as: "button" },
 )

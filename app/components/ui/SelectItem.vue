@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from "vue"
 import { Check } from "lucide-vue-next"
 import {
   SelectItem,
@@ -9,7 +10,7 @@ import {
 } from "reka-ui"
 import { cn } from "~/lib/utils"
 
-const props = defineProps<SelectItemProps & { class?: string }>()
+const props = defineProps<SelectItemProps & { class?: HTMLAttributes["class"] }>()
 
 const forwarded = useForwardProps(
   computed(() => {

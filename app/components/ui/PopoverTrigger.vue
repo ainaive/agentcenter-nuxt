@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from "vue"
 import { PopoverTrigger, type PopoverTriggerProps, useForwardProps } from "reka-ui"
 
-const props = defineProps<PopoverTriggerProps & { class?: string }>()
+const props = defineProps<PopoverTriggerProps & { class?: HTMLAttributes["class"] }>()
 
 const forwarded = useForwardProps(
   computed(() => {

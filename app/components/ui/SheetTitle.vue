@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from "vue"
 import { DialogTitle, type DialogTitleProps, useForwardProps } from "reka-ui"
 import { cn } from "~/lib/utils"
 
-const props = defineProps<DialogTitleProps & { class?: string }>()
+const props = defineProps<DialogTitleProps & { class?: HTMLAttributes["class"] }>()
 
 const forwarded = useForwardProps(
   computed(() => {

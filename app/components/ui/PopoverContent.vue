@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from "vue"
 import {
   PopoverContent,
   type PopoverContentEmits,
@@ -9,7 +10,7 @@ import {
 import { cn } from "~/lib/utils"
 
 const props = withDefaults(
-  defineProps<PopoverContentProps & { class?: string }>(),
+  defineProps<PopoverContentProps & { class?: HTMLAttributes["class"] }>(),
   { align: "center", sideOffset: 4 },
 )
 const emits = defineEmits<PopoverContentEmits>()

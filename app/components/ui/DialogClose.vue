@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from "vue"
 import { DialogClose, type DialogCloseProps, useForwardProps } from "reka-ui"
 
-const props = defineProps<DialogCloseProps & { class?: string }>()
+const props = defineProps<DialogCloseProps & { class?: HTMLAttributes["class"] }>()
 
 const forwarded = useForwardProps(
   computed(() => {

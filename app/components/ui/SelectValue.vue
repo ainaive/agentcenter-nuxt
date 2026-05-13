@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from "vue"
 import { SelectValue, type SelectValueProps, useForwardProps } from "reka-ui"
 
-const props = defineProps<SelectValueProps & { class?: string; placeholder?: string }>()
+const props = defineProps<SelectValueProps & { class?: HTMLAttributes["class"]; placeholder?: string }>()
 
 const forwarded = useForwardProps(
   computed(() => {

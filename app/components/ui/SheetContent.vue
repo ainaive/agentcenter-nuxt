@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from "vue"
 import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "lucide-vue-next"
 import {
@@ -30,7 +31,7 @@ const sheetVariants = cva(
 type SheetSide = NonNullable<VariantProps<typeof sheetVariants>["side"]>
 
 const props = withDefaults(
-  defineProps<DialogContentProps & { class?: string; side?: SheetSide }>(),
+  defineProps<DialogContentProps & { class?: HTMLAttributes["class"]; side?: SheetSide }>(),
   { side: "right" },
 )
 const emits = defineEmits<DialogContentEmits>()

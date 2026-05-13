@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from "vue"
 import { X } from "lucide-vue-next"
 import {
   DialogClose,
@@ -11,7 +12,7 @@ import {
 } from "reka-ui"
 import { cn } from "~/lib/utils"
 
-const props = defineProps<DialogContentProps & { class?: string }>()
+const props = defineProps<DialogContentProps & { class?: HTMLAttributes["class"] }>()
 const emits = defineEmits<DialogContentEmits>()
 
 const forwarded = useForwardPropsEmits(

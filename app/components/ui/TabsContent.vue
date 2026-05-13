@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from "vue"
 import { TabsContent, type TabsContentProps, useForwardProps } from "reka-ui"
 import { cn } from "~/lib/utils"
 
-const props = defineProps<TabsContentProps & { class?: string }>()
+const props = defineProps<TabsContentProps & { class?: HTMLAttributes["class"] }>()
 
 const forwarded = useForwardProps(
   computed(() => {

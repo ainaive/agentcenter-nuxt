@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from "vue"
 import { Check } from "lucide-vue-next"
 import {
   CheckboxIndicator,
@@ -9,7 +10,7 @@ import {
 } from "reka-ui"
 import { cn } from "~/lib/utils"
 
-const props = defineProps<CheckboxRootProps & { class?: string }>()
+const props = defineProps<CheckboxRootProps & { class?: HTMLAttributes["class"] }>()
 const emits = defineEmits<CheckboxRootEmits>()
 
 const forwarded = useForwardPropsEmits(

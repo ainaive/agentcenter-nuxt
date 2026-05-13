@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from "vue"
 import { Label } from "reka-ui"
 import { cn } from "~/lib/utils"
 
 const props = defineProps<{
   for?: string
-  class?: string
+  class?: HTMLAttributes["class"]
 }>()
 </script>
 

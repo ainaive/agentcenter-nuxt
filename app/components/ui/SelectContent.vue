@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { HTMLAttributes } from "vue"
 import {
   SelectContent,
   type SelectContentEmits,
@@ -10,7 +11,7 @@ import {
 import { cn } from "~/lib/utils"
 
 const props = withDefaults(
-  defineProps<SelectContentProps & { class?: string }>(),
+  defineProps<SelectContentProps & { class?: HTMLAttributes["class"] }>(),
   { position: "popper" },
 )
 const emits = defineEmits<SelectContentEmits>()
