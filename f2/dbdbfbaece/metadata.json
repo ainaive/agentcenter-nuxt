@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "f2dbdbfbaece",
+  "strategy": "manual-commit",
+  "branch": "deploy/vercel-preset",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "nuxt.config.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/f2/dbdbfbaece/0/metadata.json",
+      "transcript": "/f2/dbdbfbaece/0/full.jsonl",
+      "content_hash": "/f2/dbdbfbaece/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  }
+}
