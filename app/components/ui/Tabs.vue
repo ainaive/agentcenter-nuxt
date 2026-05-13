@@ -1,0 +1,21 @@
+<script setup lang="ts">
+import { TabsRoot, type TabsRootEmits, type TabsRootProps, useForwardPropsEmits } from "reka-ui"
+import { cn } from "~/lib/utils"
+
+const props = defineProps<TabsRootProps & { class?: string }>()
+const emits = defineEmits<TabsRootEmits>()
+
+const forwarded = useForwardPropsEmits(
+  computed(() => {
+    const { class: _, ...rest } = props
+    return rest
+  }),
+  emits,
+)
+</script>
+
+<template>
+  <TabsRoot v-bind="forwarded" :class="cn('w-full', props.class)">
+    <slot />
+  </TabsRoot>
+</template>

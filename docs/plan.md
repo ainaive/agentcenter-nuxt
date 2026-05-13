@@ -521,8 +521,9 @@ Enforced in CI by diffing `lcov.info` between the PR head and `main`. Practicall
 Beyond `strict: true` (already locked), enable:
 
 - **`noUncheckedIndexedAccess: true`** — `arr[i]` returns `T | undefined`. Forces handling the missing case. The single change that catches the most "but it always exists" bugs.
-- **`exactOptionalPropertyTypes: true`** — `{ x?: T }` is not `{ x: T | undefined }`. Distinguishes "absent" from "present-but-undefined." Catches a class of bugs where a JSON serializer silently changes shape.
 - **`noImplicitOverride: true`** — `override` keyword required when overriding parent methods. Cheap, catches refactor mistakes.
+
+**`exactOptionalPropertyTypes` was tried and dropped in P15.** Vue's `defineProps` adds explicit `undefined` to optional prop types, and reka-ui's prop-forwarding helpers (`useForwardProps`, `useForwardPropsEmits`) then route those values into reka-ui's stricter optional props, which refuse explicit `undefined`. The result is dozens of `TS2379` errors at every shadcn-vue forwarding boundary. The fix would be either casting at each forward site or relaxing the flag globally — the former is verbose and ts-ignorant; the latter loses the "JSON-serializer-shape-drift" guarantee that motivated the flag. Since the marketplace doesn't have a hot JSON-shape-drift path that this flag was preventing, the trade favoured relaxing.
 
 These cost ~1 extra hour of TS friction per phase and pay it back the first time a `(items[0] as Item).foo` would have crashed in production.
 

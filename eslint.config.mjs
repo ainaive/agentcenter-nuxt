@@ -25,9 +25,10 @@ export default withNuxt(
     },
   },
   {
-    files: ["app/layouts/**", "app/pages/**", "app/error.vue", "app/app.vue"],
+    files: ["app/layouts/**", "app/pages/**", "app/error.vue", "app/app.vue", "app/components/ui/**"],
     rules: {
       "vue/multi-word-component-names": "off",
+      "vue/require-default-prop": "off",
     },
   },
   {
