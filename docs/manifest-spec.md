@@ -136,7 +136,7 @@ message = "Add your Brave API key: agentcenter config set web-search-pro.apiKey 
 
 ## Bundle structure
 
-```
+```text
 web-search-pro-1.2.0.zip
 ├── manifest.toml       ← required, at archive root
 ├── skill.md            ← skill definition (for category=skills)

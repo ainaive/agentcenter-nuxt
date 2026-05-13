@@ -337,7 +337,7 @@ Called synchronously in `app.vue`'s `<script setup>` so unhead serializes the cl
 - Inngest client is a lazy module-level singleton in `server/utils/inngest.ts`. Function list is itself lazy-loaded via dynamic `import()` so unrelated server modules don't pull `fflate` / `smol-toml` into their import graph.
 - Webhook endpoint at `server/api/inngest.ts` calls `serve()` from `inngest/node` and awaits it — without the await, the Nuxt response could close before Inngest finishes signature verification + step dispatch.
 - `INNGEST_SIGNING_KEY` is read by `serve()` from env automatically.
-- For local dev, run `bunx inngest-cli@latest dev` — auto-discovers `/api/inngest` and routes events locally. No keys needed in dev (the client uses `isDev: true` when `NODE_ENV !== "production"`).
+- For local dev, run `bunx inngest-cli@1.19.2 dev` — auto-discovers `/api/inngest` and routes events locally. No keys needed in dev (the client uses `isDev: true` when `NODE_ENV !== "production"`).
 
 ## Validate pipeline
 

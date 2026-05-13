@@ -828,7 +828,7 @@ These swaps are localized to `server/utils/db.ts` and `server/utils/storage.ts`.
 
 ### Inngest
 
-- Local dev: `bunx inngest-cli@latest dev` (auto-discovers `/api/inngest`).
+- Local dev: `bunx inngest-cli@1.19.2 dev` (auto-discovers `/api/inngest`).
 - Production: register the webhook URL `https://<origin>/api/inngest` in the Inngest dashboard.
 
 ---
