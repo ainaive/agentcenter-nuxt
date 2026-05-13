@@ -7,6 +7,8 @@ import {
   type ScanResult,
 } from "~~/shared/extensions/state"
 
+import { useDb } from "./db"
+
 // Orchestrators over the extensions/versions/files repositories. The
 // branching ("personal scope auto-publishes; org/enterprise waits for
 // admin") lives in `shared/extensions/state.ts` as pure decision

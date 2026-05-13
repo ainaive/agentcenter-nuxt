@@ -4,6 +4,8 @@ import * as installsRepo from "~~/server/repositories/installs"
 import * as versionsRepo from "~~/server/repositories/versions"
 import { pickInstallVersion } from "~~/shared/installs/record"
 
+import { useDb } from "./db"
+
 // Orchestrator over the installs/collections/extensions/versions repos. The
 // "which version to install" decision is still inline here; commit 8
 // extracts it into the pure `shared/installs/record.ts` decision module.
