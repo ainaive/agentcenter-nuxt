@@ -5,6 +5,9 @@
 .cache
 dist
 
+# Vercel build output (Build Output API v3) + local project link
+.vercel
+
 # Node
 node_modules
 *.log
