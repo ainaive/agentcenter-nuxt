@@ -121,6 +121,7 @@ export async function updateDraftExtension(
     }
   }
   const data = parsed.data
+  const cls = defaultClassification(data.category)
   const db = useDb()
 
   const [existing] = await db
@@ -163,6 +164,8 @@ export async function updateDraftExtension(
           tagline: data.summary,
           taglineZh: emptyToNull(data.taglineZh),
           category: data.category,
+          funcCat: cls.funcCat,
+          subCat: cls.subCat,
           scope: data.scope,
           deptId: emptyToNull(data.deptId),
           iconColor: data.iconColor,
