@@ -58,7 +58,7 @@ The `db:apply-fts` step requires `psql` on PATH. It runs `drizzle/0002_fts_searc
 
 For local dev, run the Inngest dev server instead:
 ```bash
-bunx inngest-cli@latest dev
+bunx inngest-cli@1.19.2 dev
 ```
 It auto-discovers `/api/inngest` and routes events locally. No event/signing keys needed locally.
 

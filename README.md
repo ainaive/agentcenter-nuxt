@@ -65,9 +65,11 @@ Open <http://localhost:3000>. The minimum env vars needed for local browsing are
 
 ## Documentation
 
-- [`docs/plan.md`](./docs/plan.md) — full implementation plan
+- [`docs/architecture.md`](./docs/architecture.md) — how the pieces fit together (topology, request flows, layer boundaries, auth model)
+- [`docs/plan.md`](./docs/plan.md) — full implementation plan + locked decisions
 - [`docs/deploy.md`](./docs/deploy.md) — deployment runbook
-- [`docs/api.md`](./docs/api.md) — public `/api/v1/...` contract
+- [`docs/api.md`](./docs/api.md) — public `/api/v1/...` contract (frozen — CLI talks to this)
+- [`docs/manifest-spec.md`](./docs/manifest-spec.md) — extension bundle `manifest.toml` format
 - [`CONTRIBUTING.md`](./CONTRIBUTING.md) — workflow, commits, PRs
 - [`CLAUDE.md`](./CLAUDE.md) — project rules and locked decisions
 
