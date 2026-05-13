@@ -6,7 +6,7 @@ definePageMeta({ middleware: ["require-auth", "require-onboard"] })
 const { t } = useI18n()
 const localePath = useLocalePath()
 
-const { data, refresh } = await useFetch("/api/internal/publish/my-extensions", {
+const { data, refresh, pending } = await useFetch("/api/internal/publish/my-extensions", {
   default: () => ({ items: [] }),
 })
 
@@ -19,15 +19,6 @@ function stageLabel(item: { latestStatus: string | null; latestBundleFileId: str
   if (item.latestStatus === "scanning") return t("publish.stage.scanning")
   if (!item.latestBundleFileId) return t("publish.stage.needsBundle")
   return t("publish.stage.readyToSubmit")
-}
-
-async function handleDiscard(extensionId: string) {
-  if (!confirm(t("publish.confirmDiscard"))) return
-  await $fetch("/api/internal/publish/discard", {
-    method: "POST",
-    body: { extensionId },
-  })
-  await refresh()
 }
 </script>
 
@@ -44,7 +35,11 @@ async function handleDiscard(extensionId: string) {
       </NuxtLink>
     </header>
 
-    <div v-if="items.length === 0" class="rounded-lg border border-dashed border-(--color-border) bg-(--color-card)/40 p-10 text-center">
+    <DashboardSkeleton v-if="pending" :rows="3" />
+    <div
+      v-else-if="items.length === 0"
+      class="rounded-lg border border-dashed border-(--color-border) bg-(--color-card)/40 p-10 text-center"
+    >
       <p class="text-(--color-ink-muted)">{{ t("publish.emptyDashboard") }}</p>
     </div>
 
@@ -57,18 +52,25 @@ async function handleDiscard(extensionId: string) {
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2">
             <span class="font-semibold text-(--color-ink) truncate">{{ item.name }}</span>
-            <span class="text-xs text-(--color-ink-muted) font-mono">{{ item.slug }}@{{ item.latestVersion }}</span>
+            <span class="text-xs text-(--color-ink-muted) font-mono">
+              {{ item.slug }}@{{ item.latestVersion }}
+            </span>
           </div>
           <div class="mt-0.5 text-xs text-(--color-ink-muted)">{{ stageLabel(item) }}</div>
         </div>
-        <button
+        <NuxtLink
           v-if="item.visibility === 'draft'"
-          type="button"
-          class="text-xs text-(--color-ink-muted) hover:text-red-600"
-          @click="handleDiscard(item.id)"
+          :to="localePath(`/publish/${item.id}/edit`)"
+          class="text-xs text-(--color-accent) underline-offset-4 hover:underline"
         >
-          {{ t("publish.discard") }}
-        </button>
+          {{ t("publish.wizard.review.edit") }}
+        </NuxtLink>
+        <DiscardButton
+          v-if="item.visibility === 'draft'"
+          :extension-id="item.id"
+          :extension-name="item.name"
+          @discarded="refresh"
+        />
       </li>
     </ul>
   </div>

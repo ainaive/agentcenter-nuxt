@@ -98,6 +98,172 @@ export async function createDraftExtension(
   return { ok: true, extensionId, versionId }
 }
 
+export type UpdateDraftResult =
+  | { ok: true; extensionId: string; versionId: string }
+  | { ok: false; error: string; detail?: string }
+
+/**
+ * Update an existing draft extension. Slug and version are immutable once
+ * the draft is created (the upload pipeline keys off them), so this only
+ * touches the mutable wizard fields. tagIds are diff-replaced.
+ */
+export async function updateDraftExtension(
+  userId: string,
+  extensionId: string,
+  raw: ManifestFormValues,
+): Promise<UpdateDraftResult> {
+  const parsed = ManifestFormSchema.safeParse(raw)
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: "invalid_input",
+      detail: parsed.error.issues.map((i) => i.message).join("; "),
+    }
+  }
+  const data = parsed.data
+  const cls = defaultClassification(data.category)
+  const db = useDb()
+
+  const [existing] = await db
+    .select({
+      publisherUserId: extensions.publisherUserId,
+      visibility: extensions.visibility,
+      slug: extensions.slug,
+    })
+    .from(extensions)
+    .where(eq(extensions.id, extensionId))
+    .limit(1)
+  if (!existing || existing.publisherUserId !== userId) {
+    return { ok: false, error: "not_found" }
+  }
+  if (existing.visibility !== "draft") {
+    return { ok: false, error: "not_editable" }
+  }
+  if (existing.slug !== data.slug) {
+    return { ok: false, error: "slug_immutable" }
+  }
+
+  const [latestVersion] = await db
+    .select({ id: extensionVersions.id, version: extensionVersions.version })
+    .from(extensionVersions)
+    .where(eq(extensionVersions.extensionId, extensionId))
+    .orderBy(desc(extensionVersions.createdAt))
+    .limit(1)
+  if (!latestVersion) return { ok: false, error: "not_found" }
+  if (latestVersion.version !== data.version) {
+    return { ok: false, error: "version_immutable" }
+  }
+
+  try {
+    await db.transaction(async (tx) => {
+      await tx
+        .update(extensions)
+        .set({
+          name: data.name,
+          nameZh: emptyToNull(data.nameZh),
+          tagline: data.summary,
+          taglineZh: emptyToNull(data.taglineZh),
+          category: data.category,
+          funcCat: cls.funcCat,
+          subCat: cls.subCat,
+          scope: data.scope,
+          deptId: emptyToNull(data.deptId),
+          iconColor: data.iconColor,
+          readmeMd: emptyToNull(data.readmeMd ?? ""),
+          permissions: data.permissions ?? {},
+        })
+        .where(eq(extensions.id, extensionId))
+      await tx
+        .delete(extensionTags)
+        .where(eq(extensionTags.extensionId, extensionId))
+      if (data.tagIds.length > 0) {
+        await tx.insert(extensionTags).values(
+          data.tagIds.map((tagId) => ({ extensionId, tagId })),
+        )
+      }
+    })
+  } catch (err) {
+    console.error("[publish] updateDraftExtension failed", err)
+    return { ok: false, error: "db_error", detail: err instanceof Error ? err.message : String(err) }
+  }
+  return { ok: true, extensionId, versionId: latestVersion.id }
+}
+
+export type GetDraftResult =
+  | { ok: true; draft: DraftRehydration }
+  | { ok: false; error: "not_found" | "not_editable" }
+
+export interface DraftRehydration {
+  extensionId: string
+  versionId: string
+  bundleUploaded: boolean
+  formValues: ManifestFormValues
+}
+
+/**
+ * Rehydrate a draft for the resume/edit flow. Owner-checked; only drafts
+ * (not published/scanning/etc.) are returned. The form values come from
+ * the same shape ManifestFormSchema produces so the wizard can drop them
+ * in without remapping.
+ */
+export async function getDraftExtension(
+  userId: string,
+  extensionId: string,
+): Promise<GetDraftResult> {
+  const db = useDb()
+  const [ext] = await db
+    .select()
+    .from(extensions)
+    .where(eq(extensions.id, extensionId))
+    .limit(1)
+  if (!ext || ext.publisherUserId !== userId) {
+    return { ok: false, error: "not_found" }
+  }
+  if (ext.visibility !== "draft") {
+    return { ok: false, error: "not_editable" }
+  }
+
+  const [version] = await db
+    .select()
+    .from(extensionVersions)
+    .where(eq(extensionVersions.extensionId, extensionId))
+    .orderBy(desc(extensionVersions.createdAt))
+    .limit(1)
+  if (!version) return { ok: false, error: "not_found" }
+
+  const tagRows = await db
+    .select({ tagId: extensionTags.tagId })
+    .from(extensionTags)
+    .where(eq(extensionTags.extensionId, extensionId))
+
+  const formValues: ManifestFormValues = {
+    slug: ext.slug,
+    name: ext.name,
+    nameZh: ext.nameZh ?? undefined,
+    version: version.version,
+    category: ext.category,
+    scope: ext.scope,
+    summary: ext.tagline ?? "",
+    taglineZh: ext.taglineZh ?? undefined,
+    readmeMd: ext.readmeMd ?? undefined,
+    iconColor: (ext.iconColor as ManifestFormValues["iconColor"]) ?? "indigo",
+    tagIds: tagRows.map((r) => r.tagId),
+    deptId: ext.deptId ?? undefined,
+    permissions: (ext.permissions ?? {}) as ManifestFormValues["permissions"],
+    sourceMethod: (version.sourceMethod as ManifestFormValues["sourceMethod"]) ?? "zip",
+  }
+
+  return {
+    ok: true,
+    draft: {
+      extensionId: ext.id,
+      versionId: version.id,
+      bundleUploaded: Boolean(version.bundleFileId),
+      formValues,
+    },
+  }
+}
+
 export type AttachFileResult =
   | { ok: true; fileId: string }
   | { ok: false; error: string }
