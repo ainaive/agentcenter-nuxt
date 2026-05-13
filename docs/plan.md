@@ -640,7 +640,7 @@ Calibration:
 | Right | `feat(p2-db): add extension drizzle schema` | Yes |
 | Right | `feat(p3-browse): ExtCard component + test` | Yes — code + its tests usually one commit |
 | Right | `feat(p3-browse): wire ExtCard into home grid` | Yes |
-| Right | `feat(p15-ui): port shadcn-vue primitives` covering 11 generated wrappers | Yes — single mechanical unit |
+| Right | `feat(p15-ui): port shadcn-vue primitives` covering ~28 generated wrappers (Button + Input + Label + Textarea + Checkbox + Skeleton + Dialog × 6 + Sheet × 4 + Popover × 3 + Select × 5 + Tabs × 4) | Yes — single mechanical unit |
 | Too big | `feat(p3-browse): browse page` covering 8 unrelated files | No — split where the story changes |
 
 Tests usually live with the code they cover in the same commit. The exception is adding tests to *existing* code as a coverage-improvement pass — then the test commit stands alone.
