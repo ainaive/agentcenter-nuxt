@@ -1,7 +1,4 @@
-import {
-  countFilteredExtensions,
-  listExtensions,
-} from "~~/server/utils/queries/extensions"
+import * as extensionsRepo from "~~/server/repositories/extensions"
 import {
   parseFilters,
   searchParamsToInput,
@@ -15,9 +12,10 @@ export default defineEventHandler(async (event) => {
   })
 
   try {
+    const db = useDb()
     const [items, total] = await Promise.all([
-      listExtensions(filters),
-      countFilteredExtensions(filters),
+      extensionsRepo.findManyForList(db, filters),
+      extensionsRepo.countFiltered(db, filters),
     ])
 
     setHeader(

@@ -1,14 +1,15 @@
-import { eq } from "drizzle-orm"
 import { unzipSync } from "fflate"
 import { parse } from "smol-toml"
 import { z } from "zod"
-import { files } from "~~/shared/db/schema"
+
+import * as filesRepo from "~~/server/repositories/files"
 import { BundleManifestSchema } from "~~/shared/validators/manifest"
-import { inngest } from "../inngest"
+
 import {
   recordScanResult,
   VersionStateError,
 } from "../extensions-state"
+import { inngest } from "../inngest"
 
 const eventDataSchema = z.object({
   versionId: z.string().min(1),
@@ -30,11 +31,7 @@ export const scanBundle = inngest.createFunction(
 
     const scanResult = await step.run("download-and-scan", async () => {
       const db = useDb()
-      const [fileRow] = await db
-        .select()
-        .from(files)
-        .where(eq(files.id, fileId))
-        .limit(1)
+      const fileRow = await filesRepo.findById(db, fileId)
       if (!fileRow) return { ok: false as const, reason: "file_not_found", checksum: "" }
 
       const storage = await useStorage()

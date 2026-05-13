@@ -1,11 +1,12 @@
-import { getExtensionBySlug } from "~~/server/utils/queries/extension-detail"
+import * as extensionsRepo from "~~/server/repositories/extensions"
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, "slug")
   if (!slug) apiError(event, "slug required", 400, "invalid_request")
 
   try {
-    const ext = await getExtensionBySlug(slug)
+    const db = useDb()
+    const ext = await extensionsRepo.findBySlug(db, slug)
     if (!ext) apiError(event, "Extension not found.", 404, "not_found")
 
     setHeader(
