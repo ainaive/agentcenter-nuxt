@@ -34,6 +34,9 @@ jobs:
       - name: Test
         run: bun run test
 
+      - name: Integration tests (PGlite)
+        run: bun run test:integration
+
       - name: Commitlint (PR commit range)
         if: github.event_name == 'pull_request'
         run: bunx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
