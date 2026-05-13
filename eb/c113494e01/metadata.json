@@ -4,13 +4,22 @@
   "strategy": "manual-commit",
   "branch": "feat/filters-and-wizard",
   "checkpoints_count": 1,
-  "files_touched": null,
+  "files_touched": [
+    "app/components/publish/WizardBundle.vue",
+    "app/pages/publish/[id]/edit.vue"
+  ],
   "sessions": [
     {
       "metadata": "/eb/c113494e01/0/metadata.json",
       "transcript": "/eb/c113494e01/0/full.jsonl",
       "content_hash": "/eb/c113494e01/0/content_hash.txt",
       "prompt": "/eb/c113494e01/0/prompt.txt"
+    },
+    {
+      "metadata": "/eb/c113494e01/1/metadata.json",
+      "transcript": "/eb/c113494e01/1/full.jsonl",
+      "content_hash": "/eb/c113494e01/1/content_hash.txt",
+      "prompt": ""
     }
   ],
   "token_usage": {
