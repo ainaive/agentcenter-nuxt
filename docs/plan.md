@@ -112,11 +112,20 @@ agentcenter-nuxt/
 │   │       │   ├── create.post.ts
 │   │       │   └── add-item.post.ts
 │   │       └── installs.post.ts       # web install button (separate from /v1/installs)
+│   ├── repositories/                  # Drizzle is ONLY imported here; every other layer takes a Transactable
+│   │   ├── types.ts                   # Transactable = PostgresJsDatabase | PgTransaction
+│   │   ├── extensions.ts              # findBySlug, findById, findManyWithFilters, updateVisibility, …
+│   │   ├── versions.ts                # findById, findByIdWithScope, updateStatus, listReady, …
+│   │   ├── files.ts                   # updateScanStatus
+│   │   ├── installs.ts                # insertInstall, findByUserAndExtension, listLatestReadyForExtension
+│   │   └── collections.ts             # getOrCreateSystemCollection, addItem
 │   ├── utils/
-│   │   ├── db.ts                      # drizzle(postgres-js client) singleton via Nitro plugin
+│   │   ├── db.ts                      # drizzle(postgres-js client) singleton — only call site of useDb()
 │   │   ├── auth.ts                    # getSessionUser(event), requireUser(event)
 │   │   ├── storage.ts                 # presign + download-url helpers (Supabase Storage default)
-│   │   └── inngest.ts                 # Inngest client + functions registry
+│   │   ├── inngest.ts                 # Inngest client + functions registry
+│   │   ├── extensions-state.ts        # submit/recordScanResult/publishVersion orchestrators over repos
+│   │   └── installs.ts                # recordInstall orchestrator over repos
 │   └── plugins/
 │       └── db.ts                      # initialise drizzle once per worker
 ├── shared/                            # reachable from both app/ and server/
@@ -135,10 +144,10 @@ agentcenter-nuxt/
 │   ├── search/
 │   │   └── query.ts                   # buildExtensionWhere, buildExtensionOrder (verbatim port)
 │   ├── extensions/
-│   │   └── state.ts                   # submit / recordScanResult / publishVersion (verbatim port)
+│   │   └── state.ts                   # decideScanOutcome, decidePublishOutcome (pure decisions)
 │   ├── installs/
-│   │   └── record.ts                  # recordInstall (verbatim port)
-│   ├── publish/
+│   │   └── record.ts                  # pickInstallVersion (pure decision)
+│   ├── publish/                       # planned; not yet ported
 │   │   ├── row-action.ts              # rowAction()
 │   │   └── scan-report.ts             # extractScanReason()
 │   ├── taxonomy.ts                    # FUNC_TAXONOMY constant
@@ -158,11 +167,17 @@ agentcenter-nuxt/
 │   ├── apply-fts.ts
 │   └── set-storage-cors.ts
 ├── tests/
-│   └── e2e/                           # Playwright specs
+│   ├── contract/                      # shape-only Vitest specs against docs/api.md (frozen /api/v1)
+│   ├── e2e/                           # Playwright specs
+│   └── integration/                   # PGlite-backed repository tests + harness
+│       ├── helpers/
+│       │   └── db.ts                  # boot PGlite, run drizzle migrations + 0002_fts_search_vector.sql
+│       └── repositories/              # one spec per server/repositories/*.ts
 ├── drizzle.config.ts
 ├── inngest.config.ts
 ├── playwright.config.ts
 ├── vitest.config.ts
+├── vitest.config.integration.ts
 ├── eslint.config.mjs
 ├── tsconfig.json
 ├── package.json
@@ -430,13 +445,14 @@ The "P14" label is reused intentionally — the original P14 (Deploy) never exec
 
 ## 11. Validate pipeline
 
-`bun run validate` is the single command that mirrors what CI runs. It chains four steps in order, failing fast. Phase 0 lands a working `bun run validate` against the bare scaffold (no tests yet, but lint + typecheck clean); every subsequent phase must keep it green.
+`bun run validate` is the primary command — the fast inner loop that mirrors the first four steps of CI. It chains four steps in order, failing fast. The fifth gate, `bun run test:integration`, runs PGlite-backed repository tests; CI runs it on every PR but it's not part of `validate` (kept separate so the local typecheck/test loop stays under a few seconds). Phase 0 landed a working `bun run validate` against the bare scaffold; every subsequent phase keeps it green.
 
 ```bash
-bun run prepare      # nuxi prepare — generates .nuxt/types/* (needed for typecheck)
-bun run lint         # @nuxt/eslint over the whole tree
-bun run typecheck    # nuxi typecheck (vue-tsc) — handles .ts, .vue, auto-imports
-bun run test         # vitest run
+bun run prepare           # nuxi prepare — generates .nuxt/types/* (needed for typecheck)
+bun run lint              # @nuxt/eslint over the whole tree
+bun run typecheck         # nuxi typecheck (vue-tsc) — handles .ts, .vue, auto-imports
+bun run test              # vitest run — unit + contract suites
+bun run test:integration  # vitest run -c vitest.config.integration.ts — PGlite repo suite (separate, slower)
 ```
 
 ### Tools
@@ -447,39 +463,46 @@ bun run test         # vitest run
 | Lint | `@nuxt/eslint` | Auto-configures ESLint rules for Vue 3 + TS + Nuxt 4. Replaces `eslint-config-next`. |
 | Typecheck | `nuxi typecheck` → `vue-tsc` | `tsc --noEmit` doesn't understand `.vue` SFCs. `vue-tsc` is the wrapper that does. |
 | Unit / component tests | Vitest + `@nuxt/test-utils` + `@vue/test-utils` + happy-dom | Vitest is the runner; `@vue/test-utils` for `mount()`; `@nuxt/test-utils` for components that touch Nuxt runtime (auto-imports, `useFetch`, `useNuxtApp`) via `mountSuspended()`. |
+| Integration | Vitest + PGlite (`@electric-sql/pglite` + `drizzle-orm/pglite`) | In-process Postgres-in-WASM with real Drizzle migrations applied. Covers `server/repositories/**` — same SQL dialect as production, no Docker. Runs as a separate suite via `bun run test:integration`. |
 | E2E | Playwright | Same library as the original. Runs against a dev server with seeded data. Local on demand + nightly CI; **not** per-PR. |
 
 ### What gets tested where
 
-Mirrors the original repo's strategy. The split is deliberate: mocked DB tests are a known failure mode (mock/prod divergence), so we don't do them. Pure code is unit-tested; anything touching real Postgres is covered by Playwright.
+Five tiers, each with a distinct boundary. Together they cover the codebase end-to-end without leaning on any single layer past its strengths.
 
-- **Pure logic** (`shared/validators/`, `shared/search/query.ts`, `shared/extensions/state.ts` decision branches, `shared/utils.ts`, `shared/publish/*`) — unit-tested with Vitest; no DB, no Nuxt runtime; fast. These are the highest-leverage tests.
-- **Composables** without Nuxt internals (`useFilters` parse/serialize) — direct unit tests. Composables that use Nuxt internals (`useAsyncData`, `useFetch`) — exercised through their consuming components via `mountSuspended`.
-- **Components** — leaf components via `@vue/test-utils` `mount()`; components that use auto-imports via `mountSuspended()` from `@nuxt/test-utils/runtime`.
-- **Server endpoints** — extract the core logic into pure functions under `shared/` (or `server/utils/`) and unit-test those; the endpoint becomes a thin adapter. End-to-end behaviour is covered by Playwright.
-- **DB-touching code** — Playwright against a seeded test database. No DB mocking.
-- **API contract** — `tests/contract/` asserts each `/api/v1` response shape against the example payloads in `docs/api.md`. Catches accidental contract drift before the CLI does.
+- **Pure unit** (`shared/**/*.test.ts`, `app/**/*.nuxt.test.ts`) — pure logic, validators, composables, components. Vitest, no DB, no real network. Includes the *decisions* extracted from server orchestrators: `shared/extensions/state.ts` (`decideScanOutcome`, `decidePublishOutcome`), `shared/installs/record.ts` (`pickInstallVersion`). Highest leverage, cheapest to write.
+- **Integration** (`tests/integration/repositories/*.test.ts`) — every function in `server/repositories/**` exercised against PGlite with real Drizzle migrations applied. PGlite is Postgres-in-WASM: same SQL dialect as production, in-process, no Docker. This tier is where SQL is verified — generated columns, FTS, `pg_trgm`, dotted-path `LIKE`, transaction semantics.
+- **Orchestrator unit** (`server/utils/*.test.ts`, `server/api/**/*.test.ts`) — adapter logic that composes repository calls inside transactions. The **repository module is mocked**, never Drizzle's builder. Verifies orchestration shape (which repo methods get called, in what order, with what arguments), error mapping, and transaction wiring. Fast.
+- **Contract** (`tests/contract/*.test.ts`) — Zod schemas assert that the JSON payloads documented in `docs/api.md` parse against each `/api/v1` endpoint's response shape. Shape-only, no DB. Catches accidental contract drift before the CLI does.
+- **E2E** (`tests/e2e/*.spec.ts`) — Playwright against a dev server with seeded data. Owns full-stack flows. Slow, not per-PR.
+
+The structural rule that makes the tiers coherent: **Drizzle's query builder is called only inside `server/repositories/`**. Every other layer (`server/utils/`, `server/api/`, jobs) takes a `Transactable` (= `PostgresJsDatabase | PgTransaction`) and calls named repository functions. Transactions are opened at orchestrator boundaries and the `tx` is threaded down through repo calls. Without this rule, "mock the repo" devolves into "mock Drizzle chains" — coupling tests to query implementation and bypassing the Postgres-specific features the integration tier is the only place to verify.
 
 ### CI
 
-`.github/workflows/ci.yml` runs `bun run validate` on every PR push:
+`.github/workflows/ci.yml` runs `bun run validate` plus the integration suite on every PR push:
 
 ```yaml
 - bun install --frozen-lockfile
 - bun run prepare
 - bun run lint
 - bun run typecheck
-- bun run test
+- bun run test                # main Vitest suite (unit + contract)
+- bun run test:integration    # PGlite repository suite
 ```
 
-A nightly `.github/workflows/e2e.yml` runs Playwright against a seeded test database. Slow + needs DB, so not on every PR.
+`bun run validate` itself stays fast (no PGlite) — the integration suite is a separate script. CI runs both per-PR; local devs run `test:integration` when touching repositories or schema.
+
+A nightly `.github/workflows/e2e.yml` runs Playwright against a seeded test database. Slow + needs DB + browser, so not on every PR.
 
 ### Locked tooling decisions
 
 - **`vue-tsc` is the typechecker.** Do not try to substitute `tsc --noEmit`; it can't read `.vue`. The `bun run typecheck` script wraps `nuxi typecheck`.
 - **`nuxi prepare` runs before `typecheck` and `lint`.** It's idempotent and fast; always include it. CI must run it after `bun install`.
-- **No DB mocking.** If a test would need a mocked Drizzle client, it's the wrong layer — push the logic into `shared/` and test the pure function, or let Playwright cover it.
-- **Playwright is not part of `validate`.** It's a separate, slower gate. Run locally with `bun run test:e2e` on demand.
+- **Drizzle is only imported inside `server/repositories/`.** Every other layer takes a `Transactable` and calls repo functions. Mocking the Drizzle builder is banned — refactor the call into a repo function and mock that instead. Repository functions themselves are integration-tested against PGlite, never mocked.
+- **PGlite is the integration DB.** Same SQL dialect as production, in-process, ~50ms cold-start. Commit 2 of P21 includes a smoke check exercising the Postgres-specific features this app uses most: `tsvector` / FTS, `pg_trgm`, dotted-path `LIKE`. If any of these fail on PGlite, fall back to a Docker Postgres service container — but only if needed; the default is PGlite.
+- **`test:integration` is not part of `validate`.** It's a separate, slower gate (still per-PR in CI). Local devs run it explicitly when touching `server/repositories/**` or `shared/db/schema/**`. Same rationale as Playwright before it: keep the local validate loop tight.
+- **Playwright is not part of `validate`.** It's a separate, slower gate. Run locally with `bun run test:e2e` on demand; CI runs nightly.
 
 ---
 
@@ -493,36 +516,57 @@ The original Next.js project relied on culture ("add a colocated test") for test
 |---|---|---|---|
 | `shared/**` (pure logic) | **≥ 95%** | **≥ 90%** | Validators, search query builder, state machine, utilities. Highest leverage; cheapest to test; load-bearing. |
 | `app/composables/**` | ≥ 90% | ≥ 85% | Mostly pure (filter parse/serialize, tag-label resolver). |
-| `server/utils/**` | ≥ 80% | ≥ 75% | Helper functions (auth check, storage URL builders). DB client singleton excluded. |
-| `server/api/**` | ≥ 70% | ≥ 65% | Endpoints are thin adapters; most logic lives in `shared/`. Integration covered by Playwright. |
+| `server/repositories/**` | ≥ 90% | ≥ 85% | Drizzle lives only here. Coverage comes from the integration suite (PGlite). |
+| `server/utils/**` | ≥ 85% | ≥ 80% | Orchestrators over repos + helpers (auth, storage, inngest). Coverage from unit tests with mocked repos. DB client singleton excluded. |
+| `server/api/**` | ≥ 70% | ≥ 65% | Endpoints are thin adapters; logic lives in `shared/` or `server/utils/`. End-to-end behavior covered by Playwright. |
 | `app/components/**` | ≥ 60% overall; ≥ 80% for interactive components (FilterBar, UploadWizard, InstallButton) | — | Component logic that branches on state earns its own tests; pure-layout components are covered by Playwright. |
 | `app/pages/**`, `app/layouts/**`, `app/app.vue` | excluded | — | Composition only; Playwright owns this layer. |
 | `cli/**` | unchanged from original | — | Carried over with its existing tests. |
 
-Configured in `vitest.config.ts`:
+Configured in `vitest.config.ts`. The `include` list deliberately scopes coverage measurement to the *currently tested* surface — files not yet in the test pyramid (`server/api/**`, `server/utils/{auth,db,storage,inngest,publish}.ts`, `server/utils/jobs/**`, `server/utils/queries/**`, `app/pages/**`, `app/components/{extension,filters,publish,ui}/**`, layout components without tests) stay outside the include so they're not silently averaged in at 0%. Add a path to `include` only after its tests actually land.
 
 ```ts
 test: {
   coverage: {
     provider: "v8",
     reporter: ["text", "html", "lcov"],
-    include: ["shared/**", "server/**", "app/composables/**", "app/components/**"],
-    exclude: [
-      "**/*.test.ts", "**/*.spec.ts",
-      "server/plugins/db.ts",
-      "app/pages/**", "app/layouts/**", "app/app.vue",
-      "nuxt.config.ts", ".nuxt/**", ".output/**",
+    include: [
+      "shared/validators/**",
+      "shared/search/**",
+      "shared/extensions/**",
+      "shared/installs/**",
+      "shared/tags.ts",
+      "shared/taxonomy.ts",
+      "shared/theme.ts",
+      "app/composables/useFilters.ts",
+      "app/composables/usePublishWizard.ts",
+      "app/composables/useTheme.ts",
+      "server/utils/extensions-state.ts",
+      "server/utils/installs.ts",
     ],
+    exclude: ["**/*.test.ts", "**/*.spec.ts", ".nuxt/**", ".output/**"],
     thresholds: {
-      lines: 80, branches: 75, functions: 80, statements: 80,
-      "shared/**": { lines: 95, branches: 90, functions: 95, statements: 95 },
-      "app/composables/**": { lines: 90, branches: 85, functions: 90, statements: 90 },
+      lines: 85, branches: 75, functions: 85, statements: 85,
+      "shared/validators/**":   { lines: 95, branches: 90, functions: 95, statements: 95 },
+      "shared/search/**":       { lines: 95, branches: 87, functions: 95, statements: 95 },
+      "shared/extensions/**":   { lines: 95, branches: 90, functions: 95, statements: 95 },
+      "shared/installs/**":     { lines: 95, branches: 90, functions: 95, statements: 95 },
+      "shared/tags.ts":         { lines: 95, branches: 90, functions: 95, statements: 95 },
+      "shared/taxonomy.ts":     { lines: 95, branches: 90, functions: 95, statements: 95 },
+      "shared/theme.ts":        { lines: 95, branches: 90, functions: 95, statements: 95 },
+      "server/utils/extensions-state.ts": { lines: 95, branches: 90, functions: 95, statements: 95 },
+      "server/utils/installs.ts":         { lines: 95, branches: 85, functions: 95, statements: 95 },
+      "app/composables/useFilters.ts":      { lines: 90, branches: 75, functions: 90, statements: 90 },
+      "app/composables/usePublishWizard.ts": { lines: 90, branches: 85, functions: 85, statements: 85 },
+      "app/composables/useTheme.ts":         { lines: 90, branches: 85, functions: 90, statements: 90 },
     },
   },
 }
 ```
 
-CI runs `bun run test:coverage` (a superset of `bun run test`) and uploads the HTML report as a build artifact. A PR that drops `shared/**` below 95% fails CI; reviewers don't have to remember to check.
+`server/repositories/**` coverage is computed by the integration suite (PGlite). The integration suite's `vitest.config.integration.ts` does not yet emit coverage by default — merging into the main lcov is a CI-side concern. Today the integration suite verifies behavior; the threshold for `server/repositories/**` is enforced de facto by "every repo function has integration test coverage" rather than a numeric gate. Adding the numeric gate is a follow-up.
+
+CI runs `bun run test:coverage` and uploads the HTML report as a build artifact. A PR that drops any thresholded subdir below its gate fails CI; reviewers don't have to remember to check. Aspirational thresholds in the table above (e.g. `server/api/**: 70`, `app/components/**: 60–80`) land as those surfaces get test coverage in future PRs.
 
 ### Patch coverage rule
 
@@ -548,10 +592,12 @@ These cost ~1 extra hour of TS friction per phase and pay it back the first time
 The directory layout encodes a dependency graph. Enforce it in ESLint so violations get caught at write time:
 
 ```text
-shared/   ──►  (nothing else)              # leaf — pure code, no framework imports
-server/   ──►  shared/                     # may import shared/, not app/
-app/      ──►  shared/                     # may import shared/, not server/ (only $fetch over the wire)
-cli/      ──►  (its own world)             # standalone Bun workspace; only talks to /api/v1
+shared/                              ──►  (nothing else)                # leaf — pure code, no framework, no Drizzle
+server/repositories/                 ──►  shared/db/schema, drizzle-orm  # the ONLY place Drizzle is imported
+server/utils/, server/api/, server/plugins/, server/jobs/
+                                     ──►  server/repositories/, shared/  # take Transactable; never import drizzle-orm
+app/                                 ──►  shared/                        # may import shared/, not server/ (only $fetch over the wire)
+cli/                                 ──►  (its own world)                # standalone Bun workspace; only talks to /api/v1
 ```
 
 `eslint.config.mjs` uses `no-restricted-imports` with glob patterns:
@@ -563,13 +609,30 @@ cli/      ──►  (its own world)             # standalone Bun workspace; onl
 },
 {
   files: ["server/**"],
+  ignores: ["server/repositories/**", "server/utils/db.ts", "server/plugins/db.ts"],
+  rules: {
+    "no-restricted-imports": [
+      "error",
+      { patterns: ["app/*", "~/*", "drizzle-orm", "drizzle-orm/*"] },
+    ],
+  },
+},
+{
+  files: ["server/repositories/**", "server/utils/db.ts", "server/plugins/db.ts"],
   rules: { "no-restricted-imports": ["error", { patterns: ["app/*", "~/*"] }] },
 },
 {
   files: ["shared/**"],
-  rules: { "no-restricted-imports": ["error", { patterns: ["app/*", "server/*", "~/*", "~~/server/*"] }] },
+  rules: {
+    "no-restricted-imports": [
+      "error",
+      { patterns: ["app/*", "server/*", "~/*", "~~/server/*", "drizzle-orm", "drizzle-orm/*"] },
+    ],
+  },
 },
 ```
+
+The `server/**` rule with `ignores` ensures Drizzle imports outside `server/repositories/`, `server/utils/db.ts`, and `server/plugins/db.ts` are rejected at lint time. This is what makes the repository boundary load-bearing rather than a convention.
 
 This is the single rule that keeps the codebase navigable as it grows. Without it, `shared/` slowly grows imports from `server/`, then `app/`, then nothing is testable in isolation.
 
@@ -588,8 +651,9 @@ This is the single rule that keeps the codebase navigable as it grows. Without i
 | `shared/**` pure logic | Unit | Vitest |
 | `app/composables/**` | Unit (pure) or via consuming component (Nuxt internals) | Vitest + `@nuxt/test-utils/runtime` |
 | `app/components/**` | Component | Vitest + `@vue/test-utils` + `mountSuspended()` |
-| `server/api/**` | Adapter logic via extracted pure functions; integration via Playwright | Vitest (pure) + Playwright |
-| `/api/v1/**` JSON shapes | Contract | Vitest, asserts against `docs/api.md` payloads |
+| `server/repositories/**` | Integration | Vitest + PGlite (`@electric-sql/pglite` + `drizzle-orm/pglite`) |
+| `server/utils/**`, `server/api/**` | Orchestrator unit (repo mocked, not Drizzle) | Vitest |
+| `/api/v1/**` JSON shapes | Contract | Vitest, asserts `docs/api.md` payloads against Zod schemas |
 | End-to-end | E2E | Playwright, seeded DB |
 
 ### Per-phase coverage discipline

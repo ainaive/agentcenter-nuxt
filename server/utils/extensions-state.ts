@@ -1,9 +1,21 @@
-import { and, eq, inArray } from "drizzle-orm"
-import { extensions, extensionVersions, files } from "~~/shared/db/schema"
+import * as extensionsRepo from "~~/server/repositories/extensions"
+import * as filesRepo from "~~/server/repositories/files"
+import * as versionsRepo from "~~/server/repositories/versions"
+import {
+  decidePublishOutcome,
+  decideScanOutcome,
+  type ScanResult,
+} from "~~/shared/extensions/state"
 
-export type ScanResult =
-  | { ok: true; checksum: string; scanReport: unknown }
-  | { ok: false; reason: string; scanReport: unknown }
+import { useDb } from "./db"
+
+// Orchestrators over the extensions/versions/files repositories. The
+// branching ("personal scope auto-publishes; org/enterprise waits for
+// admin") lives in `shared/extensions/state.ts` as pure decision
+// functions; this file just loads rows, opens transactions, and applies
+// the decision via the repos.
+
+export type { ScanResult }
 
 export class VersionStateError extends Error {
   readonly code: "version_not_found"
@@ -14,109 +26,73 @@ export class VersionStateError extends Error {
   }
 }
 
+// Move a version from `pending|scanning` → `scanning`. Idempotent for those
+// two start states so a queue retry doesn't get stuck.
 export async function submit(versionId: string): Promise<void> {
   const db = useDb()
-  const updated = await db
-    .update(extensionVersions)
-    .set({ status: "scanning" })
-    .where(
-      and(
-        eq(extensionVersions.id, versionId),
-        inArray(extensionVersions.status, ["pending", "scanning"]),
-      ),
-    )
-    .returning({ id: extensionVersions.id })
-  if (updated.length === 0) throw new VersionStateError("version_not_found")
+  const { updated } = await versionsRepo.updateStatusGuarded(db, versionId, {
+    from: ["pending", "scanning"],
+    to: "scanning",
+  })
+  if (!updated) throw new VersionStateError("version_not_found")
 }
 
+// Apply the bundle scan outcome via `decideScanOutcome`.
 export async function recordScanResult(
   versionId: string,
   fileId: string,
   result: ScanResult,
 ): Promise<void> {
   const db = useDb()
-  const [version] = await db
-    .select({
-      status: extensionVersions.status,
-      extensionId: extensionVersions.extensionId,
-      scope: extensions.scope,
-    })
-    .from(extensionVersions)
-    .innerJoin(extensions, eq(extensions.id, extensionVersions.extensionId))
-    .where(eq(extensionVersions.id, versionId))
-    .limit(1)
+  const version = await versionsRepo.findByIdWithScope(db, versionId)
   if (!version || version.status !== "scanning") {
     throw new VersionStateError("version_not_found")
   }
 
-  await db.transaction(async (tx) => {
-    if (result.ok) {
-      const isPersonal = version.scope === "personal"
-      const now = isPersonal ? new Date() : null
+  const decision = decideScanOutcome({
+    scope: version.scope,
+    result,
+    now: new Date(),
+  })
 
-      await tx
-        .update(files)
-        .set({
-          scanStatus: "clean",
-          scanReport: result.scanReport,
-          checksumSha256: result.checksum,
-        })
-        .where(eq(files.id, fileId))
-      await tx
-        .update(extensionVersions)
-        .set(
-          isPersonal
-            ? { status: "ready", publishedAt: now }
-            : { status: "ready" },
-        )
-        .where(eq(extensionVersions.id, versionId))
-      if (isPersonal) {
-        await tx
-          .update(extensions)
-          .set({ visibility: "published", publishedAt: now })
-          .where(eq(extensions.id, version.extensionId))
-      }
-    } else {
-      await tx
-        .update(files)
-        .set({ scanStatus: "flagged", scanReport: result.scanReport })
-        .where(eq(files.id, fileId))
-      await tx
-        .update(extensionVersions)
-        .set({ status: "rejected" })
-        .where(eq(extensionVersions.id, versionId))
+  await db.transaction(async (tx) => {
+    await filesRepo.updateScanStatus(tx, fileId, decision.file)
+    await versionsRepo.updateStatus(tx, versionId, decision.version)
+    if (decision.extension) {
+      await extensionsRepo.updateVisibility(
+        tx,
+        version.extensionId,
+        decision.extension,
+      )
     }
   })
 }
 
-export async function publishVersion(versionId: string): Promise<{ extensionId: string }> {
+// Admin-driven flip from `ready` → `published`. Stamps `publishedAt` on
+// both rows with the same `now` via `decidePublishOutcome`.
+export async function publishVersion(
+  versionId: string,
+): Promise<{ extensionId: string }> {
   const db = useDb()
-  const [row] = await db
-    .select({
-      extensionId: extensionVersions.extensionId,
-      status: extensionVersions.status,
-    })
-    .from(extensionVersions)
-    .where(eq(extensionVersions.id, versionId))
-    .limit(1)
-
+  const row = await versionsRepo.findById(db, versionId)
   if (!row || row.status !== "ready") {
     throw new VersionStateError("version_not_found")
   }
 
-  const { extensionId } = row
-  const now = new Date()
+  const decision = decidePublishOutcome(new Date())
 
   await db.transaction(async (tx) => {
-    await tx
-      .update(extensions)
-      .set({ visibility: "published", publishedAt: now })
-      .where(eq(extensions.id, extensionId))
-    await tx
-      .update(extensionVersions)
-      .set({ publishedAt: now })
-      .where(eq(extensionVersions.id, versionId))
+    await extensionsRepo.updateVisibility(
+      tx,
+      row.extensionId,
+      decision.extension,
+    )
+    await versionsRepo.updatePublishedAt(
+      tx,
+      versionId,
+      decision.version.publishedAt,
+    )
   })
 
-  return { extensionId }
+  return { extensionId: row.extensionId }
 }

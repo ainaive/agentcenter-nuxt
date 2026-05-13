@@ -1,5 +1,5 @@
-import { and, desc, eq, ilike, inArray, like, or, sql, type SQL } from "drizzle-orm"
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js"
+import { and, desc, eq, ilike, inArray, like, or, sql, type SQL, type ExtractTablesWithRelations } from "drizzle-orm"
+import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core"
 
 import { MY_DEPT_ID } from "~~/shared/data/departments"
 import type * as schema from "~~/shared/db/schema"
@@ -8,7 +8,13 @@ import type { Filters } from "~~/shared/validators/filters"
 
 const ALL_DEPTS = "__all"
 
-type Db = PostgresJsDatabase<typeof schema>
+// Driver-agnostic: matches postgres-js, PGlite, and PgTransaction so the
+// query builder composes with the repository layer's `Transactable`.
+type Db = PgDatabase<
+  PgQueryResultHKT,
+  typeof schema,
+  ExtractTablesWithRelations<typeof schema>
+>
 
 export function buildExtensionWhere(
   db: Db,

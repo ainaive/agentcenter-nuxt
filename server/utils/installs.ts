@@ -1,7 +1,14 @@
-import { and, desc, eq, sql } from "drizzle-orm"
-import { installs } from "~~/shared/db/schema/activity"
-import { collectionItems } from "~~/shared/db/schema/collection"
-import { extensions, extensionVersions } from "~~/shared/db/schema/extension"
+import * as collectionsRepo from "~~/server/repositories/collections"
+import * as extensionsRepo from "~~/server/repositories/extensions"
+import * as installsRepo from "~~/server/repositories/installs"
+import * as versionsRepo from "~~/server/repositories/versions"
+import { pickInstallVersion } from "~~/shared/installs/record"
+
+import { useDb } from "./db"
+
+// Orchestrator over the installs/collections/extensions/versions repos. The
+// "which version to install" decision is still inline here; commit 8
+// extracts it into the pure `shared/installs/record.ts` decision module.
 
 export type ExtensionRef = { id: string } | { slug: string }
 export type InstallSource = "web" | "cli"
@@ -29,72 +36,56 @@ export interface InstallRecord {
   version: string
 }
 
-export async function recordInstall(params: RecordInstallParams): Promise<InstallRecord> {
+export async function recordInstall(
+  params: RecordInstallParams,
+): Promise<InstallRecord> {
   const { userId, extension, source } = params
   const db = useDb()
 
-  const extWhere =
+  // Resolve the extension. `findBySlug` is `onlyPublished: true` by default,
+  // which would hide drafts — the install flow is only allowed against
+  // published extensions anyway, so the default is what we want.
+  const ext =
     "id" in extension
-      ? eq(extensions.id, extension.id)
-      : eq(extensions.slug, extension.slug)
-
-  const [ext] = await db
-    .select({ id: extensions.id })
-    .from(extensions)
-    .where(extWhere)
-    .limit(1)
+      ? await extensionsRepo.findById(db, extension.id)
+      : await extensionsRepo.findBySlug(db, extension.slug)
   if (!ext) throw new InstallError("extension_not_found")
   const extensionId = ext.id
 
-  let version = params.version
-  if (!version) {
-    const [latest] = await db
-      .select({ version: extensionVersions.version })
-      .from(extensionVersions)
-      .where(
-        and(
-          eq(extensionVersions.extensionId, extensionId),
-          eq(extensionVersions.status, "ready"),
-        ),
-      )
-      .orderBy(
-        desc(extensionVersions.publishedAt),
-        desc(extensionVersions.createdAt),
-      )
-      .limit(1)
-    if (!latest) throw new InstallError("no_published_version")
-    version = latest.version
-  }
+  // Resolve which version to install. The orchestrator only loads the
+  // candidate list when it's actually needed (`requested` is undefined).
+  const candidates = params.version
+    ? []
+    : await versionsRepo.listLatestReadyForExtension(db, extensionId)
+  const pick = pickInstallVersion({ requested: params.version, candidates })
+  if (!pick.ok) throw new InstallError(pick.error)
+  const version = pick.version
 
-  const installedColId = await getOrCreateSystemCollection(userId, "installed")
+  const { id: installedColId } = await collectionsRepo.getOrCreateSystem(
+    db,
+    userId,
+    "installed",
+  )
   const installId = crypto.randomUUID()
   const resolvedVersion = version
 
   const isFirstInstall = await db.transaction(async (tx) => {
-    const prior = await tx
-      .select({ id: installs.id })
-      .from(installs)
-      .where(and(eq(installs.userId, userId), eq(installs.extensionId, extensionId)))
-      .limit(1)
-    const isFirst = prior.length === 0
+    const prior = await installsRepo.findByUserAndExtension(
+      tx,
+      userId,
+      extensionId,
+    )
+    const isFirst = prior === null
 
-    await tx.insert(installs).values({
+    await installsRepo.insertInstall(tx, {
       id: installId,
       userId,
       extensionId,
       version: resolvedVersion,
       source,
     })
-
-    await tx
-      .insert(collectionItems)
-      .values({ collectionId: installedColId, extensionId })
-      .onConflictDoNothing()
-
-    await tx
-      .update(extensions)
-      .set({ downloadsCount: sql`${extensions.downloadsCount} + 1` })
-      .where(eq(extensions.id, extensionId))
+    await collectionsRepo.addItem(tx, installedColId, extensionId)
+    await extensionsRepo.incrementDownloads(tx, extensionId)
 
     return isFirst
   })

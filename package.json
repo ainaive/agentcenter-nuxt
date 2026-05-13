@@ -14,6 +14,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:integration": "vitest run -c vitest.config.integration.ts",
+    "test:integration:watch": "vitest -c vitest.config.integration.ts",
     "test:e2e": "playwright test",
     "validate": "bun run prepare && bun run lint && bun run typecheck && bun run test",
     "db:generate": "drizzle-kit generate",
@@ -54,6 +56,7 @@
   "devDependencies": {
     "@commitlint/cli": "^21.0.0",
     "@commitlint/config-conventional": "^21.0.0",
+    "@electric-sql/pglite": "^0.4.5",
     "@nuxt/eslint": "^1.15.2",
     "@nuxt/test-utils": "^4.0.3",
     "@playwright/test": "^1.60.0",

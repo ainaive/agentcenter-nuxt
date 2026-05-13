@@ -1,8 +1,6 @@
+import * as extensionsRepo from "~~/server/repositories/extensions"
 import {
-  countFilteredExtensions,
-  listExtensions,
-} from "~~/server/utils/queries/extensions"
-import {
+  PAGE_SIZE,
   parseFilters,
   searchParamsToInput,
 } from "~~/shared/validators/filters"
@@ -15,9 +13,10 @@ export default defineEventHandler(async (event) => {
   })
 
   try {
+    const db = useDb()
     const [items, total] = await Promise.all([
-      listExtensions(filters),
-      countFilteredExtensions(filters),
+      extensionsRepo.findManyForList(db, filters),
+      extensionsRepo.countFiltered(db, filters),
     ])
 
     setHeader(
@@ -45,7 +44,7 @@ export default defineEventHandler(async (event) => {
       })),
       total,
       page: filters.page,
-      pageSize: 24,
+      pageSize: PAGE_SIZE,
     }
   } catch (err) {
     console.error("[api/v1/extensions] db error:", err)

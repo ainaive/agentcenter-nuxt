@@ -1,33 +1,15 @@
-import { and, desc, eq, sql } from "drizzle-orm"
-import {
-  extensions,
-  extensionVersions,
-  files,
-} from "~~/shared/db/schema"
-import { getExtensionBySlug } from "~~/server/utils/queries/extension-detail"
+import * as extensionsRepo from "~~/server/repositories/extensions"
+import * as versionsRepo from "~~/server/repositories/versions"
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, "slug")
   if (!slug) apiError(event, "slug required", 400, "invalid_request")
 
-  const ext = await getExtensionBySlug(slug)
+  const db = useDb()
+  const ext = await extensionsRepo.findBySlug(db, slug)
   if (!ext) apiError(event, "Extension not found.", 404, "not_found")
 
-  const db = useDb()
-  const [row] = await db
-    .select({ r2Key: files.r2Key })
-    .from(extensionVersions)
-    .innerJoin(files, eq(files.id, extensionVersions.bundleFileId))
-    .innerJoin(extensions, eq(extensions.id, extensionVersions.extensionId))
-    .where(
-      and(eq(extensions.slug, slug), eq(extensionVersions.status, "ready")),
-    )
-    .orderBy(
-      sql`${extensionVersions.publishedAt} DESC NULLS LAST`,
-      desc(extensionVersions.createdAt),
-    )
-    .limit(1)
-
+  const row = await versionsRepo.findLatestReadyBundleBySlug(db, slug)
   if (!row?.r2Key) {
     apiError(event, "Bundle not available yet.", 503, "bundle_unavailable")
   }
