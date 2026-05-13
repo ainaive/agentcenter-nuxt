@@ -82,6 +82,9 @@ function onFileChange(event: Event) {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
   if (file) onFile(file)
+  // Reset so picking the same file again still fires `change` — common when an
+  // upload fails and the user retries with the same .zip.
+  target.value = ""
 }
 
 function onDrop(event: DragEvent) {

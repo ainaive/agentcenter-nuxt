@@ -21,7 +21,16 @@ const { data, error } = await useFetch<DraftResponse>(
   { query: computed(() => ({ extensionId: id.value })) },
 )
 
-if (error.value || !data.value) {
+// Preserve the backend's status code so a 400 / 409 / auth failure doesn't
+// get rewritten as 404. The error-boundary renders the matching message.
+if (error.value) {
+  const statusCode = error.value.statusCode ?? 500
+  throw createError({
+    statusCode,
+    statusMessage: error.value.statusMessage ?? t("publish.errors.generic"),
+  })
+}
+if (!data.value) {
   throw createError({
     statusCode: 404,
     statusMessage: t("publish.errors.notFound"),
