@@ -1,0 +1,17 @@
+We have rewritten this codebase using Nuxt framework from @../agentcenter/ , I will not use that repo anymore, so please check if there are some missed or wrong. let's decide what will to do next.
+
+---
+
+let's make a plan to implement them all, commit on each phase, what do you think?
+
+---
+
+one PR for a phase seems too much, and multiple commits seems too much too. I am thing one PR for total, and one or several commits for each phase. what do you think?
+
+---
+
+if you think one PR is too big, you can sperate it, but not too much. if one is ok, we can choose one PR for all
+
+---
+
+this CLAUDE.md seems too many rules compared to the original one, please check that
