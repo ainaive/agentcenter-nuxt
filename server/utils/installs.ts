@@ -2,6 +2,7 @@ import * as collectionsRepo from "~~/server/repositories/collections"
 import * as extensionsRepo from "~~/server/repositories/extensions"
 import * as installsRepo from "~~/server/repositories/installs"
 import * as versionsRepo from "~~/server/repositories/versions"
+import { pickInstallVersion } from "~~/shared/installs/record"
 
 // Orchestrator over the installs/collections/extensions/versions repos. The
 // "which version to install" decision is still inline here; commit 8
@@ -49,18 +50,14 @@ export async function recordInstall(
   if (!ext) throw new InstallError("extension_not_found")
   const extensionId = ext.id
 
-  // Resolve which version to install. If the caller passed one explicitly,
-  // use it; otherwise pick the latest published-ready candidate.
-  let version = params.version
-  if (!version) {
-    const candidates = await versionsRepo.listLatestReadyForExtension(
-      db,
-      extensionId,
-    )
-    const latest = candidates[0]
-    if (!latest) throw new InstallError("no_published_version")
-    version = latest.version
-  }
+  // Resolve which version to install. The orchestrator only loads the
+  // candidate list when it's actually needed (`requested` is undefined).
+  const candidates = params.version
+    ? []
+    : await versionsRepo.listLatestReadyForExtension(db, extensionId)
+  const pick = pickInstallVersion({ requested: params.version, candidates })
+  if (!pick.ok) throw new InstallError(pick.error)
+  const version = pick.version
 
   const { id: installedColId } = await collectionsRepo.getOrCreateSystem(
     db,
