@@ -395,6 +395,22 @@ The `/api/v1/...` JSON shapes documented in the original `docs/api.md` are froze
 
 Each phase ends with a commit on its branch and a PR back to `main`. CI mirrors `bun run validate` (see §11). Tag the merge commit (`p0`, `p1`, …) to make per-phase rollback trivial.
 
+### Status (2026-05-13)
+
+- **P0 – P13: shipped** in the original rewrite track (#1 – #9).
+- **P14 (Deploy): pending.** The Node preset is already configured in `nuxt.config.ts`; the runbook in `docs/deploy.md` is up to date; what's left is wiring the production environment and flipping the CLI's default registry to point at it.
+- **P14a – P20: rewrite-completion track, all merged.** A second pass closed gaps the audit found at the end of the initial rewrite:
+  - **P14a** — trim `CLAUDE.md` to short-form, point to this plan for details (#10).
+  - **P14** — import `cli/` as a standalone Bun project; ship a cross-platform Node JS bundle (#10).
+  - **P15** — port shadcn-vue primitives backed by reka-ui (#10).
+  - **P16** — filter drawer pickers: DeptPicker, TagDrawer, CreatorPicker, PublisherPicker + facets endpoint (#11).
+  - **P17** — 4-step publish wizard with live preview + `publish/[id]/edit` resume flow (#11).
+  - **P18** — `/profile` My Workspace page with 9 components + 3 internal endpoints (#12).
+  - **P19** — split the detail page into hero / about / tabs / related + InstallCommand / ShareButton / SaveButton (#12).
+  - **P20** — `nuxt-og-image` for social previews + Playwright browse / detail / navigation specs (#12).
+
+The "P14" label is reused intentionally — the original P14 (Deploy) never executed before the rewrite-completion track began, so P14a was named to avoid clashing with the unfinished P14 deploy work.
+
 ### P1 (post-v1)
 
 - Publisher dashboard improvements (install metrics, version diffs)
