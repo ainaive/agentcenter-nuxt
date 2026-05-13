@@ -600,7 +600,7 @@ Deliberately out of scope for v1:
 
 ## 13. Commit & PR rules
 
-The original Next.js project locked "Conventional Commits, one coherent unit per commit, phase scope." That carries over with one tightening: this repo commits **per step**, not per phase or per feature. This section spells out the parts that were left informal — granularity, breaking-change handling for `/api/v1`, merge strategy, the per-commit vs. per-PR validate split, and the hook tooling.
+The original Next.js project locked "Conventional Commits, one coherent unit per commit, phase scope." That carries over verbatim. This section spells out the parts that were left informal — granularity, breaking-change handling for `/api/v1`, merge strategy, the per-commit vs. per-PR validate split, and the hook tooling.
 
 ### Commit message format
 
@@ -626,9 +626,9 @@ Two scope shapes used here:
 
 If a commit spans two scopes evenly, that's a smell — split it.
 
-### Commit granularity — one per step
+### Commit granularity — one coherent unit per commit
 
-A phase is many commits. Default to **one commit per step** — a step is roughly one item on the phase's checklist (or one TodoWrite checkbox during execution). The granularity is finer than "natural split points" — it's "one focused thing landed, commit, move on."
+A phase is one or several commits. Default to **one coherent unit per commit** — a single focused change that compiles and stands on its own. The exact number of commits per phase depends on the work: a mechanical port may be one commit per phase; a feature build may be several. Optimise for "the diff tells a clear story", not for a target commit count.
 
 Calibration:
 
@@ -639,7 +639,8 @@ Calibration:
 | Right | `feat(p2-db): add extension drizzle schema` | Yes |
 | Right | `feat(p3-browse): ExtCard component + test` | Yes — code + its tests usually one commit |
 | Right | `feat(p3-browse): wire ExtCard into home grid` | Yes |
-| Too big | `feat(p3-browse): browse page` covering 8 files | No — should be 4-6 step commits |
+| Right | `feat(p15-ui): port shadcn-vue primitives` covering 11 generated wrappers | Yes — single mechanical unit |
+| Too big | `feat(p3-browse): browse page` covering 8 unrelated files | No — split where the story changes |
 
 Tests usually live with the code they cover in the same commit. The exception is adding tests to *existing* code as a coverage-improvement pass — then the test commit stands alone.
 
@@ -657,7 +658,7 @@ The validate suite has two gates with different strictness:
 - **Each commit must compile and `bun run typecheck` must pass.** This is the per-step gate. Strict enough to keep history bisectable; loose enough that you can land a Zod validator in one commit before its consumer in the next.
 - **The PR head must pass full `bun run validate`** (lint + typecheck + test + coverage thresholds). This is the per-PR gate. Enforced by the `pre-push` hook locally and by CI on the PR.
 
-This split is intentional: it's why step-granularity commits stay practical. Trying to make every single commit hit 95% coverage on `shared/**` would force unnatural test-first-then-code ordering. Coverage is a PR-boundary property, not a commit-boundary property.
+This split is intentional. Trying to make every single commit hit 95% coverage on `shared/**` would force unnatural test-first-then-code ordering. Coverage is a PR-boundary property, not a commit-boundary property.
 
 ### Breaking changes
 
@@ -715,14 +716,12 @@ Commit-msg is microsecond-fast. Pre-commit is staged-files only so it stays unde
 
 For AI agents working in this repo (Claude Code or otherwise):
 
-1. Work in steps. After each step, surface a diff summary (`git diff --stat` + key file changes) and the proposed commit message.
-2. Wait for an explicit human go-ahead before running `git commit`. Per-step granularity means commit pauses are frequent — that's the point.
+1. Work in coherent units. When a unit lands, commit it; surface a diff summary (`git diff --stat` + key file changes) in the chat alongside the commit.
+2. Pause for an explicit human checkpoint at **phase boundaries**, not at every commit. Within a phase, commit at coherent-unit boundaries without pausing for each one — pause when surprised, when a decision is required, or at the end of the phase.
 3. Never run `git push` without an explicit request. Pushes happen at natural breaks (end of session, before review) — the `pre-push` hook then validates the accumulated commits.
 4. Never bypass hooks (`--no-verify`). If a hook fails, investigate and fix the underlying issue rather than skipping.
 5. Each phase ends with an explicit human checkpoint; the agent does not auto-start the next phase.
 6. When asked to "fix a previous commit," create a new corrective commit — do not amend or rebase.
-
-The human stays in the loop at every step boundary; the agent doesn't accumulate uncommitted state.
 
 ### PR rules
 
