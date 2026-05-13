@@ -1,0 +1,39 @@
+check the PR
+
+---
+
+merge it
+
+---
+
+how can I run dev on local mac machine
+
+---
+
+I have start pg, how to run migrate?
+
+---
+
+I have set .env.local , is it ok, should I rename it to .env?
+
+---
+
+migration success, but next fail: bun run db:apply-fts
+$ psql "$DATABASE_URL" -f drizzle/0002_fts_search_vector.sql
+psql: error: connection to server on socket "/tmp/.s.PGSQL.5432" failed: FATAL:  database "hutusi" does not exist
+
+---
+
+ok, I run successfully on local dev. how can I deploy it on cloudflare or other platform?
+
+---
+
+how can I deploy on cloudflare worker & pages?
+
+---
+
+can I deploy it on vercel? what do you recommend?
+
+---
+
+when deploy on vercel, it failed: No Output Directory named "dist" found after the Build completed. Configure the Output Directory in your Project Settings. Alternatively, configure vercel.json#outputDirectory.
