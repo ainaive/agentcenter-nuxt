@@ -1,16 +1,19 @@
 import * as extensionsRepo from "~~/server/repositories/extensions"
 import * as filesRepo from "~~/server/repositories/files"
 import * as versionsRepo from "~~/server/repositories/versions"
+import {
+  decidePublishOutcome,
+  decideScanOutcome,
+  type ScanResult,
+} from "~~/shared/extensions/state"
 
 // Orchestrators over the extensions/versions/files repositories. The
-// branching logic ("personal scope auto-publishes; org/enterprise waits for
-// admin") still lives inline here; commit 7 extracts it into the pure
-// `shared/extensions/state.ts` decision module. The Drizzle imports that
-// used to live in this file moved to the repos in commit 3.
+// branching ("personal scope auto-publishes; org/enterprise waits for
+// admin") lives in `shared/extensions/state.ts` as pure decision
+// functions; this file just loads rows, opens transactions, and applies
+// the decision via the repos.
 
-export type ScanResult =
-  | { ok: true; checksum: string; scanReport: unknown }
-  | { ok: false; reason: string; scanReport: unknown }
+export type { ScanResult }
 
 export class VersionStateError extends Error {
   readonly code: "version_not_found"
@@ -32,9 +35,7 @@ export async function submit(versionId: string): Promise<void> {
   if (!updated) throw new VersionStateError("version_not_found")
 }
 
-// Apply the bundle scan outcome. Personal-scope extensions auto-publish on
-// success; org/enterprise versions land in `ready` and wait for an admin to
-// call `publishVersion`.
+// Apply the bundle scan outcome via `decideScanOutcome`.
 export async function recordScanResult(
   versionId: string,
   fileId: string,
@@ -46,38 +47,27 @@ export async function recordScanResult(
     throw new VersionStateError("version_not_found")
   }
 
-  await db.transaction(async (tx) => {
-    if (result.ok) {
-      const isPersonal = version.scope === "personal"
-      const now = isPersonal ? new Date() : null
+  const decision = decideScanOutcome({
+    scope: version.scope,
+    result,
+    now: new Date(),
+  })
 
-      await filesRepo.updateScanStatus(tx, fileId, {
-        scanStatus: "clean",
-        scanReport: result.scanReport,
-        checksumSha256: result.checksum,
-      })
-      await versionsRepo.updateStatus(tx, versionId, {
-        status: "ready",
-        publishedAt: now,
-      })
-      if (isPersonal && now) {
-        await extensionsRepo.updateVisibility(tx, version.extensionId, {
-          visibility: "published",
-          publishedAt: now,
-        })
-      }
-    } else {
-      await filesRepo.updateScanStatus(tx, fileId, {
-        scanStatus: "flagged",
-        scanReport: result.scanReport,
-      })
-      await versionsRepo.updateStatus(tx, versionId, { status: "rejected" })
+  await db.transaction(async (tx) => {
+    await filesRepo.updateScanStatus(tx, fileId, decision.file)
+    await versionsRepo.updateStatus(tx, versionId, decision.version)
+    if (decision.extension) {
+      await extensionsRepo.updateVisibility(
+        tx,
+        version.extensionId,
+        decision.extension,
+      )
     }
   })
 }
 
 // Admin-driven flip from `ready` → `published`. Stamps `publishedAt` on
-// both the extension and the version with the same `now` so they line up.
+// both rows with the same `now` via `decidePublishOutcome`.
 export async function publishVersion(
   versionId: string,
 ): Promise<{ extensionId: string }> {
@@ -87,16 +77,20 @@ export async function publishVersion(
     throw new VersionStateError("version_not_found")
   }
 
-  const { extensionId } = row
-  const now = new Date()
+  const decision = decidePublishOutcome(new Date())
 
   await db.transaction(async (tx) => {
-    await extensionsRepo.updateVisibility(tx, extensionId, {
-      visibility: "published",
-      publishedAt: now,
-    })
-    await versionsRepo.updatePublishedAt(tx, versionId, now)
+    await extensionsRepo.updateVisibility(
+      tx,
+      row.extensionId,
+      decision.extension,
+    )
+    await versionsRepo.updatePublishedAt(
+      tx,
+      versionId,
+      decision.version.publishedAt,
+    )
   })
 
-  return { extensionId }
+  return { extensionId: row.extensionId }
 }
