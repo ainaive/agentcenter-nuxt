@@ -1,4 +1,6 @@
 import { and, desc, eq, sql } from "drizzle-orm"
+
+import * as collectionsRepo from "~~/server/repositories/collections"
 import { installs } from "~~/shared/db/schema/activity"
 import { collectionItems } from "~~/shared/db/schema/collection"
 import { extensions, extensionVersions } from "~~/shared/db/schema/extension"
@@ -66,7 +68,11 @@ export async function recordInstall(params: RecordInstallParams): Promise<Instal
     version = latest.version
   }
 
-  const installedColId = await getOrCreateSystemCollection(userId, "installed")
+  const { id: installedColId } = await collectionsRepo.getOrCreateSystem(
+    db,
+    userId,
+    "installed",
+  )
   const installId = crypto.randomUUID()
   const resolvedVersion = version
 
