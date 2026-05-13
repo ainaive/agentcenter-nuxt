@@ -1,0 +1,25 @@
+let's think about the tests
+
+---
+
+and I have other questions?
+
+---
+
+1. maitenance 2. refactor 3. tighten is ok, what do you think? 4. all ok
+
+---
+
+I have two questions: 1, why some of the test file name "nuxt.vue.ts", what is the test file name convention? 2. do we need add some integration tests and api tests?
+
+---
+
+do we need to add integration tests in the integration directory?
+
+---
+
+why we need no-DB-mocking rule?
+
+---
+
+for the no-DB-mocking rule, I have different opionion, we need several levels of tests, some tests may need db mock. what do you think?
