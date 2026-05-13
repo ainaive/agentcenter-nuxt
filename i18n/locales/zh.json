@@ -266,7 +266,92 @@
     },
     "errors": {
       "bundleRequired": "请选择要上传的 zip 文件。",
-      "generic": "发布失败，请重试。"
+      "generic": "发布失败，请重试。",
+      "slugTaken": "该标识已被占用。",
+      "slugImmutable": "草稿创建后无法修改标识。",
+      "versionImmutable": "草稿创建后无法修改版本号。",
+      "notFound": "未找到草稿或你不再拥有它。",
+      "notEditable": "此扩展无法继续编辑。",
+      "noBundle": "提交前请先上传 Bundle。",
+      "scanQueueUnavailable": "扫描任务暂时无法入队，请稍后再试。"
+    },
+    "wizard": {
+      "steps": {
+        "basics": "基本信息",
+        "bundle": "Bundle",
+        "listing": "上架信息",
+        "review": "确认"
+      },
+      "next": "继续",
+      "back": "返回",
+      "headerEdit": "继续草稿",
+      "headerNew": "新建扩展",
+      "basics": {
+        "title": "介绍一下你的扩展",
+        "subtitle": "名称和标识，后续步骤可以继续调整。",
+        "namePlaceholder": "例如 Stripe 退款助手",
+        "slugHint": "仅小写字母、数字、连字符，用于 URL。",
+        "versionHint": "语义化版本，例如 1.0.0",
+        "summaryHint": "一句话简介，将显示在浏览卡片上。",
+        "chinese": "中文翻译",
+        "chineseHint": "可选，当用户语言为中文时使用。",
+        "scope": {
+          "personalDesc": "仅你可见，安全扫描后自动发布。",
+          "orgDesc": "审核通过后在组织内可见。",
+          "enterpriseDesc": "审核通过后在整个企业内可见。"
+        }
+      },
+      "bundle": {
+        "title": "上传 Bundle",
+        "subtitle": "包含扩展清单和源代码的 .zip 文件。",
+        "drop": "拖入 .zip 文件，或点击选择。",
+        "max": "最大 50 MB。",
+        "uploaded": "已上传 {name}",
+        "replace": "替换",
+        "tooLarge": "文件超过 50 MB。",
+        "wrongType": "仅支持 .zip 格式。"
+      },
+      "listing": {
+        "title": "上架信息",
+        "subtitle": "你的扩展在市场中的展示方式。",
+        "iconLabel": "图标颜色",
+        "tagsLabel": "标签",
+        "tagsHint": "最多 8 个标签，按 Enter 添加。",
+        "tagsPlaceholder": "添加标签…",
+        "tagsLimit": "已达上限",
+        "deptLabel": "部门",
+        "deptUnset": "所有部门",
+        "readmeLabel": "README",
+        "readmeHint": "支持 Markdown，将渲染到详情页。",
+        "permissionsLabel": "权限",
+        "permissions": {
+          "network": "网络访问",
+          "files": "文件系统访问",
+          "runtime": "长时运行环境",
+          "data": "用户数据访问"
+        }
+      },
+      "review": {
+        "title": "确认并提交",
+        "subtitle": "信息无误？提交进入扫描与审核流程。",
+        "edit": "修改",
+        "personalNote": "个人作用域将在安全扫描后自动发布。",
+        "orgNote": "组织和企业草稿将在扫描后等待审核。",
+        "termsHint": "提交即表示同意《发布者条款》。",
+        "submit": "提交审核"
+      },
+      "success": {
+        "title": "已提交",
+        "personal": "扫描完成后会自动发布。",
+        "shared": "扫描完成后将进入审核队列。",
+        "back": "返回控制台"
+      }
+    },
+    "preview": {
+      "card": "上架预览",
+      "manifest": "派生 manifest",
+      "namePlaceholder": "你的扩展",
+      "summaryPlaceholder": "一句话简介将显示在此处。"
     }
   },
   "cliAuth": {

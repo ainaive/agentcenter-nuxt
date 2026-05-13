@@ -266,7 +266,92 @@
     },
     "errors": {
       "bundleRequired": "Please pick a zip bundle to upload.",
-      "generic": "Publish failed. Please try again."
+      "generic": "Publish failed. Please try again.",
+      "slugTaken": "That slug is already taken.",
+      "slugImmutable": "Slug cannot be changed after the draft is created.",
+      "versionImmutable": "Version cannot be changed after the draft is created.",
+      "notFound": "Draft not found or you no longer own it.",
+      "notEditable": "This extension can no longer be edited.",
+      "noBundle": "You need to upload a bundle before submitting.",
+      "scanQueueUnavailable": "Couldn't queue the scan job. Try submitting again."
+    },
+    "wizard": {
+      "steps": {
+        "basics": "Basics",
+        "bundle": "Bundle",
+        "listing": "Listing",
+        "review": "Review"
+      },
+      "next": "Continue",
+      "back": "Back",
+      "headerEdit": "Resume draft",
+      "headerNew": "New extension",
+      "basics": {
+        "title": "Tell us about your extension",
+        "subtitle": "Name and identifier. You can refine this on later steps.",
+        "namePlaceholder": "e.g. Stripe Refund Helper",
+        "slugHint": "Lowercase letters, digits, and hyphens. Used in the URL.",
+        "versionHint": "Semantic version, e.g. 1.0.0",
+        "summaryHint": "One-line description, shown on browse cards.",
+        "chinese": "Chinese translations",
+        "chineseHint": "Optional. Used when a viewer's locale is set to Chinese.",
+        "scope": {
+          "personalDesc": "Just for you. Auto-publishes after the security scan.",
+          "orgDesc": "Visible inside your organization once approved.",
+          "enterpriseDesc": "Visible to the whole enterprise once approved."
+        }
+      },
+      "bundle": {
+        "title": "Upload the bundle",
+        "subtitle": "A .zip containing the extension's manifest and source.",
+        "drop": "Drag and drop a .zip, or click to choose a file.",
+        "max": "Max 50 MB.",
+        "uploaded": "Uploaded {name}",
+        "replace": "Replace",
+        "tooLarge": "File is larger than 50 MB.",
+        "wrongType": "Only .zip files are supported."
+      },
+      "listing": {
+        "title": "Listing details",
+        "subtitle": "How your extension appears on the marketplace.",
+        "iconLabel": "Icon color",
+        "tagsLabel": "Tags",
+        "tagsHint": "Up to 8 tags. Press Enter to add.",
+        "tagsPlaceholder": "Add a tag…",
+        "tagsLimit": "Limit reached",
+        "deptLabel": "Department",
+        "deptUnset": "All departments",
+        "readmeLabel": "README",
+        "readmeHint": "Markdown supported. Rendered on the detail page.",
+        "permissionsLabel": "Permissions",
+        "permissions": {
+          "network": "Network access",
+          "files": "File system access",
+          "runtime": "Long-running runtime",
+          "data": "User data access"
+        }
+      },
+      "review": {
+        "title": "Review and submit",
+        "subtitle": "Everything looks right? Submit for the scan + review pipeline.",
+        "edit": "Edit",
+        "personalNote": "Personal scope auto-publishes after the security scan.",
+        "orgNote": "Org and enterprise drafts wait for a reviewer after the scan.",
+        "termsHint": "By submitting you agree to the Publisher Terms.",
+        "submit": "Submit for review"
+      },
+      "success": {
+        "title": "Submitted",
+        "personal": "We'll scan the bundle and publish it shortly.",
+        "shared": "We'll scan the bundle and queue it for review.",
+        "back": "Back to dashboard"
+      }
+    },
+    "preview": {
+      "card": "Listing preview",
+      "manifest": "Derived manifest",
+      "namePlaceholder": "Your extension",
+      "summaryPlaceholder": "A one-line description shows here."
     }
   },
   "cliAuth": {
