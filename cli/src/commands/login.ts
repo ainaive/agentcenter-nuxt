@@ -24,19 +24,23 @@ export function makeLoginCommand(): Command {
       console.log(`  ${base}${verificationUri}`);
       console.log(`\n  Code: ${userCode}\n`);
 
-      // Try to open browser (best-effort)
+      // Try to open browser (best-effort). Use execFile, not exec — the URL comes
+      // from the registry server, so a malicious or MITM'd response could otherwise
+      // inject shell metacharacters into the command line.
       try {
-        const { exec } = await import("child_process");
+        const { execFile } = await import("child_process");
         const url = `${base}${verificationUri}`;
-        const cmd =
-          process.platform === "darwin"
-            ? `open "${url}"`
-            : process.platform === "win32"
-              ? `start "" "${url}"`
-              : `xdg-open "${url}"`;
-        exec(cmd);
+        if (process.platform === "darwin") {
+          execFile("open", [url]);
+        } else if (process.platform === "win32") {
+          // `start` is a cmd builtin, so it has to go through cmd.exe; the empty
+          // string is the window title, and the URL is passed as a distinct arg.
+          execFile("cmd", ["/c", "start", "", url]);
+        } else {
+          execFile("xdg-open", [url]);
+        }
       } catch {
-        // ignore
+        // ignore — the verification URL is already printed above
       }
 
       const deadline = Date.now() + expiresIn * 1000;

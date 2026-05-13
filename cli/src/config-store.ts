@@ -13,7 +13,7 @@ export interface Config {
   [key: string]: unknown;
 }
 
-const DEFAULTS: Config = {
+export const DEFAULT_CONFIG: Config = {
   registry: "https://agentcenter.app",
   agent: "claude",
 };
@@ -25,9 +25,20 @@ function ensureConfigDir() {
 export async function loadConfig(): Promise<Config> {
   try {
     const raw = await readFile(CONFIG_FILE, "utf8");
-    return { ...DEFAULTS, ...(parse(raw) as Partial<Config>) };
-  } catch {
-    return { ...DEFAULTS };
+    const parsed = parse(raw) as Record<string, unknown>;
+    const merged: Config = { ...DEFAULT_CONFIG, ...parsed };
+    if (typeof merged.registry !== "string") merged.registry = DEFAULT_CONFIG.registry;
+    if (typeof merged.agent !== "string") merged.agent = DEFAULT_CONFIG.agent;
+    return merged;
+  } catch (error: unknown) {
+    const code = (error as { code?: string })?.code;
+    // Treat missing file and malformed TOML as "use defaults"; rethrow everything else
+    // (permissions, IO, etc.) so the user sees the actual problem.
+    if (code === "ENOENT") return { ...DEFAULT_CONFIG };
+    if (error instanceof SyntaxError) return { ...DEFAULT_CONFIG };
+    // smol-toml throws TomlError on malformed input; detect by name to avoid coupling to its type.
+    if ((error as { name?: string })?.name === "TomlError") return { ...DEFAULT_CONFIG };
+    throw error;
   }
 }
 

@@ -83,7 +83,11 @@ export async function getBundleUrl(slug: string): Promise<string> {
     headers: await getHeaders(true),
   });
   if (res.status === 302 || res.status === 301) {
-    return res.headers.get("Location") ?? "";
+    const location = res.headers.get("Location");
+    if (!location) {
+      throw new Error(`Bundle redirect for "${slug}" missing Location header`);
+    }
+    return location;
   }
   if (res.status === 503) {
     const body = await res.json() as { message?: string };

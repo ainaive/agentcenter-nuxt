@@ -1,5 +1,11 @@
 import { Command } from "commander";
-import { loadConfig, getConfigValue, setConfigValue, saveConfig } from "../config-store";
+import {
+  DEFAULT_CONFIG,
+  getConfigValue,
+  loadConfig,
+  saveConfig,
+  setConfigValue,
+} from "../config-store";
 
 export function makeConfigCommand(): Command {
   const config = new Command("config").description("Manage CLI configuration");
@@ -39,7 +45,7 @@ export function makeConfigCommand(): Command {
     .command("reset")
     .description("Reset config to defaults")
     .action(async () => {
-      await saveConfig({ registry: "https://agentcenter.app", agent: "claude" });
+      await saveConfig({ ...DEFAULT_CONFIG });
       console.log("Config reset to defaults.");
     });
 
