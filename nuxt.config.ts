@@ -5,7 +5,14 @@ export default defineNuxtConfig({
   future: { compatibilityVersion: 4 },
   devtools: { enabled: true },
   typescript: { strict: true },
-  nitro: { preset: "node-server" },
+  // `node-server` is the primary self-host target; `VERCEL` is set in
+  // Vercel build env so deploys there pick the `vercel` preset and emit
+  // the Build Output API v3 layout (.vercel/output/) automatically.
+  // `NITRO_PRESET` overrides both for other hosts (fly, railway, etc).
+  nitro: {
+    preset:
+      process.env.NITRO_PRESET || (process.env.VERCEL ? "vercel" : "node-server"),
+  },
   css: ["~/assets/css/tailwind.css"],
   vite: { plugins: [tailwindcss()] },
   components: [{ path: "~/components", pathPrefix: false }],
