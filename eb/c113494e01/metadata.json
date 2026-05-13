@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "ebc113494e01",
+  "strategy": "manual-commit",
+  "branch": "feat/filters-and-wizard",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/eb/c113494e01/0/metadata.json",
+      "transcript": "/eb/c113494e01/0/full.jsonl",
+      "content_hash": "/eb/c113494e01/0/content_hash.txt",
+      "prompt": "/eb/c113494e01/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 5368,
+    "cache_creation_tokens": 472479,
+    "cache_read_tokens": 87358601,
+    "output_tokens": 216042,
+    "api_call_count": 355
+  }
+}

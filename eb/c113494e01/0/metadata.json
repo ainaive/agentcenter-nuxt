@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "ebc113494e01",
+  "session_id": "7cac47ca-813b-4b80-9a5c-9b4c1b2f40ab",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-13T03:00:30.151121Z",
+  "branch": "feat/filters-and-wizard",
+  "checkpoints_count": 1,
+  "files_touched": [],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "94deb97038cc",
+  "token_usage": {
+    "input_tokens": 5368,
+    "cache_creation_tokens": 472479,
+    "cache_read_tokens": 87358601,
+    "output_tokens": 216042,
+    "api_call_count": 355
+  },
+  "session_metrics": {
+    "turn_count": 8
+  }
+}
