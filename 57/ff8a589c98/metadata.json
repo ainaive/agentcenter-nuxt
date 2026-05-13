@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "57ff8a589c98",
+  "strategy": "manual-commit",
+  "branch": "feat/foundation",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/components/ui/Input.vue"
+  ],
+  "sessions": [
+    {
+      "metadata": "/57/ff8a589c98/0/metadata.json",
+      "transcript": "/57/ff8a589c98/0/full.jsonl",
+      "content_hash": "/57/ff8a589c98/0/content_hash.txt",
+      "prompt": "/57/ff8a589c98/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 5218,
+    "cache_creation_tokens": 334886,
+    "cache_read_tokens": 39359119,
+    "output_tokens": 133367,
+    "api_call_count": 220
+  }
+}
