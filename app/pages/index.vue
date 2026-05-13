@@ -11,6 +11,14 @@ const { data } = await useFetch("/api/internal/extensions", {
 
 const trending = computed(() => data.value.items.slice(0, 8))
 const totalCount = computed(() => data.value.total)
+
+// Using nuxt-og-image's bundled "Frame" template until we ship brand-matched
+// custom OG components (deferred — Nuxt 4's `app/` layout breaks the
+// module's `components/OgImage/` scan).
+defineOgImageComponent("Frame", {
+  title: "AgentCenter",
+  description: t("home.featuredDescription"),
+})
 </script>
 
 <template>

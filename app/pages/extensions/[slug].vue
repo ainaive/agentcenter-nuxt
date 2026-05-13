@@ -31,6 +31,14 @@ const permissions = computed(
   () => (ext.value.permissions ?? null) as Record<string, unknown> | null,
 )
 const shareUrl = computed(() => `${requestUrl.origin}/${locale.value}/extensions/${slug.value}`)
+
+// Using nuxt-og-image's bundled "Frame" template until we ship brand-matched
+// custom OG components (deferred — Nuxt 4's `app/` layout breaks the
+// module's `components/OgImage/` scan).
+defineOgImageComponent("Frame", {
+  title: name.value,
+  description: description.value ?? "",
+})
 </script>
 
 <template>
