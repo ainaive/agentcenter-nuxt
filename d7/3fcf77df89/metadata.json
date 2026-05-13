@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "d73fcf77df89",
+  "strategy": "manual-commit",
+  "branch": "feat/filters-and-wizard",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/d7/3fcf77df89/0/metadata.json",
+      "transcript": "/d7/3fcf77df89/0/full.jsonl",
+      "content_hash": "/d7/3fcf77df89/0/content_hash.txt",
+      "prompt": "/d7/3fcf77df89/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 10363,
+    "cache_creation_tokens": 1833809,
+    "cache_read_tokens": 231644607,
+    "output_tokens": 485917,
+    "api_call_count": 501
+  }
+}
