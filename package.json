@@ -40,6 +40,7 @@
     "lucide-vue-next": "^1.0.0",
     "markdown-it": "^14.1.1",
     "nuxt": "^4.0.0",
+    "nuxt-og-image": "^6.5.0",
     "pinia": "^3.0.4",
     "postgres": "^3.4.9",
     "reka-ui": "^2.9.7",

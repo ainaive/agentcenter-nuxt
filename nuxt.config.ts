@@ -9,7 +9,14 @@ export default defineNuxtConfig({
   css: ["~/assets/css/tailwind.css"],
   vite: { plugins: [tailwindcss()] },
   components: [{ path: "~/components", pathPrefix: false }],
-  modules: ["@nuxtjs/i18n", "@nuxt/fonts", "@nuxt/eslint", "@pinia/nuxt"],
+  modules: ["@nuxtjs/i18n", "@nuxt/fonts", "@nuxt/eslint", "@pinia/nuxt", "nuxt-og-image"],
+  ogImage: {
+    defaults: {
+      width: 1200,
+      height: 600,
+      cacheMaxAgeSeconds: 60 * 60 * 24,
+    },
+  },
   eslint: { config: { stylistic: false } },
   fonts: {
     families: [

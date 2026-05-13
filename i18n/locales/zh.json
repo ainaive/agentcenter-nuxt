@@ -54,6 +54,16 @@
     "homepage": "主页",
     "repository": "代码仓库",
     "related": "相关",
+    "tabs": {
+      "overview": "概览",
+      "setup": "安装",
+      "permissions": "权限"
+    },
+    "setupHint": "登录后在终端中运行：",
+    "noPermissions": "该扩展不需要任何特殊权限。",
+    "copy": "复制",
+    "copied": "已复制",
+    "share": "分享",
     "empty": {
       "noResultsFor": "没有\"{query}\"的结果",
       "noResultsFiltered": "没有符合当前筛选条件的扩展",
@@ -352,6 +362,80 @@
       "manifest": "派生 manifest",
       "namePlaceholder": "你的扩展",
       "summaryPlaceholder": "一句话简介将显示在此处。"
+    }
+  },
+  "profile": {
+    "title": "我的工作台",
+    "deptUnset": "未设置部门",
+    "joined": "{date} 加入",
+    "installsShort": "次安装",
+    "publishOne": "发布一个扩展",
+    "browse": "浏览市场",
+    "continueDraft": "继续",
+    "stats": {
+      "installed": "已安装",
+      "published": "已发布",
+      "installs": "总安装数",
+      "rating": "创建者评分"
+    },
+    "sections": {
+      "installed": "已安装",
+      "published": "已发布",
+      "drafts": "草稿",
+      "saved": "收藏",
+      "activity": "动态",
+      "settings": "设置"
+    },
+    "settings": {
+      "save": "保存修改",
+      "saving": "保存中…",
+      "saved": "已保存",
+      "deptPlaceholder": "请选择部门…",
+      "fields": {
+        "name": "显示名称",
+        "email": "邮箱",
+        "dept": "部门",
+        "joined": "加入时间",
+        "bio": "个人简介"
+      }
+    },
+    "comingSoon": {
+      "title": "即将推出",
+      "body": "此区域正在开发中——下个版本再来看看。"
+    },
+    "emptyInstalled": {
+      "title": "暂无已安装扩展",
+      "body": "去市场逛逛，安装的扩展会显示在这里。"
+    },
+    "emptyPublished": {
+      "title": "暂无已发布扩展",
+      "body": "打包你的 Skill、MCP、斜杠命令或插件并提交审核吧。"
+    },
+    "emptyDrafts": {
+      "title": "暂无进行中的草稿",
+      "body": "你开始的草稿会显示在这里，直到发布或丢弃。"
+    },
+    "emptySaved": {
+      "title": "暂无收藏",
+      "body": "收藏你想稍后回来看看的扩展。"
+    },
+    "emptyActivity": {
+      "title": "暂无动态",
+      "body": "安装、发布和评分都会显示在这里。"
+    },
+    "draftStatus": {
+      "scanning": "等待扫描",
+      "rejected": "已拒绝"
+    },
+    "activity": {
+      "installed": "安装了",
+      "published": "发布了",
+      "rated": "评价了"
+    },
+    "errors": {
+      "unauthenticated": "请重新登录。",
+      "invalid_input": "部分字段需要修正。",
+      "generic": "无法保存资料，请重试。"
     }
   },
   "cliAuth": {
