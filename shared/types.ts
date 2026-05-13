@@ -77,3 +77,56 @@ export interface TagFacet {
   labelZh: string
   count: number
 }
+
+export interface ProfileStats {
+  installedCount: number
+  publishedCount: number
+  totalInstallsOfMine: number
+  avgRatingOfMine: number | null
+}
+
+export interface ProfileInstalledRow {
+  extensionId: string
+  slug: string
+  name: string
+  category: string
+  iconColor: string | null
+  installedVersion: string
+  installedAt: string
+}
+
+export interface ProfileSavedRow {
+  extensionId: string
+  slug: string
+  name: string
+  category: string
+  iconColor: string | null
+  savedAt: string
+}
+
+export interface ProfileDraftRow {
+  extensionId: string
+  slug: string
+  name: string
+  category: string
+  iconColor: string | null
+  updatedAt: string
+  latestStatus: string | null
+}
+
+export interface ProfilePublishedRow {
+  extensionId: string
+  slug: string
+  name: string
+  category: string
+  iconColor: string | null
+  latestVersion: string | null
+  downloadsCount: number
+  starsAvg: string
+  ratingsCount: number
+}
+
+export type ProfileActivityEvent =
+  | { kind: "installed"; at: string; extensionId: string; slug: string; name: string; version: string }
+  | { kind: "published"; at: string; extensionId: string; slug: string; name: string; version: string }
+  | { kind: "rated"; at: string; extensionId: string; slug: string; name: string; stars: number }

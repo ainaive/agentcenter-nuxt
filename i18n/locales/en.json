@@ -354,6 +354,81 @@
       "summaryPlaceholder": "A one-line description shows here."
     }
   },
+  "profile": {
+    "title": "My workspace",
+    "role": "Senior Engineer",
+    "deptUnset": "No department",
+    "joined": "Joined {date}",
+    "installsShort": "installs",
+    "publishOne": "Publish an extension",
+    "browse": "Browse marketplace",
+    "continueDraft": "Continue",
+    "stats": {
+      "installed": "installed",
+      "published": "published",
+      "installs": "total installs",
+      "rating": "creator rating"
+    },
+    "sections": {
+      "installed": "Installed",
+      "published": "Published",
+      "drafts": "Drafts",
+      "saved": "Saved",
+      "activity": "Activity",
+      "settings": "Settings"
+    },
+    "settings": {
+      "save": "Save changes",
+      "saving": "Saving…",
+      "saved": "Profile saved",
+      "deptPlaceholder": "Select a department…",
+      "fields": {
+        "name": "Display name",
+        "email": "Email",
+        "dept": "Department",
+        "joined": "Joined",
+        "bio": "Bio"
+      }
+    },
+    "comingSoon": {
+      "title": "Coming soon",
+      "body": "This section is in the works — check back after the next release."
+    },
+    "emptyInstalled": {
+      "title": "Nothing installed yet",
+      "body": "Browse the marketplace and install an extension to see it here."
+    },
+    "emptyPublished": {
+      "title": "Nothing published yet",
+      "body": "Bundle your skill, MCP server, slash command, or plugin and submit it for review."
+    },
+    "emptyDrafts": {
+      "title": "No drafts in progress",
+      "body": "Drafts you start show up here until they're published or discarded."
+    },
+    "emptySaved": {
+      "title": "Nothing saved yet",
+      "body": "Bookmark extensions you want to come back to."
+    },
+    "emptyActivity": {
+      "title": "No activity yet",
+      "body": "Installs, releases, and ratings will appear here."
+    },
+    "draftStatus": {
+      "scanning": "Awaiting scan",
+      "rejected": "Rejected"
+    },
+    "activity": {
+      "installed": "Installed",
+      "published": "Published",
+      "rated": "Rated"
+    },
+    "errors": {
+      "unauthenticated": "Please sign in again.",
+      "invalid_input": "Some fields need attention.",
+      "generic": "We couldn't save your profile. Please try again."
+    }
+  },
   "cliAuth": {
     "title": "Authorize CLI",
     "subtitle": "Enter the code shown in your terminal to connect the AgentCenter CLI to your account.",
