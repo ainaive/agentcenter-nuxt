@@ -150,6 +150,20 @@ export async function updateStatus(
     .where(eq(extensionVersions.id, versionId))
 }
 
+// Admin publish flow: stamp `publishedAt` on an already-`ready` row without
+// touching `status`. Same column write as `updateStatus({ status, publishedAt })`
+// would do but doesn't lie about touching the status.
+export async function updatePublishedAt(
+  db: Transactable,
+  versionId: string,
+  publishedAt: Date,
+): Promise<void> {
+  await db
+    .update(extensionVersions)
+    .set({ publishedAt })
+    .where(eq(extensionVersions.id, versionId))
+}
+
 // Atomic guarded transition for `submit` — only updates rows whose current
 // status is in the `from` list. Returns whether a row was changed so the
 // caller can map "no row" to its domain error.
