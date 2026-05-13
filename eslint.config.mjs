@@ -2,6 +2,9 @@ import withNuxt from "./.nuxt/eslint.config.mjs"
 
 export default withNuxt(
   {
+    ignores: ["cli/**"],
+  },
+  {
     rules: {
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-floating-promises": "off",
@@ -22,9 +25,10 @@ export default withNuxt(
     },
   },
   {
-    files: ["app/layouts/**", "app/pages/**", "app/error.vue", "app/app.vue"],
+    files: ["app/layouts/**", "app/pages/**", "app/error.vue", "app/app.vue", "app/components/ui/**"],
     rules: {
       "vue/multi-word-component-names": "off",
+      "vue/require-default-prop": "off",
     },
   },
   {
