@@ -10,13 +10,17 @@ export default defineNuxtConfig({
   // the Build Output API v3 layout (.vercel/output/) automatically.
   // `NITRO_PRESET` overrides both for other hosts (fly, railway, etc).
   nitro: {
-    preset:
-      process.env.NITRO_PRESET || (process.env.VERCEL ? "vercel" : "node-server"),
+    preset: "cloudflare_module",
+
+    cloudflare: {
+      deployConfig: true,
+      nodeCompat: true
+    }
   },
   css: ["~/assets/css/tailwind.css"],
   vite: { plugins: [tailwindcss()] },
   components: [{ path: "~/components", pathPrefix: false }],
-  modules: ["@nuxtjs/i18n", "@nuxt/fonts", "@nuxt/eslint", "@pinia/nuxt", "nuxt-og-image"],
+  modules: ["nitro-cloudflare-dev"],
   ogImage: {
     defaults: {
       width: 1200,
