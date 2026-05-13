@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "a6d9ad3e75c2",
+  "strategy": "manual-commit",
+  "branch": "feat/profile-and-polish",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/a6/d9ad3e75c2/0/metadata.json",
+      "transcript": "/a6/d9ad3e75c2/0/full.jsonl",
+      "content_hash": "/a6/d9ad3e75c2/0/content_hash.txt",
+      "prompt": "/a6/d9ad3e75c2/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 5403,
+    "cache_creation_tokens": 503575,
+    "cache_read_tokens": 96096823,
+    "output_tokens": 228860,
+    "api_call_count": 375
+  }
+}
