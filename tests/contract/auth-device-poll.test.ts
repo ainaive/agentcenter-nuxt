@@ -15,7 +15,7 @@ const pollRequestSchema = z.object({
 
 const pollResponseSchema = z.discriminatedUnion("status", [
   z.object({ status: z.literal("pending") }),
-  z.object({ status: z.literal("authorized"), token: z.string() }),
+  z.object({ status: z.literal("authorized"), token: z.string().min(1) }),
   z.object({ status: z.literal("expired") }),
 ])
 
@@ -45,6 +45,11 @@ describe("contract: POST /api/v1/auth/device/poll", () => {
 
   it("rejects `authorized` without a token (load-bearing — CLI cannot proceed without it)", () => {
     const parsed = pollResponseSchema.safeParse({ status: "authorized" })
+    expect(parsed.success).toBe(false)
+  })
+
+  it("rejects `authorized` with an empty-string token", () => {
+    const parsed = pollResponseSchema.safeParse({ status: "authorized", token: "" })
     expect(parsed.success).toBe(false)
   })
 

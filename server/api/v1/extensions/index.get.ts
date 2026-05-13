@@ -1,5 +1,6 @@
 import * as extensionsRepo from "~~/server/repositories/extensions"
 import {
+  PAGE_SIZE,
   parseFilters,
   searchParamsToInput,
 } from "~~/shared/validators/filters"
@@ -43,7 +44,7 @@ export default defineEventHandler(async (event) => {
       })),
       total,
       page: filters.page,
-      pageSize: 24,
+      pageSize: PAGE_SIZE,
     }
   } catch (err) {
     console.error("[api/v1/extensions] db error:", err)

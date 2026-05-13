@@ -174,13 +174,18 @@ describe("extensions repository", () => {
   })
 
   describe("incrementDownloads", () => {
-    it("adds 1 to downloads_count atomically per call", async () => {
+    it("adds 1 to downloads_count atomically — concurrent calls don't lose updates", async () => {
       await seedExtension({ downloadsCount: 0 })
-      await extensionsRepo.incrementDownloads(db, "ext-1")
-      await extensionsRepo.incrementDownloads(db, "ext-1")
-      await extensionsRepo.incrementDownloads(db, "ext-1")
+      // SQL-level `+ 1` is what makes this safe under contention; the
+      // assertion would fail if the function were implemented as
+      // "read, increment in JS, write" rather than `set ... = ... + 1`.
+      await Promise.all(
+        Array.from({ length: 20 }, () =>
+          extensionsRepo.incrementDownloads(db, "ext-1"),
+        ),
+      )
       const ext = await extensionsRepo.findById(db, "ext-1")
-      expect(ext?.downloadsCount).toBe(3)
+      expect(ext?.downloadsCount).toBe(20)
     })
   })
 })
