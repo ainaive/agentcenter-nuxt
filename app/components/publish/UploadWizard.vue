@@ -38,7 +38,10 @@ function back() {
 }
 
 function jumpTo(step: WizardStep) {
-  // Allow forward jumps only to already-valid earlier steps via the review screen.
+  // Used by Review's per-row "Edit" links to jump back to an earlier step.
+  // No validity check here on purpose — Review is only reachable when every
+  // earlier step is valid, so the target step is always something the user
+  // has already filled in. Submit re-validates everything before persisting.
   wizard.jumpTo(step)
 }
 </script>
