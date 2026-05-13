@@ -55,3 +55,25 @@ export interface Collection {
   nameZh: string
   count: number
 }
+
+export interface CreatorFacet {
+  id: string
+  name: string | null
+  email: string
+  count: number
+}
+
+export interface PublisherFacet {
+  id: string
+  name: string
+  nameZh: string | null
+  slug: string
+  count: number
+}
+
+export interface TagFacet {
+  id: string
+  labelEn: string
+  labelZh: string
+  count: number
+}

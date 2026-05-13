@@ -104,7 +104,32 @@
     },
     "dept": {
       "expand": "展开",
-      "collapse": "折叠"
+      "collapse": "折叠",
+      "label": "部门",
+      "all": "所有部门",
+      "mine": "我的部门",
+      "org": "我的组织",
+      "mineBadge": "我的"
+    },
+    "tagsToggle": "标签",
+    "tagsLabel": "标签",
+    "showMoreCount": "再展示 {count} 个",
+    "showLess": "收起",
+    "matchModeGroupLabel": "标签匹配模式",
+    "tags": {
+      "any": "任意匹配",
+      "all": "全部匹配",
+      "clear": "清除标签"
+    },
+    "creator": {
+      "label": "创建者",
+      "any": "所有创建者",
+      "empty": "暂无创建者"
+    },
+    "publisher": {
+      "label": "发布方",
+      "any": "所有发布方",
+      "empty": "暂无发布方"
     }
   },
   "taxonomy": {

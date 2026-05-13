@@ -104,7 +104,32 @@
     },
     "dept": {
       "expand": "Expand",
-      "collapse": "Collapse"
+      "collapse": "Collapse",
+      "label": "Department",
+      "all": "All Departments",
+      "mine": "My Department",
+      "org": "My Org",
+      "mineBadge": "MINE"
+    },
+    "tagsToggle": "Tags",
+    "tagsLabel": "Tags",
+    "showMoreCount": "+{count} more",
+    "showLess": "Show less",
+    "matchModeGroupLabel": "Tag match mode",
+    "tags": {
+      "any": "Any",
+      "all": "All",
+      "clear": "Clear tags"
+    },
+    "creator": {
+      "label": "Creator",
+      "any": "Any creator",
+      "empty": "No creators yet"
+    },
+    "publisher": {
+      "label": "Publisher",
+      "any": "Any publisher",
+      "empty": "No publishers yet"
     }
   },
   "taxonomy": {
