@@ -54,6 +54,16 @@
     "homepage": "主页",
     "repository": "代码仓库",
     "related": "相关",
+    "tabs": {
+      "overview": "概览",
+      "setup": "安装",
+      "permissions": "权限"
+    },
+    "setupHint": "登录后在终端中运行：",
+    "noPermissions": "该扩展不需要任何特殊权限。",
+    "copy": "复制",
+    "copied": "已复制",
+    "share": "分享",
     "empty": {
       "noResultsFor": "没有\"{query}\"的结果",
       "noResultsFiltered": "没有符合当前筛选条件的扩展",

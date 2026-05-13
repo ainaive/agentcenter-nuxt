@@ -54,6 +54,16 @@
     "homepage": "Homepage",
     "repository": "Repository",
     "related": "Related",
+    "tabs": {
+      "overview": "Overview",
+      "setup": "Setup",
+      "permissions": "Permissions"
+    },
+    "setupHint": "Run this in your terminal once you've signed in:",
+    "noPermissions": "This extension doesn't request any special permissions.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "share": "Share",
     "empty": {
       "noResultsFor": "No results for \"{query}\"",
       "noResultsFiltered": "No extensions match these filters",
