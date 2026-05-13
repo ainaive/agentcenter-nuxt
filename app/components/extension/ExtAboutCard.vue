@@ -27,7 +27,9 @@ const safeRepo = computed(() => safeUrl(props.repoUrl))
 
 const publishedLabel = computed(() => {
   if (!props.publishedAt) return null
-  return new Date(props.publishedAt).toISOString().slice(0, 10)
+  const d = new Date(props.publishedAt)
+  if (Number.isNaN(d.getTime())) return null
+  return d.toISOString().slice(0, 10)
 })
 </script>
 

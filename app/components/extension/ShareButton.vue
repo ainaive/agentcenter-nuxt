@@ -13,8 +13,11 @@ async function share() {
     try {
       await navigator.share({ url: props.url })
       return
-    } catch {
-      // User dismissed or share failed — fall through to clipboard.
+    } catch (err) {
+      // User dismissed → don't silently copy as a consolation prize, that's
+      // surprising. Only fall through on genuine errors (e.g. share blocked
+      // by permissions policy on some embedded contexts).
+      if ((err as { name?: string })?.name === "AbortError") return
     }
   }
   if (typeof navigator !== "undefined" && navigator.clipboard) {
