@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "45ff44749b0f",
+  "strategy": "manual-commit",
+  "branch": "docs/port-remaining",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/45/ff44749b0f/0/metadata.json",
+      "transcript": "/45/ff44749b0f/0/full.jsonl",
+      "content_hash": "/45/ff44749b0f/0/content_hash.txt",
+      "prompt": "/45/ff44749b0f/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 6108,
+    "cache_creation_tokens": 1151097,
+    "cache_read_tokens": 173188025,
+    "output_tokens": 311405,
+    "api_call_count": 525
+  }
+}
