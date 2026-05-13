@@ -9,6 +9,11 @@ const { data, refresh } = await useFetch("/api/internal/extensions", {
   default: () => ({ items: [], total: 0, filters: {} }),
 })
 
+// Facets don't depend on filters — fetch once and reuse across navigations.
+const { data: facets } = await useFetch("/api/internal/facets", {
+  default: () => ({ creators: [], publishers: [], tags: [] }),
+})
+
 watch(() => route.fullPath, () => refresh())
 
 const items = computed(() => data.value?.items ?? [])
@@ -31,7 +36,11 @@ const filtersActive = computed(() => {
       </p>
     </header>
 
-    <FilterBar />
+    <FilterBar
+      :creators="facets.creators"
+      :publishers="facets.publishers"
+      :tags="facets.tags"
+    />
 
     <ExtGrid
       :items="items"
