@@ -23,6 +23,7 @@ const filtersActive = computed(() => {
   const f = filters.value
   return Object.keys(f).some((k) => k !== "page" && f[k as keyof typeof f] !== undefined)
 })
+const isMcpCategory = computed(() => route.query.category === "mcp")
 </script>
 
 <template>
@@ -41,6 +42,8 @@ const filtersActive = computed(() => {
       :publishers="facets.publishers"
       :tags="facets.tags"
     />
+
+    <McpPanoramaBanner v-if="isMcpCategory" />
 
     <ExtGrid
       :items="items"
