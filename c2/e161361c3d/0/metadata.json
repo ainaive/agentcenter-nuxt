@@ -1,0 +1,63 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "c2e161361c3d",
+  "session_id": "ed083026-22f4-4e40-a81c-bd023ab3848c",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-14T09:32:35.062227Z",
+  "branch": "feat/mcp-panorama",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "shared/mcp-panorama.ts",
+    "server/utils/queries/mcp-landscape.ts",
+    "app/components/mcp-landscape/StatusPill.vue",
+    "app/components/mcp-landscape/ToolTile.vue",
+    "app/components/mcp-landscape/CardHeader.vue",
+    "app/components/mcp-landscape/PdtBlock.vue",
+    "app/components/mcp-landscape/SectorCard.vue",
+    "app/components/mcp-landscape/DomainCard.vue",
+    "app/components/mcp-landscape/LayerSummary.vue",
+    "app/components/mcp-landscape/PanoramaView.vue",
+    "app/components/mcp-landscape/ToolCard.vue",
+    "app/components/mcp-landscape/GroupedListView.vue",
+    "app/components/mcp-landscape/StatusChip.vue",
+    "app/components/mcp-landscape/SectionHeader.vue",
+    "app/components/mcp-landscape/LayerSidebar.vue",
+    "app/components/mcp-landscape/ToolDetailPanel.vue",
+    "app/layouts/mcp-panorama.vue",
+    "app/pages/mcp-panorama.vue",
+    "app/components/layout/TopBar.vue",
+    "app/components/layout/Sidebar.vue",
+    "app/components/mcp-landscape/ToolTile.nuxt.test.ts",
+    "shared/mcp-panorama.test.ts",
+    "shared/data/mcp-landscape.test.ts",
+    "app/components/layout/Sidebar.nuxt.test.ts",
+    "i18n/locales/en.json"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "a95750b51107",
+  "checkpoint_transcript_start": 485,
+  "transcript_lines_at_start": 485,
+  "token_usage": {
+    "input_tokens": 80,
+    "cache_creation_tokens": 70773,
+    "cache_read_tokens": 21216753,
+    "output_tokens": 55034,
+    "api_call_count": 80
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-14T09:32:35.017083Z",
+    "agent_lines": 1864,
+    "agent_removed": 72,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 1864,
+    "total_lines_changed": 1936,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}

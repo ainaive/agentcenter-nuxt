@@ -1,0 +1,49 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "c2e161361c3d",
+  "strategy": "manual-commit",
+  "branch": "feat/mcp-panorama",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/layout/Sidebar.nuxt.test.ts",
+    "app/components/layout/Sidebar.vue",
+    "app/components/layout/TopBar.vue",
+    "app/components/mcp-landscape/CardHeader.vue",
+    "app/components/mcp-landscape/DomainCard.vue",
+    "app/components/mcp-landscape/GroupedListView.vue",
+    "app/components/mcp-landscape/LayerSidebar.vue",
+    "app/components/mcp-landscape/LayerSummary.vue",
+    "app/components/mcp-landscape/PanoramaView.vue",
+    "app/components/mcp-landscape/PdtBlock.vue",
+    "app/components/mcp-landscape/SectionHeader.vue",
+    "app/components/mcp-landscape/SectorCard.vue",
+    "app/components/mcp-landscape/StatusChip.vue",
+    "app/components/mcp-landscape/StatusPill.vue",
+    "app/components/mcp-landscape/ToolCard.vue",
+    "app/components/mcp-landscape/ToolDetailPanel.vue",
+    "app/components/mcp-landscape/ToolTile.nuxt.test.ts",
+    "app/components/mcp-landscape/ToolTile.vue",
+    "app/layouts/mcp-panorama.vue",
+    "app/pages/mcp-panorama.vue",
+    "i18n/locales/en.json",
+    "server/utils/queries/mcp-landscape.ts",
+    "shared/data/mcp-landscape.test.ts",
+    "shared/mcp-panorama.test.ts",
+    "shared/mcp-panorama.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/c2/e161361c3d/0/metadata.json",
+      "transcript": "/c2/e161361c3d/0/full.jsonl",
+      "content_hash": "/c2/e161361c3d/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 80,
+    "cache_creation_tokens": 70773,
+    "cache_read_tokens": 21216753,
+    "output_tokens": 55034,
+    "api_call_count": 80
+  }
+}
