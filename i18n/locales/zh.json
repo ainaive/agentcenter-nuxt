@@ -10,6 +10,7 @@
   "nav": {
     "explore": "探索",
     "publish": "发布",
+    "mcpPanorama": "MCP 全景图",
     "docs": "文档",
     "skipToContent": "跳到主内容",
     "toggleSidebar": "切换侧边栏",
@@ -85,7 +86,11 @@
     "plugins": "插件",
     "all": "全部",
     "saved": "已收藏",
-    "newGroup": "新建分组"
+    "newGroup": "新建分组",
+    "mcpPanorama": {
+      "title": "MCP 全景图",
+      "subtitle": "服务全景 →"
+    }
   },
   "search": {
     "placeholder": "搜索 Skill、MCP、斜杠命令…"
@@ -451,5 +456,99 @@
   "locale": {
     "en": "English",
     "zh": "中文"
+  },
+  "mcpPanorama": {
+    "page": {
+      "title": "MCP 全景图",
+      "subtitleAll": "本视图共 {total} 个工具，已显示 {visible} 个",
+      "subtitleScoped": "{visible} 个工具 · {released} 已发布 · {dev} 开发中 · {none} 无需 MCP",
+      "errorLoad": "加载 MCP 全景失败，请重试。",
+      "retry": "重试"
+    },
+    "layer": {
+      "industry": "行业服务",
+      "industryShort": "行业",
+      "industryDesc": "面向各行业的工具服务",
+      "public": "公共服务",
+      "publicShort": "公共",
+      "publicDesc": "跨业务的平台领域"
+    },
+    "sidebar": {
+      "serviceLayer": "服务层级",
+      "sectors": "行业",
+      "domainsPdts": "领域 / PDT",
+      "allTools": "全部工具",
+      "pushToMcp": "推动 MCP 化",
+      "pushToMcpHint": "点击任意卡片可查看依赖并提交 MCP 化申请。"
+    },
+    "status": {
+      "none": {
+        "label": "无需 MCP",
+        "short": "无需",
+        "desc": "工具维持现状即可，暂无 MCP 化计划。"
+      },
+      "dev": {
+        "label": "MCP 开发中",
+        "short": "开发中",
+        "desc": "MCP 服务正在构建中，尚未正式发布。"
+      },
+      "released": {
+        "label": "MCP 已发布",
+        "short": "已发布",
+        "desc": "MCP 版本已上线，可在市场中检索。"
+      }
+    },
+    "rank": {
+      "leading": "领先",
+      "onTrack": "进展中",
+      "lagging": "落后",
+      "early": "起步"
+    },
+    "summary": {
+      "mcpActive": "MCP 推进率",
+      "released": "已发布",
+      "inDev": "开发中",
+      "noMcp": "无需 MCP",
+      "leading": "领先",
+      "lagging": "落后",
+      "groupsCount": "{groups} 个分组 · {tools} 个工具"
+    },
+    "card": {
+      "live": "已发布",
+      "dev": "开发中",
+      "none": "—",
+      "liveSuffix": "{pct}% 已发布"
+    },
+    "view": {
+      "panorama": "全景图",
+      "list": "列表"
+    },
+    "filter": {
+      "all": "全部",
+      "searchPlaceholder": "搜索工具、依赖或所属团队…",
+      "clear": "← 清除"
+    },
+    "detail": {
+      "mcpStatus": "MCP 状态",
+      "dependents": "依赖方",
+      "lastUpdate": "最近更新",
+      "owner": "所属团队",
+      "endpoint": "Endpoint",
+      "downstream": "下游工具（共 {count} 个）",
+      "empty": "暂无跟踪到的依赖方。",
+      "openInMarketplace": "在市场中打开",
+      "trackProgress": "跟踪进度",
+      "requestBuild": "申请 MCP 化",
+      "docs": "文档",
+      "close": "关闭",
+      "notAvailable": "MCP 暂未上线",
+      "depsCount": "{count} 个工具"
+    }
+  },
+  "time": {
+    "today": "今日",
+    "daysAgo": "{n} 天前",
+    "weeksAgo": "{n} 周前",
+    "never": "—"
   }
 }

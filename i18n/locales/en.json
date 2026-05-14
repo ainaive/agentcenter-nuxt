@@ -10,6 +10,7 @@
   "nav": {
     "explore": "Explore",
     "publish": "Publish",
+    "mcpPanorama": "MCP Panorama",
     "docs": "Docs",
     "skipToContent": "Skip to main content",
     "toggleSidebar": "Toggle sidebar",
@@ -85,7 +86,11 @@
     "plugins": "Plugins",
     "all": "All",
     "saved": "Saved",
-    "newGroup": "New Group"
+    "newGroup": "New Group",
+    "mcpPanorama": {
+      "title": "MCP Panorama",
+      "subtitle": "Service landscape →"
+    }
   },
   "search": {
     "placeholder": "Search skills, MCP servers, slash commands…"
@@ -451,5 +456,99 @@
   "locale": {
     "en": "English",
     "zh": "中文"
+  },
+  "mcpPanorama": {
+    "page": {
+      "title": "MCP Panorama",
+      "subtitleAll": "{visible} of {total} tools in this layer",
+      "subtitleScoped": "{visible} {visible, plural, one {tool} other {tools}} · {released} released · {dev} in dev · {none} no MCP needed",
+      "errorLoad": "Couldn't load the MCP landscape — please retry.",
+      "retry": "Retry"
+    },
+    "layer": {
+      "industry": "Industry Services",
+      "industryShort": "Industry",
+      "industryDesc": "Sector-aligned tool services",
+      "public": "Public Services",
+      "publicShort": "Public",
+      "publicDesc": "Cross-cutting platform domains"
+    },
+    "sidebar": {
+      "serviceLayer": "Service Layer",
+      "sectors": "Sectors",
+      "domainsPdts": "Domains / PDTs",
+      "allTools": "All tools",
+      "pushToMcp": "Push to MCP",
+      "pushToMcpHint": "Click any card to inspect dependencies & request a build."
+    },
+    "status": {
+      "none": {
+        "label": "No MCP Needed",
+        "short": "No-Need",
+        "desc": "Tool is fine as-is; no MCP layer planned."
+      },
+      "dev": {
+        "label": "MCP In Development",
+        "short": "In Dev",
+        "desc": "MCP server being built; not yet GA."
+      },
+      "released": {
+        "label": "MCP Released",
+        "short": "Released",
+        "desc": "MCP version is live & discoverable."
+      }
+    },
+    "rank": {
+      "leading": "Leading",
+      "onTrack": "On track",
+      "lagging": "Lagging",
+      "early": "Early"
+    },
+    "summary": {
+      "mcpActive": "MCP-active",
+      "released": "Released",
+      "inDev": "In development",
+      "noMcp": "No MCP needed",
+      "leading": "Leading",
+      "lagging": "Lagging",
+      "groupsCount": "{groups, plural, one {1 group} other {{groups} groups}} · {tools, plural, one {1 tool} other {{tools} tools}}"
+    },
+    "card": {
+      "live": "live",
+      "dev": "dev",
+      "none": "—",
+      "liveSuffix": "{pct}% live"
+    },
+    "view": {
+      "panorama": "Panorama",
+      "list": "List"
+    },
+    "filter": {
+      "all": "All",
+      "searchPlaceholder": "Search tools, dependencies, owners…",
+      "clear": "← clear"
+    },
+    "detail": {
+      "mcpStatus": "MCP Status",
+      "dependents": "Dependents",
+      "lastUpdate": "Last update",
+      "owner": "Owner",
+      "endpoint": "Endpoint",
+      "downstream": "Downstream tools ({count})",
+      "empty": "No tracked dependents.",
+      "openInMarketplace": "Open in marketplace",
+      "trackProgress": "Track progress",
+      "requestBuild": "Request MCP build",
+      "docs": "Docs",
+      "close": "Close",
+      "notAvailable": "MCP not yet available",
+      "depsCount": "{count} {count, plural, one {tool} other {tools}}"
+    }
+  },
+  "time": {
+    "today": "today",
+    "daysAgo": "{n, plural, one {1 day ago} other {{n} days ago}}",
+    "weeksAgo": "{n, plural, one {1 week ago} other {{n} weeks ago}}",
+    "never": "—"
   }
 }
