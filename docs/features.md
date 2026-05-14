@@ -36,6 +36,19 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **Related extensions** — A row of suggestions related to the current extension.
 - **Share** — A canonical link that's safe to share across hosts; uses the native share sheet on iOS / Android with a clipboard fallback elsewhere.
 
+### MCP Panorama
+
+- **Landscape page** — A single page at `/mcp-panorama` that maps every internal tool service to a color-coded tile, so the company-wide MCP adoption picture fits on one screen.
+- **Layer toggle** — Switch between Industry Services (12 sectors) and Public Services (5 domains with their product development teams).
+- **Coverage at a glance** — Each group shows a status bar, live counts, and a Leading / On track / Lagging / Early tag so it's obvious which units are ahead and which are behind.
+- **Status filter chips** — Show only released, only in-development, or only no-MCP-needed tools.
+- **Search across the landscape** — Find any tool by name, blurb, or tag.
+- **Drill into a sector or PDT** — Click any row in the layer sidebar to scope the view to one group.
+- **Two layouts** — A compact Panorama tile view and an alternate Grouped List that splits each group into three status columns.
+- **Tool side panel** — Click any tile to see its status description, dependent count, owning team, and downstream tools. Released tools link to the marketplace; in-development tools offer "Track progress"; tools without an MCP plan offer "Request MCP build".
+- **Bilingual** — Sectors, domains, PDTs, statuses, and tool descriptions all render in EN or ZH.
+- **Catalog cross-link** — Filtering the extensions catalog to MCP Servers surfaces a "View Panorama" banner above the grid; the top-bar nav also keeps a persistent "MCP Panorama" link.
+
 ### Publish
 
 - **4-step wizard** — Basics → Bundle → Listing → Review.
@@ -125,6 +138,19 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **Tabs** ——概览 / 安装 / 权限。权限页签展示发布者声明的网络 / 文件 / 运行时 / 数据访问开关。
 - **相关扩展** ——与当前扩展相关的推荐行。
 - **分享** ——跨域名安全分享的规范链接；iOS / Android 调用系统分享面板，其他平台回退到剪贴板复制。
+
+### MCP 全景图
+
+- **全景页** ——单页 `/mcp-panorama` 将所有内部工具服务以色块呈现，整个公司的 MCP 化全貌一屏可见。
+- **层级切换** ——可在"行业服务"（12 个行业切片）与"公共服务"（5 个公共领域及其下属 PDT）之间切换。
+- **覆盖率一目了然** ——每个分组带状态进度条、各状态数量与"领先 / 进展中 / 落后 / 起步"标签，先进与落后单位一目了然。
+- **状态筛选** ——可单独查看"已发布"、"开发中"或"无需 MCP"的工具。
+- **跨全景搜索** ——按名称、简介或标签查找任意工具。
+- **下钻到行业或 PDT** ——点击层级侧栏任意一行即可将视图收窄到该分组。
+- **两种排版** ——紧凑的"全景图"瓦片视图，以及按"已发布 / 开发中 / 无需"三列拆分的"分组列表"备用视图。
+- **工具详情面板** ——点击任意色块查看状态说明、依赖方数量、所属团队与下游工具。已发布工具跳转到市场详情；开发中工具提供"跟踪进度"；无 MCP 计划的工具提供"申请 MCP 化"。
+- **双语呈现** ——行业、领域、PDT、状态、工具描述均支持中英双语。
+- **目录交叉入口** ——在扩展目录筛选"MCP"分类时，列表上方会出现"查看全景图"横幅；顶部导航栏始终保留"MCP 全景图"入口。
 
 ### 发布
 

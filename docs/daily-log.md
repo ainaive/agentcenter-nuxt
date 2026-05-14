@@ -12,6 +12,23 @@ What changed each day. For the current capability list, see [features.md](./feat
 
 ## English
 
+### 2026-05-14
+
+**Briefing.** A new MCP Panorama lets stakeholders see at a glance which internal tools have shipped an MCP version, which are in development, and which don't need one — and production deploys now keep their database in sync automatically.
+
+<details>
+<summary>Details</summary>
+
+- **MCP Panorama landscape page** — A new bilingual page at `/mcp-panorama` maps every internal tool service onto one screen, grouped by industry sector (Wireless, Datacom, Cloud, Terminals, and nine others) or by public-services domain → PDT (AI R&D, Product & Software, Hardware, Product Digitization, Infrastructure). Each tile is colour-coded by status — green for MCP released, amber for in development, grey for no MCP needed — and the top of each group shows a coverage bar plus a Leading / On track / Lagging / Early tag so leading and lagging units pop out. A right-side panel opens on click with status detail, dependent count, owner team, MCP address, and downstream consumers. Green tiles link straight to the marketplace listing for that MCP. A grouped-list layout is offered as an alternate view. (#17)
+
+- **Contextual catalog entry** — Filtering the extensions catalog to MCP Servers now surfaces a "View Panorama →" banner above the grid; the top-bar nav also keeps a persistent "MCP Panorama" link. The earlier sidebar callout, which appeared on every page regardless of context, has been removed. (#18)
+
+- **Self-syncing deploys** — Every production deploy now applies pending database changes before going live, so a feature that depends on a schema update works end-to-end on day one without a separate operator step. (#19)
+
+</details>
+
+---
+
 ### 2026-05-13
 
 **Briefing.** The Nuxt rewrite reaches feature parity with the original Next.js implementation — the marketplace, publish wizard, profile workspace, CLI, and bilingual content all behave the same as before, just running on Nuxt 4.
@@ -40,6 +57,23 @@ What changed each day. For the current capability list, see [features.md](./feat
 ---
 
 ## 中文
+
+### 2026-05-14
+
+**简报。** 新增 MCP 全景图，一屏看清内部工具的 MCP 化进展——哪些已发布、哪些在开发、哪些无需 MCP——同时生产部署会自动保持数据库同步。
+
+<details>
+<summary>详情</summary>
+
+- **MCP 全景图页面** ——新增双语页面 `/mcp-panorama`，将公司内部所有工具服务收纳在一屏。可按行业切片浏览（无线、数通、云、终端等 12 个行业），也可按公共服务领域 → PDT 浏览（AI 研发、产品与软件、硬件、产品数字化、基础设施）。每个工具以色块呈现状态——绿色代表 MCP 已发布，琥珀色代表开发中，灰色代表无需 MCP——分组顶部带覆盖率进度条与"领先 / 进展中 / 落后 / 起步"标签，先进与落后单位一目了然。点击色块打开右侧详情面板，显示状态、依赖方数量、所属团队、MCP 地址与下游消费方。绿色色块可直接跳转到对应 MCP 的市场详情。同时提供"分组列表"作为备选视图。（#17）
+
+- **目录就近入口** ——在扩展目录中筛选"MCP"分类时，列表上方会出现"查看全景图 →"横幅；顶部导航栏的"MCP 全景图"入口保持不变；原本悬挂在侧边栏顶部、与场景无关的浮窗式入口已移除。（#18）
+
+- **部署自动同步数据库** ——每次生产部署都会先应用未生效的数据库变更再上线，新功能所依赖的结构调整在首日即可端到端运行，无需运维额外手动操作。（#19）
+
+</details>
+
+---
 
 ### 2026-05-13
 
