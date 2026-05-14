@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nuxt dev",
     "build": "nuxt build",
-    "vercel-build": "drizzle-kit migrate && nuxt build",
+    "vercel-build": "drizzle-kit migrate && bun scripts/seed-mcp-landscape.ts && nuxt build",
     "preview": "nuxt preview",
     "prepare": "husky && nuxt prepare",
     "lint": "eslint .",
@@ -23,7 +23,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:apply-fts": "psql \"$DATABASE_URL\" -f drizzle/0002_fts_search_vector.sql",
-    "db:seed": "bun run scripts/seed.ts"
+    "db:seed": "bun run scripts/seed.ts",
+    "db:seed:mcp": "bun run scripts/seed-mcp-landscape.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1045.0",
