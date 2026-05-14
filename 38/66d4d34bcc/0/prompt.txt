@@ -1,0 +1,5 @@
+please do not add Co-Author into commit message, put this as a rule in CLAUDE.md. what do you think?
+
+---
+
+1. ok, you can rebase to strip the trailer, 2. ok, extend the rule.
