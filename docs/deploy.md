@@ -1,11 +1,12 @@
 # Deployment
 
-AgentCenter (Nuxt) ships as a standalone Node server, with Postgres + an object store + Inngest behind it. Two deploy targets are supported:
+AgentCenter (Nuxt) ships as a standalone Node server, with Postgres + an object store + Inngest behind it. Three deploy targets are supported:
 
 - **Node** (default) — `nitro: { preset: "node-server" }`. Runs anywhere Node 22+ runs: bare metal, container, PaaS.
+- **Vercel** (auto-detected) — Nitro picks `preset: "vercel"` when `process.env.VERCEL` is set. The `vercel-build` script in `package.json` chains `drizzle-kit migrate && nuxt build`, so every deploy applies pending migrations against `DATABASE_URL` before building. Idempotent against an already-migrated DB; aborts the deploy on migration failure (prevents code shipping against a stale schema).
 - **Cloudflare** (stretch) — `nitro: { preset: "cloudflare_module" }`. Workers + R2 binding. Not maintained alongside primary; expect bundle-size + driver tweaks.
 
-This guide covers the Node path. The Cloudflare path is a config flip plus a storage driver swap.
+This guide covers the Node path. Vercel needs only the `DATABASE_URL` env var set in the project (Build & Runtime). The Cloudflare path is a config flip plus a storage driver swap.
 
 ## Prerequisites
 
