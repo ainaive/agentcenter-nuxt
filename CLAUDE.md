@@ -46,6 +46,7 @@ Nuxt-specific technical decisions (deployment target, auth choice, DB driver, st
 - **Breaking changes to `/api/v1`** require `!` after the scope and a `BREAKING CHANGE:` footer.
 - Always work on a feature branch and open a PR — never commit to `main` directly.
 - When a binding decision changes, update `docs/plan.md` in the same commit as the code change.
+- **No agent-attribution noise in commits or PRs.** Do not add a `Co-Authored-By:` trailer (e.g. `Co-Authored-By: Claude …`) to commit messages, and do not append the "🤖 Generated with Claude Code" footer to PR descriptions. The branch already records authorship and the content speaks for itself.
 
 ## Project structure
 

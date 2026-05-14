@@ -12,6 +12,19 @@
   --color-ink-muted:    oklch(48% 0.015 60);
   --color-accent:       oklch(40% 0.09 35);
   --color-accent-fg:    oklch(98% 0.005 70);
+
+  /* MCP Panorama: status + layer tints (light theme) */
+  --color-status-released:    oklch(58% 0.14 155);
+  --color-status-released-bg: oklch(95% 0.035 155);
+  --color-status-dev:         oklch(68% 0.16 65);
+  --color-status-dev-bg:      oklch(96% 0.04 80);
+  --color-status-none:        oklch(62% 0.012 60);
+  --color-status-none-bg:     oklch(96.5% 0.008 70);
+  --color-layer-industry:     oklch(48% 0.09 240);
+  --color-layer-industry-bg:  oklch(94% 0.025 240);
+  --color-layer-public:       oklch(40% 0.09 35);
+  --color-layer-public-bg:    oklch(94% 0.025 70);
+
   --font-sans:    "Inter", ui-sans-serif, system-ui;
   --font-serif:   "Fraunces", Georgia, serif;
   --font-mono:    "JetBrains Mono", ui-monospace, monospace;
@@ -27,6 +40,18 @@
   --color-ink-muted:    oklch(58% 0.008 240);
   --color-accent:       oklch(72% 0.18 200);
   --color-accent-fg:    oklch(12% 0.01 240);
+
+  /* MCP Panorama: surface-tinted backgrounds + lifted foregrounds for dark contrast */
+  --color-status-released:    oklch(72% 0.14 155);
+  --color-status-released-bg: oklch(22% 0.04 155);
+  --color-status-dev:         oklch(78% 0.14 65);
+  --color-status-dev-bg:      oklch(22% 0.04 65);
+  --color-status-none:        oklch(70% 0.012 240);
+  --color-status-none-bg:     oklch(20% 0.008 240);
+  --color-layer-industry:     oklch(75% 0.12 240);
+  --color-layer-industry-bg:  oklch(22% 0.04 240);
+  --color-layer-public:       oklch(72% 0.18 200);
+  --color-layer-public-bg:    oklch(22% 0.04 70);
 }
 
 @layer components {

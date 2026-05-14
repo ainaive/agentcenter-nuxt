@@ -30,7 +30,9 @@ describe("Sidebar", () => {
     expect(links.length).toBeGreaterThanOrEqual(5)
     for (const link of links) {
       const href = link.attributes("href") ?? ""
-      expect(href).toContain("/extensions")
+      // Browse / categories links target /extensions; the MCP Panorama callout
+      // is a sibling entry that links to its own page.
+      expect(href === "" || href.includes("/extensions") || href.includes("/mcp-panorama")).toBe(true)
     }
   })
 

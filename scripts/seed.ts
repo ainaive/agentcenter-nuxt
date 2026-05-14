@@ -5,11 +5,21 @@ import postgres from "postgres"
 import { COLLECTIONS } from "../shared/data/collections"
 import { DEPARTMENTS } from "../shared/data/departments"
 import { EXTENSIONS } from "../shared/data/extensions"
+import {
+  INDUSTRY_SECTORS,
+  MCP_TOOLS,
+  PUBLIC_DOMAINS,
+  ownerToParts,
+} from "../shared/data/mcp-landscape"
 import * as schema from "../shared/db/schema"
 import {
   departments,
   extensions,
   extensionTags,
+  mcpDomains,
+  mcpLandscapeTools,
+  mcpPdts,
+  mcpSectors,
   memberships,
   organizations,
   tags,
@@ -226,6 +236,103 @@ async function main() {
   console.log(
     `seed: skipping ${COLLECTIONS.length} mock collections (user-owned, seeded post-signup in P9)`,
   )
+
+  // ─── MCP Panorama landscape ────────────────────────────────────────────────
+  // Sectors (industry layer).
+  const sectorRows = INDUSTRY_SECTORS.map((s, i) => ({
+    key: s.key,
+    label: s.label,
+    labelZh: s.labelZh,
+    short: s.short,
+    sortOrder: i,
+  }))
+  console.log(`seed: inserting ${sectorRows.length} mcp sectors`)
+  await db.insert(mcpSectors).values(sectorRows)
+
+  // Domains + PDTs (public layer).
+  const domainRows = PUBLIC_DOMAINS.map((d, i) => ({
+    key: d.key,
+    label: d.label,
+    labelZh: d.labelZh,
+    short: d.short,
+    sortOrder: i,
+  }))
+  console.log(`seed: inserting ${domainRows.length} mcp domains`)
+  await db.insert(mcpDomains).values(domainRows)
+
+  const pdtRows = PUBLIC_DOMAINS.flatMap((d) =>
+    d.pdts.map((p, i) => ({
+      key: `${d.key}.${p.key}`,
+      domainKey: d.key,
+      label: p.label,
+      labelZh: p.labelZh,
+      sortOrder: i,
+    })),
+  )
+  console.log(`seed: inserting ${pdtRows.length} mcp pdts`)
+  await db.insert(mcpPdts).values(pdtRows)
+
+  // Marketplace MCP extension stubs for every "released" landscape tool —
+  // the green tile in the panorama links here.
+  const orgIdForStubs = ORG_ID
+  const releasedTools = MCP_TOOLS.filter((t) => t.released)
+  const mcpExtRows = releasedTools.map((t, i) => {
+    const creator = CREATORS[i % CREATORS.length]!
+    return {
+      id: `mcp-${t.slug}`,
+      slug: t.slug,
+      category: "mcp" as const,
+      badge: null,
+      scope: "enterprise" as const,
+      funcCat: null,
+      subCat: null,
+      publisherUserId: creator.id,
+      ownerOrgId: orgIdForStubs,
+      deptId: null,
+      iconEmoji: null,
+      iconColor: null,
+      visibility: "published" as const,
+      name: t.name,
+      nameZh: t.nameZh ?? null,
+      tagline: t.blurb,
+      taglineZh: t.blurbZh,
+      description: t.blurb,
+      descriptionZh: t.blurbZh,
+      readmeMd: `# ${t.name}\n\nMCP server for **${t.name}** — ${t.blurb}.\n\n## Install\n\n\`\`\`bash\nagentcenter install ${t.slug}\n\`\`\`\n`,
+      downloadsCount: 0,
+      starsAvg: "0.0",
+      ratingsCount: 0,
+      publishedAt: new Date(),
+    }
+  })
+  console.log(`seed: inserting ${mcpExtRows.length} mcp extension stubs`)
+  await db.insert(extensions).values(mcpExtRows)
+
+  // Landscape tool rows — extensionId points at the stub above for released
+  // ones; inDev=true for the rest of the dev-status tools.
+  const toolRows = MCP_TOOLS.map((t) => {
+    const parts = ownerToParts(t.owner)
+    return {
+      slug: t.slug,
+      name: t.name,
+      nameZh: t.nameZh ?? null,
+      layer: parts.layer,
+      ownerSector: parts.layer === "industry" ? parts.primary : null,
+      ownerDomain: parts.layer === "public" ? parts.primary : null,
+      ownerPdt:
+        parts.layer === "public" && parts.secondary
+          ? `${parts.primary}.${parts.secondary}`
+          : null,
+      extensionId: t.released ? `mcp-${t.slug}` : null,
+      inDev: t.inDev,
+      depsCount: t.depsCount,
+      blurb: t.blurb,
+      blurbZh: t.blurbZh,
+      tags: t.tags,
+    }
+  })
+  console.log(`seed: inserting ${toolRows.length} mcp landscape tools`)
+  await db.insert(mcpLandscapeTools).values(toolRows)
 
   console.log("seed: done")
   await client.end()
