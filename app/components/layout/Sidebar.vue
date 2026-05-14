@@ -6,7 +6,6 @@ import {
   Command,
   Folder,
   Globe2,
-  LayoutGrid,
   Plug,
   Plus,
   Zap,
@@ -91,24 +90,6 @@ function toggleL1(key: string) {
 
 <template>
   <div v-if="!collapsed" class="min-w-[200px] flex-1 overflow-y-auto p-3 text-(--color-ink)">
-    <!-- MCP Panorama callout — prominent entry to the service-landscape page. -->
-    <NuxtLink
-      :to="localePath('/mcp-panorama')"
-      class="mb-3 flex items-center gap-2.5 rounded-md border border-(--color-accent)/25 bg-(--color-accent)/8 px-2.5 py-2 text-(--color-ink) transition hover:bg-(--color-accent)/12"
-    >
-      <span class="flex size-7 shrink-0 items-center justify-center rounded-md bg-(--color-accent) text-(--color-accent-fg)">
-        <LayoutGrid :size="14" aria-hidden="true" />
-      </span>
-      <span class="flex flex-1 flex-col leading-tight">
-        <span class="text-[12.5px] font-semibold text-(--color-ink)">
-          {{ t("sidebar.mcpPanorama.title") }}
-        </span>
-        <span class="text-[11px] text-(--color-accent)">
-          {{ t("sidebar.mcpPanorama.subtitle") }}
-        </span>
-      </span>
-    </NuxtLink>
-
     <!-- Browse section -->
     <div class="mb-1">
       <button

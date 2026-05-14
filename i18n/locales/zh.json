@@ -72,6 +72,11 @@
       "hintAdjust": "试试其他关键词或调整筛选条件。",
       "hintCheckBack": "市场不断扩充中，请稍后再来看看。",
       "clearFilters": "清除筛选"
+    },
+    "mcpPanoramaBanner": {
+      "title": "MCP 全景图",
+      "subtitle": "查看内部工具 MCP 化的全景图。",
+      "cta": "查看全景图"
     }
   },
   "sidebar": {
@@ -86,11 +91,7 @@
     "plugins": "插件",
     "all": "全部",
     "saved": "已收藏",
-    "newGroup": "新建分组",
-    "mcpPanorama": {
-      "title": "MCP 全景图",
-      "subtitle": "服务全景 →"
-    }
+    "newGroup": "新建分组"
   },
   "search": {
     "placeholder": "搜索 Skill、MCP、斜杠命令…"

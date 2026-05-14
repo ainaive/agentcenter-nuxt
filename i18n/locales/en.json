@@ -72,6 +72,11 @@
       "hintAdjust": "Try a different search or relax some filters.",
       "hintCheckBack": "New extensions land here as the marketplace grows.",
       "clearFilters": "Clear filters"
+    },
+    "mcpPanoramaBanner": {
+      "title": "MCP Panorama",
+      "subtitle": "See the full MCP adoption landscape across our internal tools.",
+      "cta": "View Panorama"
     }
   },
   "sidebar": {
@@ -86,11 +91,7 @@
     "plugins": "Plugins",
     "all": "All",
     "saved": "Saved",
-    "newGroup": "New Group",
-    "mcpPanorama": {
-      "title": "MCP Panorama",
-      "subtitle": "Service landscape →"
-    }
+    "newGroup": "New Group"
   },
   "search": {
     "placeholder": "Search skills, MCP servers, slash commands…"
