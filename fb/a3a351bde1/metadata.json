@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "fba3a351bde1",
+  "strategy": "manual-commit",
+  "branch": "chore/vercel-auto-seed-mcp",
+  "checkpoints_count": 0,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/fb/a3a351bde1/0/metadata.json",
+      "transcript": "/fb/a3a351bde1/0/full.jsonl",
+      "content_hash": "/fb/a3a351bde1/0/content_hash.txt",
+      "prompt": "/fb/a3a351bde1/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 342,
+    "cache_creation_tokens": 524567,
+    "cache_read_tokens": 82704244,
+    "output_tokens": 100199,
+    "api_call_count": 199
+  }
+}
