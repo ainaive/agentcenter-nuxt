@@ -29,6 +29,13 @@
       "when": 1778469400831,
       "tag": "0003_tricky_earthquake",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1778748543344,
+      "tag": "0004_loose_elektra",
+      "breakpoints": true
     }
   ]
 }
