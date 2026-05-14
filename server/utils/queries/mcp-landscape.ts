@@ -9,73 +9,28 @@ import {
   mcpPdts,
   mcpSectors,
 } from "~~/shared/db/schema"
+import type {
+  DomainGroup,
+  Group,
+  GroupStats,
+  Layer,
+  LayerPayload,
+  PdtBlock,
+  SectorGroup,
+  StatusCounts,
+  ToolDto,
+} from "~~/shared/mcp-panorama"
 
-export type Layer = "industry" | "public"
-
-export interface ToolDto {
-  id: number
-  slug: string
-  name: string
-  nameZh: string | null
-  status: McpStatus
-  depsCount: number
-  blurb: string
-  blurbZh: string
-  tags: string[]
-  /** When status === "released", the marketplace listing slug. */
-  extensionSlug: string | null
-  ownerPrimary: string
-  ownerSecondary: string | null
-}
-
-export interface StatusCounts {
-  released: number
-  dev: number
-  none: number
-}
-
-export interface GroupStats {
-  total: number
-  counts: StatusCounts
-  releasedPct: number
-  activePct: number
-  lagPct: number
-}
-
-interface SectorGroup {
-  kind: "sector"
-  key: string
-  label: string
-  labelZh: string
-  short: string
-  items: ToolDto[]
-  stats: GroupStats
-}
-
-interface PdtBlock {
-  key: string
-  label: string
-  labelZh: string
-  items: ToolDto[]
-}
-
-interface DomainGroup {
-  kind: "domain"
-  key: string
-  label: string
-  labelZh: string
-  short: string
-  items: ToolDto[]
-  pdts: PdtBlock[]
-  stats: GroupStats
-}
-
-export type Group = SectorGroup | DomainGroup
-
-export interface LayerPayload {
-  layer: Layer
-  layerStats: GroupStats
-  groups: Group[]
+export type {
+  DomainGroup,
+  Group,
+  GroupStats,
+  Layer,
+  LayerPayload,
+  PdtBlock,
+  SectorGroup,
+  StatusCounts,
+  ToolDto,
 }
 
 function blankCounts(): StatusCounts {

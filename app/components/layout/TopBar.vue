@@ -76,6 +76,13 @@ function onSubmit() {
         {{ t("nav.explore") }}
       </NuxtLink>
       <NuxtLink
+        :to="localePath('/mcp-panorama')"
+        class="px-3 py-1.5 rounded hover:bg-(--color-sidebar)"
+        active-class="bg-(--color-accent)/10 text-(--color-accent)"
+      >
+        {{ t("nav.mcpPanorama") }}
+      </NuxtLink>
+      <NuxtLink
         :to="localePath('/publish')"
         class="px-3 py-1.5 rounded hover:bg-(--color-sidebar)"
       >

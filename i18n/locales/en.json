@@ -461,7 +461,7 @@
     "page": {
       "title": "MCP Panorama",
       "subtitleAll": "{visible} of {total} tools in this layer",
-      "subtitleScoped": "{visible} {visible, plural, one {tool} other {tools}} · {released} released · {dev} in dev · {none} no MCP needed",
+      "subtitleScoped": "{visible} tools · {released} released · {dev} in dev · {none} no MCP needed",
       "errorLoad": "Couldn't load the MCP landscape — please retry.",
       "retry": "Retry"
     },
@@ -511,7 +511,7 @@
       "noMcp": "No MCP needed",
       "leading": "Leading",
       "lagging": "Lagging",
-      "groupsCount": "{groups, plural, one {1 group} other {{groups} groups}} · {tools, plural, one {1 tool} other {{tools} tools}}"
+      "groupsCount": "{groups} groups · {tools} tools"
     },
     "card": {
       "live": "live",
@@ -542,13 +542,13 @@
       "docs": "Docs",
       "close": "Close",
       "notAvailable": "MCP not yet available",
-      "depsCount": "{count} {count, plural, one {tool} other {tools}}"
+      "depsCount": "{count} tools"
     }
   },
   "time": {
     "today": "today",
-    "daysAgo": "{n, plural, one {1 day ago} other {{n} days ago}}",
-    "weeksAgo": "{n, plural, one {1 week ago} other {{n} weeks ago}}",
+    "daysAgo": "{n} days ago",
+    "weeksAgo": "{n} weeks ago",
     "never": "—"
   }
 }
