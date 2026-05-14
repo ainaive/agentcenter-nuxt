@@ -52,14 +52,21 @@ const endpoint = computed(() =>
 const downstreams = computed<ToolDto[]>(() => {
   if (!props.tool) return []
   // Deterministic pick from across the groups, capped at min(deps, 5) — purely
-  // illustrative dependency list for the side panel.
+  // illustrative dependency list for the side panel. Walks the pool linearly
+  // until n distinct tools are collected, so adjacent picks never collide.
   const all = props.groups.flatMap((g) => g.items).filter((x) => x.id !== props.tool!.id)
   if (all.length === 0) return []
-  const seed = props.tool.id * 7
-  const n = Math.min(props.tool.depsCount, 5)
+  const target = Math.min(props.tool.depsCount, 5, all.length)
   const out: ToolDto[] = []
-  for (let i = 0; i < n; i++) {
-    out.push(all[(seed + i * 13) % all.length]!)
+  const seen = new Set<number>()
+  let i = props.tool.id * 7
+  while (out.length < target) {
+    const candidate = all[i % all.length]!
+    if (!seen.has(candidate.id)) {
+      seen.add(candidate.id)
+      out.push(candidate)
+    }
+    i += 13
   }
   return out
 })

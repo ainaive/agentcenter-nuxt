@@ -64,6 +64,10 @@ export const mcpLandscapeTools = pgTable(
     ownerDomain: text().references(() => mcpDomains.key, {
       onDelete: "restrict",
     }),
+    // TODO: a composite FK on (ownerDomain, ownerPdt) → (mcpPdts.domainKey, mcpPdts.key)
+    // would let the DB enforce that the PDT actually belongs to the domain. Today
+    // the seed is the only writer and keeps them aligned; revisit when an admin UI
+    // can mutate landscape rows.
     ownerPdt: text().references(() => mcpPdts.key, { onDelete: "restrict" }),
     // Marketplace MCP listing. Non-null ⇒ tool is "released".
     extensionId: text().references(() => extensions.id, {

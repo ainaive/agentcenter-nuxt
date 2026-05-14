@@ -46,7 +46,9 @@ const titleAndCrumb = computed<{ title: string; crumb: string | null }>(() => {
       crumb: layerLabel.value,
     }
   }
-  if (primary.kind !== "domain") return { title: primary.label, crumb: layerLabel.value }
+  if (primary.kind !== "domain") {
+    return { title: groupDisplayTitle(primary, locale.value), crumb: layerLabel.value }
+  }
   if (props.activeSecondary) {
     const pdt = primary.pdts.find((p) => p.key === props.activeSecondary) as PdtBlock | undefined
     if (pdt) {

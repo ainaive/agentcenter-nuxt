@@ -49,7 +49,8 @@ function setActivePrimary(key: string) {
 
 function setActivePdt(domainKey: string, pdtKey: string) {
   const isActive = props.activePrimary === domainKey && props.activeSecondary === pdtKey
-  emit("setActive", isActive ? domainKey : domainKey, isActive ? null : pdtKey)
+  // Always keep the domain selected; clicking the active PDT only clears the secondary.
+  emit("setActive", domainKey, isActive ? null : pdtKey)
 }
 
 function toggle(k: string) {

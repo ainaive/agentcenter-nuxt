@@ -39,26 +39,26 @@ const allTools = computed<ToolDto[]>(() =>
   data.value ? data.value.groups.flatMap((g) => g.items) : [],
 )
 
+// Search match — single source of truth, used by both filterTool (which
+// drives what's rendered) and visibleCounts (which drives the chip badges).
+function matchesSearch(tool: ToolDto): boolean {
+  const q = search.value.trim().toLowerCase()
+  if (!q) return true
+  return (
+    tool.name.toLowerCase().includes(q)
+    || (tool.nameZh ?? "").toLowerCase().includes(q)
+    || tool.blurb.toLowerCase().includes(q)
+    || tool.blurbZh.toLowerCase().includes(q)
+    || tool.tags.some((tg) => tg.toLowerCase().includes(q))
+  )
+}
+
 // Filter individual tools (drill-down + status + search).
 function filterTool(tool: ToolDto): boolean {
   if (activePrimary.value && tool.ownerPrimary !== activePrimary.value) return false
   if (activeSecondary.value && tool.ownerSecondary !== activeSecondary.value) return false
   if (statusFilter.value !== "all" && tool.status !== statusFilter.value) return false
-  if (search.value.trim()) {
-    const q = search.value.trim().toLowerCase()
-    const hay =
-      tool.name.toLowerCase()
-      + " "
-      + (tool.nameZh ?? "").toLowerCase()
-      + " "
-      + tool.blurb.toLowerCase()
-      + " "
-      + tool.blurbZh.toLowerCase()
-      + " "
-      + tool.tags.join(" ")
-    if (!hay.includes(q)) return false
-  }
-  return true
+  return matchesSearch(tool)
 }
 
 // Re-shape groups with filtered items, dropping empty groups/PDTs.
@@ -103,12 +103,7 @@ const visibleCounts = computed(() => {
   for (const tool of allTools.value) {
     if (activePrimary.value && tool.ownerPrimary !== activePrimary.value) continue
     if (activeSecondary.value && tool.ownerSecondary !== activeSecondary.value) continue
-    if (search.value.trim()) {
-      const q = search.value.trim().toLowerCase()
-      const hay =
-        tool.name.toLowerCase() + " " + tool.blurb.toLowerCase() + " " + tool.blurbZh.toLowerCase()
-      if (!hay.includes(q)) continue
-    }
+    if (!matchesSearch(tool)) continue
     counts[tool.status]++
     counts.total++
   }
@@ -189,7 +184,7 @@ function pickTool(tool: ToolDto) {
     <PanoramaView
       v-if="data && viewMode === 'panorama'"
       :layer="layer"
-      :stats="filteredGroups.length === data.groups.length && statusFilter === 'all' && !activePrimary && !search.trim()
+      :stats="!activePrimary && !activeSecondary && statusFilter === 'all' && !search.trim()
         ? data.layerStats
         : computeStats(filteredGroups.flatMap((g) => g.items))"
       :groups="filteredGroups"
