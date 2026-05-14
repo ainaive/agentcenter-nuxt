@@ -1,0 +1,50 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "c88147cf46e4",
+  "session_id": "ed083026-22f4-4e40-a81c-bd023ab3848c",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-14T08:50:21.759538Z",
+  "branch": "feat/mcp-panorama",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "drizzle/0004_loose_elektra.sql",
+    "drizzle/meta/0004_snapshot.json",
+    "drizzle/meta/_journal.json",
+    "shared/db/schema/index.ts",
+    "shared/db/schema/mcp-landscape.ts"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "a95750b51107",
+  "token_usage": {
+    "input_tokens": 129,
+    "cache_creation_tokens": 362682,
+    "cache_read_tokens": 12400599,
+    "output_tokens": 46396,
+    "api_call_count": 94
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-14T08:50:21.719199Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 2312,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 2312,
+    "total_lines_changed": 2312,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}
