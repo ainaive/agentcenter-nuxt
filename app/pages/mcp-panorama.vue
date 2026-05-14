@@ -137,7 +137,7 @@ function pickTool(tool: ToolDto) {
   <div class="contents">
     <!-- Sidebar -->
     <ClientOnly>
-    <McpLandscapeLayerSidebar
+    <LayerSidebar
       v-if="data"
       :layer="layer"
       :groups="data.groups"
@@ -154,7 +154,7 @@ function pickTool(tool: ToolDto) {
 
   <!-- Main + side panel -->
   <div class="flex-1 overflow-auto bg-(--color-bg) relative">
-    <McpLandscapeSectionHeader
+    <SectionHeader
       v-if="data"
       :layer="layer"
       :active-primary="activePrimary"
@@ -186,7 +186,7 @@ function pickTool(tool: ToolDto) {
       </button>
     </div>
 
-    <McpLandscapePanoramaView
+    <PanoramaView
       v-if="data && viewMode === 'panorama'"
       :layer="layer"
       :stats="filteredGroups.length === data.groups.length && statusFilter === 'all' && !activePrimary && !search.trim()
@@ -196,7 +196,7 @@ function pickTool(tool: ToolDto) {
       :active-id="activeTool?.id ?? null"
       @pick="pickTool"
     />
-    <McpLandscapeGroupedListView
+    <GroupedListView
       v-else-if="data && viewMode === 'list'"
       :layer="layer"
       :groups="filteredGroups"
@@ -205,7 +205,7 @@ function pickTool(tool: ToolDto) {
     />
   </div>
 
-    <McpLandscapeToolDetailPanel
+    <ToolDetailPanel
       :tool="activeTool"
       :groups="data?.groups ?? []"
       @close="activeTool = null"
