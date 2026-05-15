@@ -73,10 +73,13 @@
       "hintCheckBack": "New extensions land here as the marketplace grows.",
       "clearFilters": "Clear filters"
     },
-    "mcpPanoramaBanner": {
-      "title": "MCP Panorama",
-      "subtitle": "See the full MCP adoption landscape across our internal tools.",
-      "cta": "View Panorama"
+    "mcpPanoramaFeature": {
+      "eyebrow": "MCP PANORAMA",
+      "title": "The MCP adoption landscape",
+      "description": "Two layers, every sector and platform domain — see which tools are live, in build, or yet to start.",
+      "stats": "{domains} domains · {tools} tools · 2 layers",
+      "statsFallback": "Browse every tool, sector, and domain",
+      "cta": "Open the panorama"
     }
   },
   "sidebar": {
@@ -527,7 +530,8 @@
     "filter": {
       "all": "All",
       "searchPlaceholder": "Search tools, dependencies, owners…",
-      "clear": "← clear"
+      "filterCaption": "FILTER VISIBLE TOOLS",
+      "clear": "Clear drill-down"
     },
     "detail": {
       "mcpStatus": "MCP Status",

@@ -23,11 +23,13 @@ const filtersActive = computed(() => {
   const f = filters.value
   return Object.keys(f).some((k) => k !== "page" && f[k as keyof typeof f] !== undefined)
 })
-const isMcpCategory = computed(() => route.query.category === "mcp")
+const showFeature = computed(() => !filters.value.q)
 </script>
 
 <template>
   <div class="px-6 py-8 max-w-7xl mx-auto">
+    <McpPanoramaFeature v-if="showFeature" />
+
     <header class="mb-6">
       <h1 class="font-serif text-3xl tracking-tight text-(--color-ink)">
         {{ t("extensions.browseTitle") }}
@@ -42,8 +44,6 @@ const isMcpCategory = computed(() => route.query.category === "mcp")
       :publishers="facets.publishers"
       :tags="facets.tags"
     />
-
-    <McpPanoramaBanner v-if="isMcpCategory" />
 
     <ExtGrid
       :items="items"

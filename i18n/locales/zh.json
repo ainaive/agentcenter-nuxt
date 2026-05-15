@@ -73,10 +73,13 @@
       "hintCheckBack": "市场不断扩充中，请稍后再来看看。",
       "clearFilters": "清除筛选"
     },
-    "mcpPanoramaBanner": {
-      "title": "MCP 全景图",
-      "subtitle": "查看内部工具 MCP 化的全景图。",
-      "cta": "查看全景图"
+    "mcpPanoramaFeature": {
+      "eyebrow": "MCP 全景图",
+      "title": "MCP 化的全景视图",
+      "description": "两个层级、每个行业与平台域，一眼看清哪些工具已上线、在建或尚未启动。",
+      "stats": "{domains} 个域 · {tools} 个工具 · 2 个层级",
+      "statsFallback": "浏览所有工具、行业与领域",
+      "cta": "进入全景图"
     }
   },
   "sidebar": {
@@ -527,7 +530,8 @@
     "filter": {
       "all": "全部",
       "searchPlaceholder": "搜索工具、依赖或所属团队…",
-      "clear": "← 清除"
+      "filterCaption": "筛选可见工具",
+      "clear": "清除筛选"
     },
     "detail": {
       "mcpStatus": "MCP 状态",

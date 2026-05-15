@@ -22,7 +22,7 @@ function toggleSidebar() {
       class="sticky top-0 z-10 h-[52px] border-b border-(--color-border) bg-(--color-card) flex items-center px-4 gap-3"
       role="banner"
     >
-      <TopBar :collapsed="sidebarCollapsed" @toggle-sidebar="toggleSidebar" />
+      <TopBar :collapsed="sidebarCollapsed" :hide-search="true" @toggle-sidebar="toggleSidebar" />
     </header>
 
     <main id="main-content" tabindex="-1" class="flex flex-1 min-h-0 focus:outline-none">

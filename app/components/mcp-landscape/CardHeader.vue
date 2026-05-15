@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { groupDisplayTitle, rankFor, STATUS_ORDER, type Group } from "~~/shared/mcp-panorama"
+import { groupDisplayTitle, rankFor, type Group } from "~~/shared/mcp-panorama"
 
 const props = defineProps<{ group: Group }>()
 
@@ -19,7 +19,7 @@ const rankClass = computed(() => {
 </script>
 
 <template>
-  <header class="flex flex-col gap-2">
+  <header class="flex flex-col gap-1.5">
     <div class="flex items-baseline justify-between gap-2.5">
       <div class="flex items-baseline gap-2 min-w-0">
         <h3 class="font-serif text-[18px] font-medium tracking-tight m-0 truncate text-(--color-ink)">
@@ -36,43 +36,21 @@ const rankClass = computed(() => {
       </span>
     </div>
 
-    <div>
-      <div class="flex h-[5px] rounded overflow-hidden bg-(--color-bg)">
-        <template v-for="s in STATUS_ORDER" :key="s">
-          <div
-            v-if="group.stats.counts[s] > 0"
-            :title="`${t(`mcpPanorama.status.${s}.label`)}: ${group.stats.counts[s]}`"
-            :class="[
-              'h-full',
-              s === 'released' && 'bg-(--color-status-released)',
-              s === 'dev' && 'bg-(--color-status-dev)',
-              s === 'none' && 'bg-(--color-status-none) opacity-50',
-            ]"
-            :style="{ flex: group.stats.counts[s] }"
-          />
-        </template>
-      </div>
-      <div class="mt-1.5 flex justify-between font-mono text-[10px] text-(--color-ink-muted)">
-        <span class="inline-flex gap-2.5">
-          <span class="inline-flex items-center gap-1">
-            <span class="size-[5px] rounded-full bg-(--color-status-released)" />
-            <span class="text-(--color-ink) font-semibold">{{ group.stats.counts.released }}</span>
-            <span class="opacity-70">{{ t("mcpPanorama.card.live") }}</span>
-          </span>
-          <span class="inline-flex items-center gap-1">
-            <span class="size-[5px] rounded-full bg-(--color-status-dev)" />
-            <span class="text-(--color-ink) font-semibold">{{ group.stats.counts.dev }}</span>
-            <span class="opacity-70">{{ t("mcpPanorama.card.dev") }}</span>
-          </span>
-          <span class="inline-flex items-center gap-1">
-            <span class="size-[5px] rounded-full bg-(--color-status-none) opacity-60" />
-            <span class="text-(--color-ink) font-semibold">{{ group.stats.counts.none }}</span>
-          </span>
-        </span>
-        <span class="text-(--color-ink) font-semibold">
-          {{ t("mcpPanorama.card.liveSuffix", { pct: group.stats.releasedPct }) }}
-        </span>
-      </div>
+    <div class="font-mono text-[10px] text-(--color-ink-muted) inline-flex gap-3">
+      <span class="inline-flex items-center gap-1">
+        <span class="size-[5px] rounded-full bg-(--color-status-released)" />
+        <span class="text-(--color-ink) font-semibold">{{ group.stats.counts.released }}</span>
+        <span class="opacity-70">{{ t("mcpPanorama.card.live") }}</span>
+      </span>
+      <span class="inline-flex items-center gap-1">
+        <span class="size-[5px] rounded-full bg-(--color-status-dev)" />
+        <span class="text-(--color-ink) font-semibold">{{ group.stats.counts.dev }}</span>
+        <span class="opacity-70">{{ t("mcpPanorama.card.dev") }}</span>
+      </span>
+      <span class="inline-flex items-center gap-1">
+        <span class="size-[5px] rounded-full bg-(--color-status-none) opacity-60" />
+        <span class="text-(--color-ink) font-semibold">{{ group.stats.counts.none }}</span>
+      </span>
     </div>
   </header>
 </template>
