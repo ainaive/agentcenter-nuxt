@@ -5,11 +5,14 @@
   "branch": "feat/mcp-panorama-polish",
   "checkpoints_count": 1,
   "files_touched": [
+    "app/components/extension/McpPanoramaFeature.nuxt.test.ts",
+    "app/components/extension/McpPanoramaFeature.vue",
     "app/components/layout/TopBar.vue",
     "app/components/mcp-landscape/CardHeader.vue",
     "app/components/mcp-landscape/SectionHeader.vue",
     "app/components/mcp-landscape/ToolDetailPanel.vue",
     "app/layouts/mcp-panorama.vue",
+    "app/pages/extensions/index.vue",
     "i18n/locales/en.json",
     "i18n/locales/zh.json"
   ],
@@ -19,13 +22,19 @@
       "transcript": "/cd/18b3bdab5e/0/full.jsonl",
       "content_hash": "/cd/18b3bdab5e/0/content_hash.txt",
       "prompt": "/cd/18b3bdab5e/0/prompt.txt"
+    },
+    {
+      "metadata": "/cd/18b3bdab5e/1/metadata.json",
+      "transcript": "/cd/18b3bdab5e/1/full.jsonl",
+      "content_hash": "/cd/18b3bdab5e/1/content_hash.txt",
+      "prompt": "/cd/18b3bdab5e/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 688,
-    "cache_creation_tokens": 1558997,
-    "cache_read_tokens": 147939141,
-    "output_tokens": 253961,
-    "api_call_count": 487
+    "input_tokens": 1568,
+    "cache_creation_tokens": 1689059,
+    "cache_read_tokens": 152323450,
+    "output_tokens": 299611,
+    "api_call_count": 540
   }
 }

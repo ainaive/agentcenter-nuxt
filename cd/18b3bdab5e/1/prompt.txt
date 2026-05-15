@@ -1,0 +1,11 @@
+let's think about the link of panorama in MCP list page, and the page of MCP panorama, I want improvement them, make
+  them elegant. what do you think?
+
+---
+
+let's think about the link of panorama in MCP list page, and the page of MCP panorama, I want improvement them, make
+  them elegant. what do you think?
+
+---
+
+I means let me review before you push the code to github
