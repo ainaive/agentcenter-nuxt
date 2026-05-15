@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Menu, Search } from "lucide-vue-next"
 
-defineProps<{ collapsed: boolean, hideSearch?: boolean }>()
+defineProps<{ collapsed: boolean }>()
 const emit = defineEmits<{ "toggle-sidebar": [] }>()
 
 const { t } = useI18n()
@@ -49,7 +49,6 @@ function onSubmit() {
     </NuxtLink>
 
     <form
-      v-if="!hideSearch"
       role="search"
       class="flex-1 max-w-xl mx-auto relative"
       @submit.prevent="onSubmit"
@@ -68,7 +67,6 @@ function onSubmit() {
         class="w-full h-9 pl-9 pr-3 rounded-md border border-(--color-border) bg-(--color-bg) text-sm focus:outline-none focus:ring-2 focus:ring-(--color-accent)"
       >
     </form>
-    <div v-else class="flex-1" aria-hidden="true" />
 
     <nav class="hidden md:flex items-center gap-1 text-sm" :aria-label="t('nav.explore')">
       <NuxtLink
