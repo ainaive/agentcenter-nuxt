@@ -1,0 +1,1 @@
+the filter visible tools search bar is redundant.
