@@ -530,8 +530,6 @@
     },
     "filter": {
       "all": "All",
-      "searchPlaceholder": "Search tools, dependencies, owners…",
-      "filterCaption": "FILTER VISIBLE TOOLS",
       "clear": "Clear drill-down"
     },
     "detail": {

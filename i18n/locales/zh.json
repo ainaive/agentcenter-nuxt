@@ -530,8 +530,6 @@
     },
     "filter": {
       "all": "全部",
-      "searchPlaceholder": "搜索工具、依赖或所属团队…",
-      "filterCaption": "筛选可见工具",
       "clear": "清除筛选"
     },
     "detail": {

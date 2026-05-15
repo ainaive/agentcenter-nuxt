@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LayoutGrid, List, Search, X } from "lucide-vue-next"
+import { LayoutGrid, List, X } from "lucide-vue-next"
 import type { McpStatus } from "~~/shared/data/mcp-landscape"
 import {
   groupDisplayTitle,
@@ -19,14 +19,12 @@ const props = defineProps<{
   totals: { total: number }
   statusFilter: "all" | McpStatus
   viewMode: "panorama" | "list"
-  search: string
   groups: Group[]
 }>()
 
 const emit = defineEmits<{
   "update:statusFilter": ["all" | McpStatus]
   "update:viewMode": ["panorama" | "list"]
-  "update:search": [string]
   clearDrill: []
 }>()
 
@@ -82,11 +80,6 @@ const subtitle = computed(() => {
 function statusLabel(s: McpStatus): string {
   return t(`mcpPanorama.status.${s}.label`)
 }
-
-const localSearch = computed({
-  get: () => props.search,
-  set: (v: string) => emit("update:search", v),
-})
 </script>
 
 <template>
@@ -135,25 +128,6 @@ const localSearch = computed({
       </div>
 
       <div class="ml-auto flex items-center gap-3 flex-wrap">
-        <label class="flex items-center gap-2">
-          <span class="font-mono text-[10px] tracking-[0.12em] text-(--color-ink-muted) uppercase shrink-0">
-            {{ t("mcpPanorama.filter.filterCaption") }}
-          </span>
-          <span class="relative w-[220px]">
-            <Search
-              :size="13"
-              class="absolute left-2.5 top-1/2 -translate-y-1/2 text-(--color-ink-muted) pointer-events-none"
-              aria-hidden="true"
-            />
-            <input
-              v-model="localSearch"
-              type="search"
-              :placeholder="t('mcpPanorama.filter.searchPlaceholder')"
-              class="w-full h-8 pl-7 pr-2.5 rounded-md border border-(--color-border) bg-(--color-card) text-[12px] focus:outline-none focus:border-(--color-accent) focus:ring-2 focus:ring-(--color-accent)/15"
-            >
-          </span>
-        </label>
-
         <div class="flex p-[3px] rounded-lg bg-(--color-bg) border border-(--color-border) shrink-0">
           <button
             type="button"
