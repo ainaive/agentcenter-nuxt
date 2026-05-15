@@ -80,7 +80,8 @@
       "stats": "{domains} 个域 · {tools} 个工具 · 2 个层级",
       "statsFallback": "浏览所有工具、行业与领域",
       "cta": "进入全景图"
-    }
+    },
+    "mcpPanoramaLink": "查看 MCP 全景图"
   },
   "sidebar": {
     "browse": "浏览",

@@ -34,7 +34,7 @@ const motif = Array.from({ length: 24 }, (_, i) => {
 <template>
   <NuxtLink
     :to="localePath('/mcp-panorama')"
-    class="group relative block mb-7 overflow-hidden rounded-xl border border-(--color-border) border-l-2 border-l-(--color-accent) bg-(--color-card) transition hover:border-(--color-accent)/50"
+    class="group relative block overflow-hidden rounded-xl border border-(--color-border) border-l-2 border-l-(--color-accent) bg-(--color-card) transition hover:border-(--color-accent)/50"
   >
     <div class="flex flex-col gap-6 px-6 py-6 md:flex-row md:items-center md:gap-8 md:px-8 md:py-7">
       <div class="flex-1 min-w-0">

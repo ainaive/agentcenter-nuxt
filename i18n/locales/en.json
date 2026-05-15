@@ -80,7 +80,8 @@
       "stats": "{domains} domains · {tools} tools · 2 layers",
       "statsFallback": "Browse every tool, sector, and domain",
       "cta": "Open the panorama"
-    }
+    },
+    "mcpPanoramaLink": "View the MCP Panorama"
   },
   "sidebar": {
     "browse": "Browse",
