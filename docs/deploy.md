@@ -3,7 +3,7 @@
 AgentCenter (Nuxt) ships as a standalone Node server, with Postgres + an object store + Inngest behind it. Three deploy targets are supported:
 
 - **Node** (default) — `nitro: { preset: "node-server" }`. Runs anywhere Node 22+ runs: bare metal, container, PaaS.
-- **Vercel** (auto-detected) — Nitro picks `preset: "vercel"` when `process.env.VERCEL` is set. The `vercel-build` script in `package.json` chains `drizzle-kit migrate && nuxt build`, so every deploy applies pending migrations against `DATABASE_URL` before building. Idempotent against an already-migrated DB; aborts the deploy on migration failure (prevents code shipping against a stale schema).
+- **Vercel** (auto-detected) — Nitro picks `preset: "vercel"` when `process.env.VERCEL` is set. The `vercel-build` script in `package.json` chains `drizzle-kit migrate && bun scripts/seed-mcp-landscape.ts && nuxt build`, so every deploy: (1) applies pending migrations against `DATABASE_URL`, then (2) upserts the static MCP panorama landscape (taxonomy + tool rows + marketplace stubs) idempotently, then (3) builds. Aborts the deploy if either step fails (prevents code shipping against a stale or empty schema). The destructive `db:seed` script (demo users + sample extensions) is **not** in the build path — that stays a one-shot manual operation.
 - **Cloudflare** (stretch) — `nitro: { preset: "cloudflare_module" }`. Workers + R2 binding. Not maintained alongside primary; expect bundle-size + driver tweaks.
 
 This guide covers the Node path. Vercel needs only the `DATABASE_URL` env var set in the project (Build & Runtime). The Cloudflare path is a config flip plus a storage driver swap.
