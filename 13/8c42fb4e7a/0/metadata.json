@@ -1,0 +1,49 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "138c42fb4e7a",
+  "session_id": "f5ee70a8-9019-487b-9e5d-1ce080bd99c3",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-15T04:41:35.247791Z",
+  "branch": "feat/mcp-panorama-polish",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/layout/TopBar.vue",
+    "app/layouts/mcp-panorama.vue"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "a867f4bb954d",
+  "checkpoint_transcript_start": 410,
+  "transcript_lines_at_start": 410,
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 2871,
+    "cache_read_tokens": 408651,
+    "output_tokens": 2219,
+    "api_call_count": 3
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-15T04:41:35.218491Z",
+    "agent_lines": 2,
+    "agent_removed": 4,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 2,
+    "total_lines_changed": 6,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}

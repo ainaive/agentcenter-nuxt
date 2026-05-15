@@ -1,0 +1,1 @@
+why remove search bar in nav menu, I think the nav menu should consistent in every page, do not change it.
