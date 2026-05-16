@@ -44,6 +44,8 @@ defineOgImageComponent("Frame", {
       </NuxtLink>
     </section>
 
+    <McpPanoramaFeature class="mb-10" />
+
     <header class="flex items-baseline justify-between mb-5">
       <h2 class="font-serif text-2xl tracking-tight text-(--color-ink)">
         {{ t("home.trendingTitle") }}
