@@ -530,7 +530,7 @@
     },
     "filter": {
       "all": "全部",
-      "clear": "清除筛选"
+      "clear": "清除下钻"
     },
     "detail": {
       "mcpStatus": "MCP 状态",

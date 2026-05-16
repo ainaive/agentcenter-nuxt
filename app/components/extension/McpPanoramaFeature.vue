@@ -21,8 +21,8 @@ const stats = computed(() => {
   }
 })
 
-// Decorative motif: a fixed 4x6 grid of cells using the three status tokens
-// at low opacity. Deterministic pattern, no randomness — purely visual.
+// Decorative motif: a fixed 6×4 grid (6 columns, 4 rows) of cells using the
+// three status tokens at low opacity. Deterministic, no randomness.
 const motif = Array.from({ length: 24 }, (_, i) => {
   const r = (i * 7 + 3) % 11
   if (r < 5) return "released"
