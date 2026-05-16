@@ -1,0 +1,17 @@
+push and open a PR
+
+---
+
+check the code reviews on PR 21
+
+---
+
+check the new code reviews on PR 21
+
+---
+
+what about: https://github.com/ainaive/agentcenter-nuxt/pull/21#pullrequestreview-4295477288
+
+---
+
+ok, go ahead
