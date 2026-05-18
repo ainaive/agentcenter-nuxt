@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "809f755b4ed8",
+  "strategy": "manual-commit",
+  "branch": "feat/layout-elegance-pass",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "CLAUDE.md",
+    "docs/plan.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/80/9f755b4ed8/0/metadata.json",
+      "transcript": "/80/9f755b4ed8/0/full.jsonl",
+      "content_hash": "/80/9f755b4ed8/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 6,
+    "cache_creation_tokens": 7336,
+    "cache_read_tokens": 1521007,
+    "output_tokens": 2541,
+    "api_call_count": 6
+  }
+}
