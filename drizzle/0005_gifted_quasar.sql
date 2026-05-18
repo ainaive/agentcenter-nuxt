@@ -1,0 +1,2 @@
+ALTER TABLE "extensions" ADD COLUMN "featured" boolean DEFAULT false NOT NULL;--> statement-breakpoint
+CREATE INDEX "idx_ext_featured_published" ON "extensions" USING btree ("featured","published_at" DESC);

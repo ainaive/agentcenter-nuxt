@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import {
   bigint,
+  boolean,
   customType,
   index,
   integer,
@@ -91,6 +92,10 @@ export const extensions = pgTable(
     iconEmoji: text(),
     iconColor: text(),
     visibility: visibilityEnum().notNull().default("draft"),
+    // Editorial flag — hand-curated. Surfaces a single extension on the home
+    // hero. Coexists with `badge`: badge is a static editorial mark on the
+    // card; `featured` is a transient "pick of the week" pointer.
+    featured: boolean().notNull().default(false),
     // i18n columns
     name: text().notNull(),
     nameZh: text(),
@@ -130,6 +135,10 @@ export const extensions = pgTable(
     index("idx_ext_visibility").on(t.visibility),
     index("idx_ext_downloads").on(sql`${t.downloadsCount} DESC`),
     index("idx_ext_stars").on(sql`${t.starsAvg} DESC`),
+    index("idx_ext_featured_published").on(
+      t.featured,
+      sql`${t.publishedAt} DESC`,
+    ),
   ],
 );
 
