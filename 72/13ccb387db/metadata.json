@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "7213ccb387db",
+  "strategy": "manual-commit",
+  "branch": "feat/layout-elegance-pass",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "server/repositories/extensions.ts",
+    "shared/db/queries-types.ts",
+    "tests/integration/repositories/extensions.test.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/72/13ccb387db/0/metadata.json",
+      "transcript": "/72/13ccb387db/0/full.jsonl",
+      "content_hash": "/72/13ccb387db/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 16,
+    "cache_creation_tokens": 16745,
+    "cache_read_tokens": 1975135,
+    "output_tokens": 6726,
+    "api_call_count": 16
+  }
+}
