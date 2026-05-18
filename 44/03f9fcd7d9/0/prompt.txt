@@ -1,0 +1,17 @@
+I have a question, why you just create one commit for all the feature?
+
+---
+
+what's your suggetion of the commits? if the CLAUDE.md rule is not good, we can change it.
+
+---
+
+no need
+
+---
+
+check the code reviews on the PR
+
+---
+
+ok, go ahead
