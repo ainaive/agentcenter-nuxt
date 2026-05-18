@@ -1,0 +1,17 @@
+Let's think carefully about the entire layout of the website. What can we do to make the website more elegant? What do you think?
+
+---
+
+ok, go ahead
+
+---
+
+how many commits and PRs will you make?
+
+---
+
+can you make all the 8 commits in one PR?
+
+---
+
+one PR is good
