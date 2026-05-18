@@ -1,0 +1,5 @@
+I also want remove the vertical scroll bar of the sidebar. what do you think?
+
+---
+
+ok, go ahead
