@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "85c90af05b95",
+  "strategy": "manual-commit",
+  "branch": "feat/layout-elegance-pass",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/filters/FilterBar.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/85/c90af05b95/0/metadata.json",
+      "transcript": "/85/c90af05b95/0/full.jsonl",
+      "content_hash": "/85/c90af05b95/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 7,
+    "cache_creation_tokens": 3354,
+    "cache_read_tokens": 2416611,
+    "output_tokens": 2027,
+    "api_call_count": 7
+  }
+}
