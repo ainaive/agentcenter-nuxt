@@ -1,0 +1,21 @@
+is it better to make "MCP Panoroma" as a sub menu of Explore? what do you think?
+
+---
+
+but I may also will add Skills Panorama page, that will be lots of menu in the nav bar
+
+---
+
+let's decide it latter.
+
+---
+
+now we remove all extensions in the browse, but the explore menu still goes to extensions page. is it better to add skills, mcp, etc to explore as sub menu? what do you think?
+
+---
+
+but we do not want to show the all extensions list, we want user visit one type of extensions first.
+
+---
+
+keep it reachable as fallback

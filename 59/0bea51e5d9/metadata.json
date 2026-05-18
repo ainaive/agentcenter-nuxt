@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "590bea51e5d9",
+  "strategy": "manual-commit",
+  "branch": "feat/layout-elegance-pass",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/layout/TopBar.vue"
+  ],
+  "sessions": [
+    {
+      "metadata": "/59/0bea51e5d9/0/metadata.json",
+      "transcript": "/59/0bea51e5d9/0/full.jsonl",
+      "content_hash": "/59/0bea51e5d9/0/content_hash.txt",
+      "prompt": "/59/0bea51e5d9/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 40,
+    "cache_creation_tokens": 18020,
+    "cache_read_tokens": 4269038,
+    "output_tokens": 15962,
+    "api_call_count": 10
+  }
+}
