@@ -64,40 +64,9 @@ function onSubmit() {
         v-model="q"
         type="search"
         :placeholder="t('search.placeholder')"
-        class="w-full h-9 pl-9 pr-3 rounded-md border border-(--color-border) bg-(--color-bg) text-sm focus:outline-none focus:ring-2 focus:ring-(--color-accent)"
+        class="w-full h-9 pl-9 pr-3 rounded-md border border-transparent bg-(--color-sidebar)/60 text-sm transition-colors focus:outline-none focus:border-(--color-border) focus:bg-(--color-bg) focus:ring-2 focus:ring-(--color-accent)"
       >
     </form>
-
-    <nav class="hidden md:flex items-center gap-1 text-sm" :aria-label="t('nav.explore')">
-      <NuxtLink
-        :to="localePath('/extensions')"
-        class="px-3 py-1.5 rounded hover:bg-(--color-sidebar)"
-        active-class="bg-(--color-accent)/10 text-(--color-accent)"
-      >
-        {{ t("nav.explore") }}
-      </NuxtLink>
-      <NuxtLink
-        :to="localePath('/mcp-panorama')"
-        class="px-3 py-1.5 rounded hover:bg-(--color-sidebar)"
-        active-class="bg-(--color-accent)/10 text-(--color-accent)"
-      >
-        {{ t("nav.mcpPanorama") }}
-      </NuxtLink>
-      <NuxtLink
-        :to="localePath('/publish')"
-        class="px-3 py-1.5 rounded hover:bg-(--color-sidebar)"
-        active-class="bg-(--color-accent)/10 text-(--color-accent)"
-      >
-        {{ t("nav.publish") }}
-      </NuxtLink>
-      <span
-        class="px-3 py-1.5 rounded text-(--color-ink-muted) cursor-not-allowed"
-        :title="t('nav.comingSoon')"
-        aria-disabled="true"
-      >
-        {{ t("nav.docs") }}
-      </span>
-    </nav>
 
     <ThemeSwitch />
     <LocaleSwitch />

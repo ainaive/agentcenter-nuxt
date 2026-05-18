@@ -89,6 +89,7 @@
     "mcpPanoramaLink": "查看 MCP 全景图"
   },
   "sidebar": {
+    "explore": "导航",
     "browse": "浏览",
     "categories": "分类",
     "collections": "收藏夹",

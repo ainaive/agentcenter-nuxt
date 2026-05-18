@@ -16,22 +16,36 @@ const mountOpts = {
 }
 
 describe("Sidebar", () => {
-  it("renders Browse + Categories + Collections section headers", async () => {
+  it("renders Explore + Browse + Categories + Collections section headers", async () => {
     const wrapper = await mountSuspended(Sidebar, mountOpts)
     const html = wrapper.html().toLowerCase()
+    expect(html).toContain("explore")
     expect(html).toContain("browse")
     expect(html).toContain("categor")
     expect(html).toContain("collection")
   })
 
+  it("renders primary nav links to Extensions, MCP Panorama, and Publish", async () => {
+    const wrapper = await mountSuspended(Sidebar, mountOpts)
+    const hrefs = wrapper.findAll("a").map((a) => a.attributes("href") ?? "")
+    expect(hrefs.some((h) => h.endsWith("/extensions"))).toBe(true)
+    expect(hrefs.some((h) => h.includes("/mcp-panorama"))).toBe(true)
+    expect(hrefs.some((h) => h.includes("/publish"))).toBe(true)
+  })
+
+  it("renders the Docs item as a disabled placeholder, not a link", async () => {
+    const wrapper = await mountSuspended(Sidebar, mountOpts)
+    const disabled = wrapper.findAll("[aria-disabled='true']")
+    expect(disabled.length).toBeGreaterThan(0)
+    expect(disabled.some((el) => el.text().toLowerCase().includes("docs"))).toBe(true)
+  })
+
   it("renders at least 5 browse links targeting /extensions", async () => {
     const wrapper = await mountSuspended(Sidebar, mountOpts)
-    const links = wrapper.findAll("a")
-    expect(links.length).toBeGreaterThanOrEqual(5)
-    for (const link of links) {
-      const href = link.attributes("href") ?? ""
-      expect(href).toContain("/extensions")
-    }
+    const extLinks = wrapper
+      .findAll("a")
+      .filter((a) => (a.attributes("href") ?? "").includes("/extensions"))
+    expect(extLinks.length).toBeGreaterThanOrEqual(5)
   })
 
   it("collapsed prop hides the inner content", async () => {

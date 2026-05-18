@@ -89,6 +89,7 @@
     "mcpPanoramaLink": "View the MCP Panorama"
   },
   "sidebar": {
+    "explore": "Explore",
     "browse": "Browse",
     "categories": "Categories",
     "collections": "Collections",

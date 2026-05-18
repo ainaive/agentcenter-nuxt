@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import {
+  BookOpen,
   Boxes,
   ChevronDown,
   ChevronRight,
   Command,
+  Compass,
   Folder,
   Globe2,
+  Map,
   Plug,
   Plus,
+  Upload,
   Zap,
 } from "lucide-vue-next"
 import { FUNC_CAT_COLORS, FUNC_TAXONOMY } from "~~/shared/taxonomy"
@@ -46,8 +50,17 @@ const activeFuncCat = computed(() => (typeof route.query.funcCat === "string" ? 
 const activeSubCat = computed(() => (typeof route.query.subCat === "string" ? route.query.subCat : null))
 const activeL2 = computed(() => (typeof route.query.l2 === "string" ? route.query.l2 : null))
 
+type NavKey = "extensions" | "mcp-panorama" | "publish" | "docs"
+
+const PRIMARY_NAV: { key: NavKey; to: string; labelKey: string; Icon: Component; disabled?: boolean }[] = [
+  { key: "extensions", to: "/extensions", labelKey: "nav.explore", Icon: Compass },
+  { key: "mcp-panorama", to: "/mcp-panorama", labelKey: "nav.mcpPanorama", Icon: Map },
+  { key: "publish", to: "/publish", labelKey: "nav.publish", Icon: Upload },
+  { key: "docs", to: "", labelKey: "nav.docs", Icon: BookOpen, disabled: true },
+]
+
 const expansion = reactive({
-  sections: { browse: true, categories: true, collections: false },
+  sections: { explore: true, browse: true, categories: true, collections: false },
   funcCats: {} as Record<string, boolean>,
   l1: {} as Record<string, boolean>,
 })
@@ -77,7 +90,7 @@ function buildHref(updates: Record<string, string | null>): string {
   return qs ? `${path}?${qs}` : path
 }
 
-function toggleSection(key: "browse" | "categories" | "collections") {
+function toggleSection(key: "explore" | "browse" | "categories" | "collections") {
   expansion.sections[key] = !expansion.sections[key]
 }
 function toggleFuncCat(key: string) {
@@ -90,6 +103,48 @@ function toggleL1(key: string) {
 
 <template>
   <div v-if="!collapsed" class="min-w-[200px] flex-1 overflow-y-auto p-3 text-(--color-ink)">
+    <!-- Primary nav section -->
+    <div class="mb-1">
+      <button
+        type="button"
+        class="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-[11px] font-bold tracking-wider uppercase text-(--color-ink-muted) hover:text-(--color-ink)"
+        :aria-expanded="expansion.sections.explore"
+        @click="toggleSection('explore')"
+      >
+        {{ t("sidebar.explore") }}
+        <ChevronDown v-if="expansion.sections.explore" :size="14" aria-hidden="true" />
+        <ChevronRight v-else :size="14" aria-hidden="true" />
+      </button>
+      <nav
+        v-if="expansion.sections.explore"
+        class="mt-0.5 flex flex-col gap-px"
+        :aria-label="t('nav.explore')"
+      >
+        <template v-for="item in PRIMARY_NAV" :key="item.key">
+          <span
+            v-if="item.disabled"
+            class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] font-medium text-(--color-ink-muted) cursor-not-allowed"
+            :title="t('nav.comingSoon')"
+            aria-disabled="true"
+          >
+            <component :is="item.Icon" :size="14" class="shrink-0" />
+            <span class="flex-1 truncate">{{ t(item.labelKey) }}</span>
+          </span>
+          <NuxtLink
+            v-else
+            :to="localePath(item.to)"
+            class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] font-medium transition hover:bg-(--color-sidebar)"
+            active-class="bg-(--color-accent)/10 text-(--color-accent) font-semibold"
+          >
+            <component :is="item.Icon" :size="14" class="shrink-0" />
+            <span class="flex-1 truncate">{{ t(item.labelKey) }}</span>
+          </NuxtLink>
+        </template>
+      </nav>
+    </div>
+
+    <div class="bg-(--color-border) mx-1 my-3 h-px" />
+
     <!-- Browse section -->
     <div class="mb-1">
       <button
