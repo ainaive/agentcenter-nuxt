@@ -1,0 +1,64 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "df0451e7bfbf",
+  "session_id": "c26a6f6f-2de0-49eb-9927-9c8a6bb23f24",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-18T12:06:35.463938Z",
+  "branch": "feat/layout-elegance-pass",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/components/layout/Sidebar.nuxt.test.ts",
+    "app/components/layout/Sidebar.vue"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "c75112bf0123",
+  "checkpoint_transcript_start": 1211,
+  "transcript_lines_at_start": 1211,
+  "token_usage": {
+    "input_tokens": 57,
+    "cache_creation_tokens": 33617,
+    "cache_read_tokens": 12309288,
+    "output_tokens": 25851,
+    "api_call_count": 32
+  },
+  "session_metrics": {
+    "turn_count": 14
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-18T12:06:35.417175Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 13,
+    "human_removed": 36,
+    "total_committed": 0,
+    "total_lines_changed": 49,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 40,
+      "user_lines_removed": 36,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        "app/components/layout/Sidebar.nuxt.test.ts": 7,
+        "app/components/layout/Sidebar.vue": 33
+      },
+      "user_removed_per_file": {
+        "app/components/layout/Sidebar.nuxt.test.ts": 5,
+        "app/components/layout/Sidebar.vue": 31
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 40,
+      "agent_lines_removed": 36
+    }
+  ]
+}
