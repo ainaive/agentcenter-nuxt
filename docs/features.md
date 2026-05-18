@@ -12,6 +12,8 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 
 ### Browse & discover
 
+- **Type-first browsing** — Browsing the marketplace starts by picking a type — Skills, MCP Servers, Slash Commands, or Plugins — from the Explore dropdown in the top bar. The unfiltered catalog stays reachable but isn't the default destination.
+- **Function-types sidebar** — A persistent sidebar tree exposes the three-level functional taxonomy (Work Task / Business / Tools, plus sub-categories and leaves). Selecting any node filters the catalog and survives URL sharing.
 - **Extension catalog** — Browse all published extensions in a paginated grid at `/extensions`.
 - **Search** — Search by any phrase, in English or Chinese, including short fragments.
 - **Department picker** — Narrow to a department and all of its sub-departments.
@@ -22,7 +24,7 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **Creator filter** — Filter by the user who published the extension.
 - **Publisher filter** — Filter by the organization behind the extension.
 - **Shareable filter state** — Every filter combination is reflected in the URL, so any search can be bookmarked or shared.
-- **Home: featured banner** — An editorial-style banner highlights one featured extension.
+- **Home: featured spotlight** — A curated "Featured this week" extension anchors the home page with its name, tagline, install command, and a deep link to the detail page; falls back to a slim editorial card when no extension is marked featured.
 - **Home: trending row** — A cross-category mix of trending extensions (Skills, MCP servers, slash commands, plugins).
 - **Whole-card click** — Click anywhere on an extension card to open it; Save / Install stay independently clickable.
 
@@ -47,7 +49,7 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **Two layouts** — A compact Panorama tile view and an alternate Grouped List that splits each group into three status columns.
 - **Tool side panel** — Click any tile to see its status description, dependent count, owning team, and downstream tools. Released tools link to the marketplace; in-development tools offer "Track progress"; tools without an MCP plan offer "Request MCP build".
 - **Bilingual** — Sectors, domains, PDTs, statuses, and tool descriptions all render in EN or ZH.
-- **Catalog cross-link** — Filtering the extensions catalog to MCP Servers surfaces a "View Panorama" banner above the grid; the top-bar nav also keeps a persistent "MCP Panorama" link.
+- **Catalog cross-link** — Filtering the extensions catalog to MCP Servers surfaces a "View Panorama" banner above the grid; MCP Panorama also lives inside the Explore dropdown in the top nav, next to the type filters.
 
 ### Publish
 
@@ -88,7 +90,7 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 
 - **Bilingual UI** — English (default) and Chinese, with always-prefixed locale URLs (`/en`, `/zh`).
 - **Bilingual content** — Extension titles, descriptions, tags, organization names, and department names all support per-language values.
-- **Themes** — Editorial Ivory (default) and Dark; preference saved per account.
+- **Themes** — Editorial Ivory (default), Dark, and Mono Clean (high-contrast, minimalist); preference saved per account.
 
 ### Multi-tenancy (schema-only in v1)
 
@@ -115,6 +117,8 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 
 ### 浏览与发现
 
+- **先选类型的浏览方式** ——浏览市场始终从选定类型开始（Skill、MCP 服务器、斜杠命令、插件），通过顶部导航的 Explore 下拉菜单进入。未筛选的全量列表仍可访问，但不再是默认入口。
+- **侧边栏功能分类树** ——侧边栏常驻一棵三层功能分类树（工作任务 / 业务 / 工具，以及其下的子类和叶子节点）。选中任意节点即对目录进行筛选，选择反映在 URL 中，便于分享。
 - **扩展目录** ——在 `/extensions` 浏览所有已发布扩展，支持分页。
 - **搜索** ——任意短语搜索，支持中英文，含短片段查询。
 - **部门选择器** ——收窄到某个部门及其所有子部门。
@@ -125,7 +129,7 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **作者筛选** ——按发布扩展的用户筛选。
 - **发布商筛选** ——按背后的组织筛选。
 - **可分享的筛选状态** ——所有筛选条件都反映在 URL 中，可收藏或分享任意搜索。
-- **首页：精选 banner** ——编辑风格的精选 banner，突出一个推荐扩展。
+- **首页：精选模块** ——首页顶部由一个真实的"本周精选"扩展担纲，展示其名称、宣传语、安装命令以及直达详情页的链接；若当前未标记任何精选，则回退到一张简洁的编辑卡片。
 - **首页：热门栏** ——跨类别混合展示热门扩展（Skill、MCP、斜杠命令、插件）。
 - **整卡可点击** ——点击扩展卡片任意位置都能打开；Save / Install 仍可独立点击。
 
@@ -150,7 +154,7 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **两种排版** ——紧凑的"全景图"瓦片视图，以及按"已发布 / 开发中 / 无需"三列拆分的"分组列表"备用视图。
 - **工具详情面板** ——点击任意色块查看状态说明、依赖方数量、所属团队与下游工具。已发布工具跳转到市场详情；开发中工具提供"跟踪进度"；无 MCP 计划的工具提供"申请 MCP 化"。
 - **双语呈现** ——行业、领域、PDT、状态、工具描述均支持中英双语。
-- **目录交叉入口** ——在扩展目录筛选"MCP"分类时，列表上方会出现"查看全景图"横幅；顶部导航栏始终保留"MCP 全景图"入口。
+- **目录交叉入口** ——在扩展目录筛选"MCP"分类时，列表上方会出现"查看全景图"横幅；MCP 全景图同时位于顶部导航的 Explore 下拉菜单中，与类型筛选并列。
 
 ### 发布
 
@@ -191,7 +195,7 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 
 - **双语界面** ——英文（默认）+ 中文，URL 始终带语言前缀（`/en`、`/zh`）。
 - **双语内容** ——扩展标题、描述、标签、组织名、部门名均支持双语字段。
-- **主题** —— Editorial Ivory（默认）+ Dark；按账号保存偏好。
+- **主题** —— Editorial Ivory（默认）、Dark 与 Mono Clean（高对比极简）；按账号保存偏好。
 
 ### 多租户（v1 仅 Schema）
 

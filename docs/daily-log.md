@@ -12,6 +12,27 @@ What changed each day. For the current capability list, see [features.md](./feat
 
 ## English
 
+### 2026-05-18
+
+**Briefing.** Today's release pivots browsing toward type-first navigation, gives the home page a real curated "Featured this week" spotlight, and adds a Mono Clean theme alongside Ivory and Dark.
+
+<details>
+<summary>Details</summary>
+
+- **Mono Clean theme + 3-way switcher** — A third theme joins Editorial Ivory and Dark. The old toggle becomes a labelled dropdown listing all three options with short descriptors and preview tiles, so the choice and what each looks like sit side by side. (#22)
+
+- **"Featured this week" on the home page** — The home banner replaces the generic placeholder with a real curated extension: name, tagline, install command, and a deep link to the detail page. When no extension is marked featured, the home falls back to a slim editorial card. (#23)
+
+- **Type-first Explore dropdown** — Clicking Explore in the top bar now opens a dropdown listing the four extension types (Skills, MCP Servers, Slash Commands, Plugins) plus MCP Panorama. Browsing always starts with a type choice; the flat "all extensions" list is no longer the default destination but stays reachable as a fallback. (#23)
+
+- **Sidebar leads with the function-types taxonomy** — Enterprise users who navigate by functional domain now see the full Work Task / Business / Tools tree as their primary sidebar navigation. Browse-by-type pills sit above; the placeholder Collections section is hidden until it carries real data. (#23)
+
+- **Quieter editorial shell** — Sidebar and main content share one background with no dividing line, the top bar is taller, the search bar is borderless until focus, the sidebar's vertical scrollbar is hidden, and the accent color is reserved for the home spotlight and primary CTAs — secondary states use weight or a thin left rule instead. (#23)
+
+</details>
+
+---
+
 ### 2026-05-14
 
 **Briefing.** A new MCP Panorama lets stakeholders see at a glance which internal tools have shipped an MCP version, which are in development, and which don't need one — and production deploys now keep their database in sync automatically.
@@ -57,6 +78,27 @@ What changed each day. For the current capability list, see [features.md](./feat
 ---
 
 ## 中文
+
+### 2026-05-18
+
+**简报。** 今日发布将浏览导向"先选类型"——Explore 改为下拉菜单，需先选定类型再进入；首页改用真实的"本周精选"扩展取代占位横幅；同时新增 Mono Clean 主题，与 Ivory、Dark 并列。
+
+<details>
+<summary>详情</summary>
+
+- **Mono Clean 主题与三向切换器** ——新增第三套主题，与 Editorial Ivory、Dark 并列。原先的二态切换升级为带标签的下拉菜单，三套主题同时列出，每套配简短描述与预览块，可一眼对比选择。（#22）
+
+- **首页"本周精选"** ——首页横幅由通用占位图换成一个真实的精选扩展：名称、宣传语、安装命令一应俱全，可直达详情页。如果当前没有标记为精选的扩展，首页会回退到一张简洁的编辑卡片。（#23）
+
+- **Explore 改为"先选类型"下拉** ——顶部导航的 Explore 现在打开下拉菜单，列出四种扩展类型（Skill、MCP 服务器、斜杠命令、插件）与 MCP 全景图。浏览始终以选定类型开始；扁平的"全部扩展"列表不再是默认入口，但仍可作为回退访问。（#23）
+
+- **侧边栏以功能分类为主导航** ——企业用户习惯按职能域导航——侧边栏首屏即展示完整的"工作任务 / 业务 / 工具"三层功能分类树作为主导航。按类型浏览的胶囊行位于其上方；占位的"收藏夹"分区在尚无真实数据前已隐藏。（#23）
+
+- **更安静的编辑式外壳** ——侧边栏与主内容区共享统一背景、不再分隔；顶部导航更高，搜索框默认无边框、聚焦时才显现；侧边栏滚动条已隐去；主色仅保留给首页精选模块和主要 CTA——次级状态改用字重或细左线提示。（#23）
+
+</details>
+
+---
 
 ### 2026-05-14
 
