@@ -1,0 +1,5 @@
+the mono theme icon seems not good, I think it's better to be half black and half white, just like the design material.
+
+---
+
+ok, commit and the open PR
