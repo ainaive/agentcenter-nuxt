@@ -1,0 +1,17 @@
+The function types are important, so I want them in the sidebar or a similar prominent location; this is crucial for enterprise users. As for the "Explore" menu, I think it would be better placed in the navigation bar. What do you think?
+
+---
+
+The function types are important, so I want them in the sidebar or a similar prominent location; this is crucial for enterprise users. As for the "Explore" menu, I think it would be better placed in the navigation bar. What do you think?
+
+---
+
+let me re-choose
+
+---
+
+yes
+
+---
+
+go append to this PR
