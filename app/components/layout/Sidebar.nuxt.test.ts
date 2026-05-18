@@ -36,8 +36,9 @@ describe("Sidebar", () => {
 
   it("does not render a primary-nav 'Explore' section (that moved to TopBar)", async () => {
     const wrapper = await mountSuspended(Sidebar, mountOpts)
-    // No top-of-sidebar "EXPLORE" header; primary nav lives in TopBar.
-    expect(wrapper.html()).not.toMatch(/sidebar\.explore/)
+    // Assert on rendered text, not the i18n key — catches a regression
+    // whether someone re-adds the missing key or hard-codes the label.
+    expect(wrapper.text().toLowerCase()).not.toContain("explore")
   })
 
   it("Browse links target /extensions (one per type, no 'All Extensions' item)", async () => {
