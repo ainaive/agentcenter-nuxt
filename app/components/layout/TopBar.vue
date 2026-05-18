@@ -3,6 +3,7 @@ import {
   ChevronDown,
   Command,
   Globe2,
+  Map,
   Menu,
   Plug,
   Search,
@@ -46,18 +47,28 @@ const EXPLORE_ITEMS: { key: ExploreKey; labelKey: string; Icon: Component }[] = 
   { key: "plugins", labelKey: "sidebar.plugins", Icon: Plug },
 ]
 
+const PANORAMA_ITEMS: { key: string; to: string; labelKey: string; Icon: Component }[] = [
+  { key: "mcp-panorama", to: "/mcp-panorama", labelKey: "nav.mcpPanorama", Icon: Map },
+]
+
 const exploreOpen = ref(false)
 
-// Explore is "active" whenever the user is on the extensions index,
-// regardless of which category filter is applied. The dropdown is
-// type-first navigation — users must pick a category to enter — but
-// `/extensions` (no filter) is still reachable as a fallback, so the
-// trigger should still light up there.
+// Explore is "active" whenever the user is on the extensions index or
+// any of the panorama routes that live under the dropdown. The dropdown
+// itself is type-first navigation — users must pick a category to enter
+// /extensions — but `/extensions` (no filter) is still reachable as a
+// fallback, so the trigger should light up there too.
 const localeExtensionsPath = computed(() => localePath("/extensions"))
-const exploreActive = computed(() =>
-  route.path === localeExtensionsPath.value
-  || route.path.startsWith(`${localeExtensionsPath.value}/`),
+const localePanoramaPaths = computed(() =>
+  PANORAMA_ITEMS.map((p) => localePath(p.to)),
 )
+const exploreActive = computed(() => {
+  if (route.path === localeExtensionsPath.value) return true
+  if (route.path.startsWith(`${localeExtensionsPath.value}/`)) return true
+  return localePanoramaPaths.value.some(
+    (p) => route.path === p || route.path.startsWith(`${p}/`),
+  )
+})
 </script>
 
 <template>
@@ -108,7 +119,7 @@ const exploreActive = computed(() =>
           {{ t("nav.explore") }}
           <ChevronDown :size="12" aria-hidden="true" />
         </PopoverTrigger>
-        <PopoverContent align="start" :class="'w-[200px] p-1'">
+        <PopoverContent align="start" :class="'w-[220px] p-1'">
           <NuxtLink
             v-for="item in EXPLORE_ITEMS"
             :key="item.key"
@@ -119,15 +130,21 @@ const exploreActive = computed(() =>
             <component :is="item.Icon" :size="16" class="shrink-0" />
             <span class="flex-1 truncate">{{ t(item.labelKey) }}</span>
           </NuxtLink>
+
+          <div class="bg-(--color-border) mx-1 my-1 h-px" />
+
+          <NuxtLink
+            v-for="item in PANORAMA_ITEMS"
+            :key="item.key"
+            :to="localePath(item.to)"
+            class="flex items-center gap-2.5 rounded-md px-2 py-2 text-[14px] text-(--color-ink) hover:bg-(--color-card)"
+            @click="exploreOpen = false"
+          >
+            <component :is="item.Icon" :size="16" class="shrink-0" />
+            <span class="flex-1 truncate">{{ t(item.labelKey) }}</span>
+          </NuxtLink>
         </PopoverContent>
       </Popover>
-      <NuxtLink
-        :to="localePath('/mcp-panorama')"
-        class="px-3 py-1.5 rounded text-(--color-ink-muted) hover:text-(--color-ink) hover:bg-(--color-sidebar)"
-        active-class="text-(--color-ink) font-semibold bg-(--color-sidebar)/60"
-      >
-        {{ t("nav.mcpPanorama") }}
-      </NuxtLink>
       <NuxtLink
         :to="localePath('/publish')"
         class="px-3 py-1.5 rounded text-(--color-ink-muted) hover:text-(--color-ink) hover:bg-(--color-sidebar)"
