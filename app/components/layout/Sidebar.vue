@@ -105,7 +105,7 @@ function toggleL1(key: string) {
           v-for="item in BROWSE_ITEMS"
           :key="item.key"
           :to="buildHref({ category: item.key === activeCategory ? null : item.key })"
-          class="flex w-full items-center gap-2.5 rounded-md border-l-2 px-2 py-1.5 text-[13px] font-medium text-(--color-ink) transition hover:bg-(--color-sidebar)"
+          class="flex w-full items-center gap-2.5 rounded-md border-l-2 px-2 py-1.5 text-[13px] font-medium text-(--color-ink) transition hover:bg-(--color-card)"
           :class="activeCategory === item.key ? 'border-l-(--color-ink) bg-(--color-sidebar)/60 font-semibold' : 'border-transparent'"
         >
           <component :is="item.Icon" :size="14" class="shrink-0" />
@@ -133,7 +133,7 @@ function toggleL1(key: string) {
           <div class="flex items-center">
             <NuxtLink
               :to="buildHref({ funcCat: activeFuncCat === cat.key && !activeSubCat && !activeL2 ? null : cat.key, subCat: null, l2: null })"
-              class="flex flex-1 items-center gap-2 rounded-md px-2 py-1.5 text-left text-[13px] font-semibold transition hover:bg-(--color-sidebar)"
+              class="flex flex-1 items-center gap-2 rounded-md px-2 py-1.5 text-left text-[13px] font-semibold transition hover:bg-(--color-card)"
               :class="activeFuncCat === cat.key && !activeSubCat && !activeL2 ? 'bg-(--color-sidebar)/60 text-(--color-ink)' : 'text-(--color-ink)'"
             >
               <span class="size-[7px] shrink-0 rounded-sm" :style="{ background: FUNC_CAT_COLORS[cat.key] }" />
@@ -156,7 +156,7 @@ function toggleL1(key: string) {
               <div class="flex items-center">
                 <NuxtLink
                   :to="buildHref({ funcCat: cat.key, subCat: activeSubCat === l1.key ? null : l1.key, l2: null })"
-                  class="flex flex-1 items-center gap-2 rounded-md px-2 py-1.5 text-left text-[12.5px] font-medium hover:bg-(--color-sidebar)"
+                  class="flex flex-1 items-center gap-2 rounded-md px-2 py-1.5 text-left text-[12.5px] font-medium hover:bg-(--color-card)"
                   :class="activeSubCat === l1.key && !activeL2 ? 'bg-(--color-sidebar)/60 text-(--color-ink) font-semibold' : 'text-(--color-ink)'"
                 >
                   <span
@@ -183,7 +183,7 @@ function toggleL1(key: string) {
                   v-for="l2key in l1.l2"
                   :key="l2key"
                   :to="buildHref({ funcCat: cat.key, subCat: l1.key, l2: activeL2 === l2key ? null : l2key })"
-                  class="flex w-full items-center gap-1.5 rounded-md py-1 pr-2 pl-6 text-left text-[12px] hover:bg-(--color-sidebar)"
+                  class="flex w-full items-center gap-1.5 rounded-md py-1 pr-2 pl-6 text-left text-[12px] hover:bg-(--color-card)"
                   :class="activeL2 === l2key ? 'bg-(--color-sidebar)/60 text-(--color-ink) font-semibold' : 'text-(--color-ink)/85'"
                 >
                   <span class="bg-(--color-ink-muted) size-[3px] shrink-0 rounded-full" />

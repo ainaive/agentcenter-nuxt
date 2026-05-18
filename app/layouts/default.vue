@@ -24,7 +24,7 @@ function toggleSidebar() {
 
     <div class="flex flex-1 min-h-0">
       <aside
-        class="border-r border-(--color-border) bg-(--color-sidebar) overflow-hidden flex flex-col transition-[width] duration-200"
+        class="overflow-hidden flex flex-col transition-[width] duration-200"
         :class="sidebarCollapsed ? 'w-0' : 'w-[240px]'"
         role="navigation"
       >
