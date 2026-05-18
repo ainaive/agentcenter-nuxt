@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { ArrowRight } from "lucide-vue-next"
+import type { ExtensionListItem } from "~~/shared/db/queries-types"
 
 const { t } = useI18n()
 const localePath = useLocalePath()
 
+const { data: featuredData } = await useFetch("/api/internal/featured", {
+  default: () => ({ featured: null as ExtensionListItem | null }),
+  key: "home-featured",
+})
 const { data } = await useFetch("/api/internal/extensions", {
   query: { sort: "downloads" },
   default: () => ({ items: [], total: 0, filters: {} }),
 })
 
+const featured = computed(() => featuredData.value.featured)
 const trending = computed(() => data.value.items.slice(0, 8))
 const totalCount = computed(() => data.value.total)
 
@@ -23,10 +29,12 @@ defineOgImageComponent("Frame", {
 
 <template>
   <div class="px-6 py-8 max-w-7xl mx-auto">
+    <ExtFeatureHero v-if="featured" :extension="featured" class="mb-10" />
     <section
-      class="relative overflow-hidden rounded-(--radius-card) border border-(--color-border) bg-gradient-to-br from-(--color-accent)/10 via-(--color-card) to-(--color-card) p-8 mb-10"
+      v-else
+      class="relative overflow-hidden rounded-(--radius-card) border border-(--color-border) bg-(--color-card) p-8 mb-10"
     >
-      <p class="font-mono uppercase text-[11px] tracking-widest text-(--color-accent) mb-3">
+      <p class="font-mono uppercase text-[11px] tracking-widest text-(--color-ink-muted) mb-3">
         {{ t("home.featuredLabel") }}
       </p>
       <h1 class="font-serif text-4xl tracking-tight max-w-2xl mb-3 text-(--color-ink)">
