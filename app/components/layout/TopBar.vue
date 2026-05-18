@@ -1,5 +1,14 @@
 <script setup lang="ts">
-import { Menu, Search } from "lucide-vue-next"
+import {
+  ChevronDown,
+  Command,
+  Globe2,
+  Menu,
+  Plug,
+  Search,
+  Zap,
+} from "lucide-vue-next"
+import type { Component } from "vue"
 
 defineProps<{ collapsed: boolean }>()
 const emit = defineEmits<{ "toggle-sidebar": [] }>()
@@ -27,6 +36,28 @@ function onSubmit() {
   if (trimmed) query.q = trimmed
   router.push({ path: localePath("/extensions"), query })
 }
+
+type ExploreKey = "skills" | "mcp" | "slash" | "plugins"
+
+const EXPLORE_ITEMS: { key: ExploreKey; labelKey: string; Icon: Component }[] = [
+  { key: "skills", labelKey: "sidebar.skills", Icon: Zap },
+  { key: "mcp", labelKey: "sidebar.mcpServers", Icon: Globe2 },
+  { key: "slash", labelKey: "sidebar.slashCommands", Icon: Command },
+  { key: "plugins", labelKey: "sidebar.plugins", Icon: Plug },
+]
+
+const exploreOpen = ref(false)
+
+// Explore is "active" whenever the user is on the extensions index,
+// regardless of which category filter is applied. The dropdown is
+// type-first navigation — users must pick a category to enter — but
+// `/extensions` (no filter) is still reachable as a fallback, so the
+// trigger should still light up there.
+const localeExtensionsPath = computed(() => localePath("/extensions"))
+const exploreActive = computed(() =>
+  route.path === localeExtensionsPath.value
+  || route.path.startsWith(`${localeExtensionsPath.value}/`),
+)
 </script>
 
 <template>
@@ -69,13 +100,27 @@ function onSubmit() {
     </form>
 
     <nav class="hidden md:flex items-center gap-1 text-sm" :aria-label="t('nav.explore')">
-      <NuxtLink
-        :to="localePath('/extensions')"
-        class="px-3 py-1.5 rounded text-(--color-ink-muted) hover:text-(--color-ink) hover:bg-(--color-sidebar)"
-        active-class="text-(--color-ink) font-semibold bg-(--color-sidebar)/60"
-      >
-        {{ t("nav.explore") }}
-      </NuxtLink>
+      <Popover v-model:open="exploreOpen">
+        <PopoverTrigger
+          class="inline-flex items-center gap-1 px-3 py-1.5 rounded text-(--color-ink-muted) hover:text-(--color-ink) hover:bg-(--color-sidebar)"
+          :class="exploreActive ? 'text-(--color-ink) font-semibold bg-(--color-sidebar)/60' : ''"
+        >
+          {{ t("nav.explore") }}
+          <ChevronDown :size="12" aria-hidden="true" />
+        </PopoverTrigger>
+        <PopoverContent align="start" :class="'w-[200px] p-1'">
+          <NuxtLink
+            v-for="item in EXPLORE_ITEMS"
+            :key="item.key"
+            :to="{ path: localeExtensionsPath, query: { category: item.key } }"
+            class="flex items-center gap-2.5 rounded-md px-2 py-2 text-[14px] text-(--color-ink) hover:bg-(--color-card)"
+            @click="exploreOpen = false"
+          >
+            <component :is="item.Icon" :size="16" class="shrink-0" />
+            <span class="flex-1 truncate">{{ t(item.labelKey) }}</span>
+          </NuxtLink>
+        </PopoverContent>
+      </Popover>
       <NuxtLink
         :to="localePath('/mcp-panorama')"
         class="px-3 py-1.5 rounded text-(--color-ink-muted) hover:text-(--color-ink) hover:bg-(--color-sidebar)"
