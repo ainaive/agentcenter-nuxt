@@ -1,0 +1,17 @@
+can you check the themes of https://api.anthropic.com/v1/design/h/oZHuMkd0bQaptIuzo2OZNw?open_file=AgentCenter.html let's implement the theme Mono clean, and user can switch between the themes.
+
+---
+
+try fetch the design at here: https://api.anthropic.com/v1/design/h/hWoXBdXnEFdlidOL_0NdFw?open_file=AgentCenter.html
+
+---
+
+what's next?
+
+---
+
+I means let me review before push the code
+
+---
+
+ok

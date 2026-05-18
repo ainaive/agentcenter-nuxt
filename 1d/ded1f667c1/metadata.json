@@ -1,0 +1,38 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "1dded1f667c1",
+  "strategy": "manual-commit",
+  "branch": "feat/mono-clean-theme",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "CLAUDE.md",
+    "app/assets/css/tailwind.css",
+    "app/components/layout/ThemeSwitch.nuxt.test.ts",
+    "app/components/layout/ThemeSwitch.vue",
+    "app/composables/useTheme.nuxt.test.ts",
+    "app/composables/useTheme.ts",
+    "docs/plan.md",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json",
+    "shared/theme.test.ts",
+    "shared/theme.ts",
+    "shared/types.ts",
+    "tests/e2e/theme-no-flash.spec.ts",
+    "tests/e2e/theme-switcher.spec.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/1d/ded1f667c1/0/metadata.json",
+      "transcript": "/1d/ded1f667c1/0/full.jsonl",
+      "content_hash": "/1d/ded1f667c1/0/content_hash.txt",
+      "prompt": "/1d/ded1f667c1/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 507,
+    "cache_creation_tokens": 168495,
+    "cache_read_tokens": 10567312,
+    "output_tokens": 40590,
+    "api_call_count": 111
+  }
+}
