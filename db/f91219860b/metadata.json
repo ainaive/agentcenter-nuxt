@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "dbf91219860b",
+  "strategy": "manual-commit",
+  "branch": "feat/layout-elegance-pass",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/layout/Sidebar.vue",
+    "app/layouts/default.vue"
+  ],
+  "sessions": [
+    {
+      "metadata": "/db/f91219860b/0/metadata.json",
+      "transcript": "/db/f91219860b/0/full.jsonl",
+      "content_hash": "/db/f91219860b/0/content_hash.txt",
+      "prompt": "/db/f91219860b/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 18,
+    "cache_creation_tokens": 12896,
+    "cache_read_tokens": 2863462,
+    "output_tokens": 11241,
+    "api_call_count": 8
+  }
+}

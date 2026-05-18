@@ -1,0 +1,5 @@
+Now the sidebar and the main content block seem to have two different styles. Would it be better to make the background style consistent and remove the vertical line? What do you think?
+
+---
+
+just commit, do not push
