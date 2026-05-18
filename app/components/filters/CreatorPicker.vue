@@ -33,7 +33,7 @@ function selectCreator(id: string | undefined) {
       :class="[
         'inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[12px] transition-colors',
         activeCreator
-          ? 'border-(--color-accent)/40 bg-(--color-accent)/10 text-(--color-accent)'
+          ? 'border-(--color-ink)/35 bg-(--color-card) text-(--color-ink) font-semibold'
           : 'border-(--color-border) bg-(--color-card) text-(--color-ink-muted) hover:text-(--color-ink)',
       ]"
     >

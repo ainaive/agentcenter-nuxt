@@ -109,8 +109,8 @@ function toggleSection(key: "explore" | "browse" | "collections") {
           <NuxtLink
             v-else
             :to="localePath(item.to)"
-            class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] font-medium transition hover:bg-(--color-sidebar)"
-            active-class="bg-(--color-accent)/10 text-(--color-accent) font-semibold"
+            class="flex w-full items-center gap-2.5 rounded-md border-l-2 border-transparent px-2 py-1.5 text-[13px] font-medium text-(--color-ink) transition hover:bg-(--color-sidebar)"
+            active-class="border-l-(--color-accent) bg-(--color-sidebar)/60 font-semibold"
           >
             <component :is="item.Icon" :size="14" class="shrink-0" />
             <span class="flex-1 truncate">{{ t(item.labelKey) }}</span>
@@ -138,8 +138,8 @@ function toggleSection(key: "explore" | "browse" | "collections") {
           v-for="item in BROWSE_ITEMS"
           :key="item.key"
           :to="buildHref({ category: item.key === activeCategory ? null : (item.key === 'all' ? null : item.key) })"
-          class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] font-medium transition hover:bg-(--color-sidebar)"
-          :class="activeCategory === item.key ? 'bg-(--color-accent)/10 text-(--color-accent) font-semibold' : 'text-(--color-ink)'"
+          class="flex w-full items-center gap-2.5 rounded-md border-l-2 px-2 py-1.5 text-[13px] font-medium text-(--color-ink) transition hover:bg-(--color-sidebar)"
+          :class="activeCategory === item.key ? 'border-l-(--color-accent) bg-(--color-sidebar)/60 font-semibold' : 'border-transparent'"
         >
           <component :is="item.Icon" :size="14" class="shrink-0" />
           <span class="flex-1 truncate">{{ t(item.labelKey) }}</span>
