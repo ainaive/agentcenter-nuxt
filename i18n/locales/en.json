@@ -147,6 +147,10 @@
       "all": "All",
       "clear": "Clear tags"
     },
+    "funcCat": {
+      "label": "Function",
+      "all": "All functions"
+    },
     "creator": {
       "label": "Creator",
       "any": "Any creator",

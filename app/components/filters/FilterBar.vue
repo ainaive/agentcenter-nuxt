@@ -13,6 +13,7 @@ defineProps<{
     <div class="flex flex-wrap items-center gap-3">
       <ScopePills />
       <DeptPicker />
+      <FuncCategoryPicker />
       <CreatorPicker v-if="creators" :creators="creators" />
       <PublisherPicker v-if="publishers" :publishers="publishers" />
     </div>
