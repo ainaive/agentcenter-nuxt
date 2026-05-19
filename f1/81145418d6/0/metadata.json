@@ -1,0 +1,41 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "f181145418d6",
+  "session_id": "cda0ffe2-fc04-492e-8e9b-dbe92b5cc893",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-19T04:07:47.056383Z",
+  "branch": "feat/mcp-panorama-multi-mcp",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/mcp-landscape/ToolMcpsCard.vue",
+    "app/components/mcp-landscape/McpTile.vue",
+    "app/components/mcp-landscape/McpTile.nuxt.test.ts"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "f48394df9482",
+  "checkpoint_transcript_start": 650,
+  "transcript_lines_at_start": 650,
+  "token_usage": {
+    "input_tokens": 7,
+    "cache_creation_tokens": 6777,
+    "cache_read_tokens": 2459296,
+    "output_tokens": 5057,
+    "api_call_count": 7
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-19T04:07:47.024018Z",
+    "agent_lines": 34,
+    "agent_removed": 45,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 34,
+    "total_lines_changed": 79,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "f181145418d6",
+  "strategy": "manual-commit",
+  "branch": "feat/mcp-panorama-multi-mcp",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/mcp-landscape/McpTile.nuxt.test.ts",
+    "app/components/mcp-landscape/McpTile.vue",
+    "app/components/mcp-landscape/ToolMcpsCard.vue"
+  ],
+  "sessions": [
+    {
+      "metadata": "/f1/81145418d6/0/metadata.json",
+      "transcript": "/f1/81145418d6/0/full.jsonl",
+      "content_hash": "/f1/81145418d6/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 7,
+    "cache_creation_tokens": 6777,
+    "cache_read_tokens": 2459296,
+    "output_tokens": 5057,
+    "api_call_count": 7
+  }
+}
