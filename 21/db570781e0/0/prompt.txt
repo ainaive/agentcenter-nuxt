@@ -1,0 +1,43 @@
+Now there seem to be a few problems: 1. The counts for released and in-development MCPs are still showing as 0; 2. The MCP status indicators inside the software section are all displaying as "-".
+
+---
+
+when I run "bun run db:seed:mcp", it has errors: at queryWithCache (/Users/hutusi/workspace/ai/naive/agentcenter-nuxt/node_modules/drizzle-orm/pg-core/session.js:41:15)
+
+810 |   }
+811 |
+812 |   function ErrorResponse(x) {
+813 |     if (query) {
+814 |       (query.cursorFn || query.describeFirst) && write(Sync)
+815 |       errorResponse = Errors.postgres(parseError(x))
+                                   ^
+PostgresError: could not load library "/opt/homebrew/lib/postgresql@18/pg_trgm.dylib": dlopen(/opt/homebrew/lib/postgresql@18/pg_trgm.dylib, 0x000A): Symbol not found: _palloc0_mul
+  Referenced from: <E8113B46-73BE-3D69-A005-284662673806> /opt/homebrew/Cellar/postgresql@18/18.4/lib/postgresql/pg_trgm.dylib
+  Expected in:     <450498B7-D630-30F2-9EE0-1B5E5D32346F> /opt/homebrew/Cellar/postgresql@18/18.3/bin/postgres
+ severity_local: "ERROR",
+   severity: "ERROR",
+       file: "dfmgr.c",
+    routine: "internal_load_library",
+       code: "58P01"
+
+      at ErrorResponse (/Users/hutusi/workspace/ai/naive/agentcenter-nuxt/node_modules/postgres/src/connection.js:815:30)
+      at handle (/Users/hutusi/workspace/ai/naive/agentcenter-nuxt/node_modules/postgres/src/connection.js:765:5)
+      at data (/Users/hutusi/workspace/ai/naive/agentcenter-nuxt/node_modules/postgres/src/connection.js:457:5)
+      at emit (node:events:95:22)
+      at addChunk (internal:streams/readable:264:47)
+      at readableAddChunkPushByteMode (internal:streams/readable:242:18)
+      at data (node:net:281:52)
+
+error: script "db:seed:mcp" exited with code 1
+
+---
+
+ok, it fixed.
+
+---
+
+the PR is clean, please merge it
+
+---
+
+let's take a look at the panorama deeply, what can we do to make it more useful and elegant? what do you think? I have one idea, show percentage or "release number/total number" instead of "on track" in SPDT block. what do you think?

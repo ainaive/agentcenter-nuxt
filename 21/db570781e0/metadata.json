@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "21db570781e0",
+  "strategy": "manual-commit",
+  "branch": "feat/mcp-panorama-raw-stats",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/mcp-landscape/CardHeader.vue",
+    "app/components/mcp-landscape/LayerSummary.vue"
+  ],
+  "sessions": [
+    {
+      "metadata": "/21/db570781e0/0/metadata.json",
+      "transcript": "/21/db570781e0/0/full.jsonl",
+      "content_hash": "/21/db570781e0/0/content_hash.txt",
+      "prompt": "/21/db570781e0/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 44,
+    "cache_creation_tokens": 435682,
+    "cache_read_tokens": 7329821,
+    "output_tokens": 34495,
+    "api_call_count": 19
+  }
+}
