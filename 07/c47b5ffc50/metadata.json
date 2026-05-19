@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "07c47b5ffc50",
+  "strategy": "manual-commit",
+  "branch": "feat/mcp-panorama-raw-stats",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/mcp-landscape/CardHeader.vue",
+    "app/components/mcp-landscape/DomainCard.vue",
+    "app/components/mcp-landscape/LayerSummary.vue",
+    "app/components/mcp-landscape/PanoramaView.vue",
+    "app/components/mcp-landscape/SectorCard.vue",
+    "app/components/mcp-landscape/ToolDetailPanel.vue",
+    "app/pages/mcp-panorama.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/07/c47b5ffc50/0/metadata.json",
+      "transcript": "/07/c47b5ffc50/0/full.jsonl",
+      "content_hash": "/07/c47b5ffc50/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 21,
+    "cache_creation_tokens": 15811,
+    "cache_read_tokens": 9154726,
+    "output_tokens": 12976,
+    "api_call_count": 21
+  }
+}
