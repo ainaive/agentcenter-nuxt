@@ -151,7 +151,7 @@ function title(g: Group): string {
           v-for="(g, i) in top3"
           :key="g.key"
           type="button"
-          class="flex items-baseline justify-between gap-2 bg-transparent border-0 p-0 cursor-pointer text-left text-(--color-ink) hover:text-(--color-accent) transition-colors"
+          class="flex items-baseline justify-between gap-2 bg-transparent border-0 p-0 cursor-pointer text-left text-(--color-ink) hover:underline underline-offset-4 decoration-(--color-ink-muted) transition-colors"
           :title="t('mcpPanorama.card.drillIn', { name: title(g) })"
           @click="emit('drill', g.key)"
         >

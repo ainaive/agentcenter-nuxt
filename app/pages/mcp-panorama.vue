@@ -144,7 +144,9 @@ function drillTo(primary: string) {
 }
 
 function filterTo(status: McpStatus) {
-  statusFilter.value = status
+  // Same toggle behavior as the StatusChip buttons in SectionHeader —
+  // clicking the active status flips back to "all".
+  statusFilter.value = statusFilter.value === status ? "all" : status
 }
 </script>
 
