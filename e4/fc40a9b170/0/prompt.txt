@@ -1,0 +1,5 @@
+let's think about the MCP panorama, make it to be more elegant. first, we need make some improvements, the software tool in PDT may have one or more MCP, like CodeCheck, it may have two MCPs, calls: molint-mcp and codecheck-mcp. so please try to improve the panorama.
+
+---
+
+let's think about the MCP panorama, make it to be more elegant. first, we need make some improvements, the software tool in PDT may have one or more MCP, like CodeCheck, it may have two MCPs, calls: molint-mcp and codecheck-mcp. so please try to improve the panorama.

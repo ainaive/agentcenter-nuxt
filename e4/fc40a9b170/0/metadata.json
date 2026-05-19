@@ -1,0 +1,65 @@
+{
+  "cli_version": "0.6.1",
+  "checkpoint_id": "e4fc40a9b170",
+  "session_id": "cda0ffe2-fc04-492e-8e9b-dbe92b5cc893",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-19T03:30:56.119045Z",
+  "branch": "feat/mcp-panorama-multi-mcp",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "shared/db/schema/mcp-landscape.ts",
+    "shared/mcp-panorama.ts",
+    "shared/data/mcp-landscape.ts",
+    "scripts/seed-mcp-landscape.ts",
+    "shared/mcp-panorama.test.ts",
+    "shared/data/mcp-landscape.test.ts",
+    "server/utils/queries/mcp-landscape.ts",
+    "app/components/mcp-landscape/McpTile.vue",
+    "app/components/mcp-landscape/ToolGroupHeader.vue",
+    "app/components/mcp-landscape/PdtBlock.vue",
+    "app/components/mcp-landscape/SectorCard.vue",
+    "app/components/mcp-landscape/DomainCard.vue",
+    "app/components/mcp-landscape/PanoramaView.vue",
+    "app/components/mcp-landscape/ToolCard.vue",
+    "app/components/mcp-landscape/GroupedListView.vue",
+    "app/components/mcp-landscape/ToolDetailPanel.vue",
+    "app/components/mcp-landscape/LayerSidebar.vue",
+    "app/components/mcp-landscape/CardHeader.vue",
+    "app/pages/mcp-panorama.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json",
+    "app/components/mcp-landscape/LayerSummary.vue",
+    "app/components/mcp-landscape/McpTile.nuxt.test.ts"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "196a1e32ac0c",
+  "token_usage": {
+    "input_tokens": 93,
+    "cache_creation_tokens": 311846,
+    "cache_read_tokens": 12462074,
+    "output_tokens": 101956,
+    "api_call_count": 78
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-19T03:30:56.091843Z",
+    "agent_lines": 1134,
+    "agent_removed": 401,
+    "human_added": 2328,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 3462,
+    "total_lines_changed": 4039,
+    "agent_percentage": 38.00445654865066,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}
