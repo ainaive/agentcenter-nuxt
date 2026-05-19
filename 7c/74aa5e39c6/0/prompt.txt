@@ -1,0 +1,1 @@
+it's better now, let's make some improvements, 1. many mcp of the tool is not the same name of the tool, please modify the seed, make it more realistic. 2. now all the mcp is no need, please update the seed's data, make it more realistic. 3. the style of mcp card and tool card is same, please improve them, make the style more elegant.
