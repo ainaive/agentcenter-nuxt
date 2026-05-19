@@ -1,0 +1,17 @@
+the PR is clean
+
+---
+
+/update-features-and-daily-log
+
+---
+
+/update-features-and-daily-log and commit on the main branch
+
+---
+
+ok, what about the feature.md?
+
+---
+
+1. ok, 2. remove
