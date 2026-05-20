@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "83a84e1c021a",
+  "strategy": "manual-commit",
+  "branch": "feat/ext-list-elegance",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/extension/ResultsSummary.vue",
+    "app/pages/extensions/index.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/83/a84e1c021a/0/metadata.json",
+      "transcript": "/83/a84e1c021a/0/full.jsonl",
+      "content_hash": "/83/a84e1c021a/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 13,
+    "cache_creation_tokens": 11095,
+    "cache_read_tokens": 1188630,
+    "output_tokens": 8083,
+    "api_call_count": 13
+  }
+}
