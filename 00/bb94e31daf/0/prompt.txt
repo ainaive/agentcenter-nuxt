@@ -1,0 +1,29 @@
+let's take a look at the extension detail page. what can we do to make it more elegant?
+
+---
+
+push and open a PR
+
+---
+
+check about the code reviews on the PR
+
+---
+
+check about the code reviews on the PR
+
+---
+
+ok, go ahead
+
+---
+
+check about the PR
+
+---
+
+mrege it
+
+---
+
+/update-features-and-daily-log ,and commit on the main branch
