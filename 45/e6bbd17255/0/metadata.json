@@ -1,0 +1,39 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "45e6bbd17255",
+  "session_id": "5a687021-33fa-44b9-a314-cd84cf5d20bb",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-20T11:06:51.994847Z",
+  "branch": "feat/ext-list-elegance",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/filters/FilterChips.vue"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "c5045dc4fe2d",
+  "checkpoint_transcript_start": 417,
+  "transcript_lines_at_start": 417,
+  "token_usage": {
+    "input_tokens": 4,
+    "cache_creation_tokens": 1529,
+    "cache_read_tokens": 730177,
+    "output_tokens": 846,
+    "api_call_count": 4
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-20T11:06:51.965727Z",
+    "agent_lines": 0,
+    "agent_removed": 34,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 0,
+    "total_lines_changed": 34,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}
