@@ -1,0 +1,53 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "e761497b7918",
+  "session_id": "6d76a0a1-1efb-47d6-b57f-0232d8dcd773",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-20T04:59:12.497119Z",
+  "branch": "feat/mcp-panorama-elegance",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/components/mcp-landscape/CardHeader.vue"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "ff74acc47b4c",
+  "token_usage": {
+    "input_tokens": 68,
+    "cache_creation_tokens": 124193,
+    "cache_read_tokens": 2491823,
+    "output_tokens": 25622,
+    "api_call_count": 38
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-20T04:59:12.486923Z",
+    "agent_lines": 20,
+    "agent_removed": 60,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 20,
+    "total_lines_changed": 80,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 30,
+      "agent_lines_removed": 70
+    }
+  ]
+}
