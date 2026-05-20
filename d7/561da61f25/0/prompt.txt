@@ -1,0 +1,1 @@
+let's take a look at the extension detail page. what can we do to make it more elegant?
