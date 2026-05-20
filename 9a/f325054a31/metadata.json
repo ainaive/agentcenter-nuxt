@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "9af325054a31",
+  "strategy": "manual-commit",
+  "branch": "feat/ext-list-elegance",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/extension/ExtCard.vue"
+  ],
+  "sessions": [
+    {
+      "metadata": "/9a/f325054a31/0/metadata.json",
+      "transcript": "/9a/f325054a31/0/full.jsonl",
+      "content_hash": "/9a/f325054a31/0/content_hash.txt",
+      "prompt": "/9a/f325054a31/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 32,
+    "cache_creation_tokens": 142944,
+    "cache_read_tokens": 1006207,
+    "output_tokens": 19394,
+    "api_call_count": 17
+  }
+}
