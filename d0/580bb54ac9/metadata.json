@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "d0580bb54ac9",
+  "strategy": "manual-commit",
+  "branch": "feat/ext-list-elegance",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/extension/ExtCard.vue",
+    "app/components/extension/ExtGrid.vue",
+    "app/components/extension/ExtGridSkeleton.vue"
+  ],
+  "sessions": [
+    {
+      "metadata": "/d0/580bb54ac9/0/metadata.json",
+      "transcript": "/d0/580bb54ac9/0/full.jsonl",
+      "content_hash": "/d0/580bb54ac9/0/content_hash.txt",
+      "prompt": "/d0/580bb54ac9/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 14,
+    "cache_creation_tokens": 5951,
+    "cache_read_tokens": 1720898,
+    "output_tokens": 4769,
+    "api_call_count": 9
+  }
+}
