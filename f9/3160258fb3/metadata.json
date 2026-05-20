@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "f93160258fb3",
+  "strategy": "manual-commit",
+  "branch": "feat/ext-list-elegance",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/f9/3160258fb3/0/metadata.json",
+      "transcript": "/f9/3160258fb3/0/full.jsonl",
+      "content_hash": "/f9/3160258fb3/0/content_hash.txt",
+      "prompt": "/f9/3160258fb3/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 197,
+    "cache_creation_tokens": 304813,
+    "cache_read_tokens": 22432252,
+    "output_tokens": 116796,
+    "api_call_count": 147
+  }
+}
