@@ -9,14 +9,11 @@ defineProps<{
 </script>
 
 <template>
-  <div class="mb-5 flex flex-col gap-3 border-b border-(--color-border)/60 pb-3">
-    <div class="flex flex-wrap items-center gap-3">
-      <ScopePills />
-      <DeptPicker />
-      <CreatorPicker v-if="creators" :creators="creators" />
-      <PublisherPicker v-if="publishers" :publishers="publishers" />
-    </div>
+  <div class="mb-6 flex flex-wrap items-center gap-2">
+    <ScopePills />
+    <DeptPicker />
+    <CreatorPicker v-if="creators" :creators="creators" />
+    <PublisherPicker v-if="publishers" :publishers="publishers" />
     <TagDrawer v-if="tags && tags.length" :tags="tags" />
-    <FilterChips />
   </div>
 </template>

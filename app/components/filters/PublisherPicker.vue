@@ -32,15 +32,14 @@ function selectPublisher(id: string | undefined) {
   <Popover v-model:open="open">
     <PopoverTrigger
       :class="[
-        'inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[12px] transition-colors',
+        'inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 text-[12px] transition-colors',
         activePublisher
-          ? 'border-(--color-ink)/35 bg-(--color-card) text-(--color-ink) font-semibold'
+          ? 'border-(--color-ink)/20 bg-(--color-card) text-(--color-ink) font-semibold'
           : 'border-(--color-border) bg-(--color-card) text-(--color-ink-muted) hover:text-(--color-ink)',
       ]"
     >
-      <span class="font-semibold">{{ t("filters.publisher.label") }}:</span>
       <span class="truncate max-w-[140px]">
-        {{ activePublisher ? publisherLabel(activePublisher) : t("filters.publisher.any") }}
+        {{ activePublisher ? publisherLabel(activePublisher) : t("filters.publisher.label") }}
       </span>
       <ChevronDown :size="12" aria-hidden="true" />
     </PopoverTrigger>

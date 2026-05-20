@@ -46,17 +46,17 @@ function labelFor(id: string): string {
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="contents">
     <button
       type="button"
-      class="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[12px] transition-colors"
+      class="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 text-[12px] transition-colors"
       :class="activeTags.length
-        ? 'border-(--color-ink)/35 bg-(--color-card) text-(--color-ink) font-semibold'
+        ? 'border-(--color-ink)/20 bg-(--color-card) text-(--color-ink) font-semibold'
         : 'border-(--color-border) bg-(--color-card) text-(--color-ink-muted) hover:text-(--color-ink)'"
       :aria-expanded="open"
       @click="open = !open"
     >
-      <span class="font-semibold">{{ t("filters.tagsToggle") }}</span>
+      <span>{{ t("filters.tagsToggle") }}</span>
       <span
         v-if="activeTags.length"
         class="rounded-full bg-(--color-accent) text-(--color-accent-fg) font-mono text-[10px] px-1.5 py-0.5"
@@ -70,7 +70,10 @@ function labelFor(id: string): string {
       />
     </button>
 
-    <div v-if="open" class="mt-3 rounded-md border border-(--color-border) bg-(--color-card) p-3">
+    <div
+      v-if="open"
+      class="basis-full mt-1 rounded-md border border-(--color-border) bg-(--color-card) p-3"
+    >
       <div class="flex flex-wrap gap-1.5">
         <button
           v-for="tag in visibleTags"

@@ -24,11 +24,11 @@ function onClick(key: (typeof SCOPE_KEYS)[number]) {
       :key="key"
       type="button"
       :aria-pressed="active === key"
-      class="rounded-full border px-3 py-1 text-[12px] font-semibold transition"
+      class="rounded-full border px-2.5 py-0.5 text-[12px] font-semibold transition"
       :class="
         active === key
-          ? 'bg-(--color-ink) text-(--color-bg) border-(--color-ink)'
-          : 'border-(--color-border) text-(--color-ink-muted) hover:border-(--color-accent) hover:text-(--color-accent)'
+          ? 'bg-(--color-ink)/8 text-(--color-ink) border-(--color-ink)/25'
+          : 'border-(--color-border) text-(--color-ink-muted) hover:text-(--color-ink)'
       "
       @click="onClick(key)"
     >
