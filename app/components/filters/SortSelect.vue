@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ArrowDownUp } from "lucide-vue-next"
 import type { Filters } from "~~/shared/validators/filters"
 
 const { t } = useI18n()
@@ -15,11 +16,14 @@ function onChange(event: Event) {
 </script>
 
 <template>
-  <label class="flex items-center gap-2 text-[12px] text-(--color-ink-muted)">
-    <span class="shrink-0 font-semibold">{{ t("filters.sortLabel") }}:</span>
+  <label
+    :aria-label="t('filters.sortLabel')"
+    class="inline-flex items-center gap-1.5 rounded-md border border-(--color-border) bg-(--color-card) px-2 py-1 text-(--color-ink-muted) transition-colors focus-within:border-(--color-ink)/40 hover:text-(--color-ink)"
+  >
+    <ArrowDownUp :size="12" aria-hidden="true" />
     <select
       :value="active"
-      class="cursor-pointer rounded-md border border-(--color-border) bg-(--color-card) text-(--color-ink) px-2 py-1 text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-(--color-accent)/30"
+      class="cursor-pointer bg-transparent text-(--color-ink) text-[12px] outline-none"
       @change="onChange"
     >
       <option v-for="key in SORT_KEYS" :key="key" :value="key">
