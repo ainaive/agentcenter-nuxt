@@ -1,0 +1,15 @@
+let's take a look at the mcp panorama, try to make it more elegant. 1, the status bar lines seems too many, do we
+  need to remove it from SPDT block, what do you think? 2. "No mcp need" 无需 MCP is better to change to "暂无 MCP
+  诉求". 3. "行业" please change to "产业"
+
+---
+
+I can not see the full figure you show me, only the top lines
+
+---
+
+I like ASCII art, but please show me the full
+
+---
+
+open a PR
