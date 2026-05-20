@@ -6,7 +6,7 @@ const route = useRoute()
 const { filters } = useFilters()
 const localePath = useLocalePath()
 
-const { data, refresh } = await useFetch("/api/internal/extensions", {
+const { data, pending, refresh } = await useFetch("/api/internal/extensions", {
   query: computed(() => route.query),
   default: () => ({ items: [], total: 0, filters: {} }),
 })
@@ -57,7 +57,9 @@ const isMcpCategory = computed(() => route.query.category === "mcp")
       :tags="facets.tags"
     />
 
+    <ExtGridSkeleton v-if="pending && items.length === 0" />
     <ExtGrid
+      v-else
       :items="items"
       :query="query"
       :clear-filters-href="filtersActive ? localePath('/extensions') : undefined"
