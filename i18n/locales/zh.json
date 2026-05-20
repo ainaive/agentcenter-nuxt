@@ -81,9 +81,9 @@
     "mcpPanoramaFeature": {
       "eyebrow": "MCP 全景图",
       "title": "MCP 化的全景视图",
-      "description": "两个层级、每个行业与平台域，一眼看清哪些工具已上线、在建或尚未启动。",
+      "description": "两个层级、每个产业与平台域，一眼看清哪些工具已上线、在建或尚未启动。",
       "stats": "{domains} 个域 · {tools} 个工具 · 2 个层级",
-      "statsFallback": "浏览所有工具、行业与领域",
+      "statsFallback": "浏览所有工具、产业与领域",
       "cta": "进入全景图"
     },
     "mcpPanoramaLink": "查看 MCP 全景图"
@@ -465,21 +465,21 @@
     "page": {
       "title": "MCP 全景图",
       "subtitleAll": "本视图共 {total} 个 MCP，已显示 {visible} 个",
-      "subtitleScoped": "{visible} 个 MCP · {released} 已发布 · {dev} 开发中 · {none} 无需 MCP",
+      "subtitleScoped": "{visible} 个 MCP · {released} 已发布 · {dev} 开发中 · {none} 暂无 MCP 诉求",
       "errorLoad": "加载 MCP 全景失败，请重试。",
       "retry": "重试"
     },
     "layer": {
-      "industry": "行业服务",
-      "industryShort": "行业",
-      "industryDesc": "面向各行业的工具服务",
+      "industry": "产业服务",
+      "industryShort": "产业",
+      "industryDesc": "面向各产业的工具服务",
       "public": "公共服务",
       "publicShort": "公共",
       "publicDesc": "跨业务的平台领域"
     },
     "sidebar": {
       "serviceLayer": "服务层级",
-      "sectors": "行业",
+      "sectors": "产业",
       "domainsPdts": "领域 / PDT",
       "allMcps": "全部 MCP",
       "pushToMcp": "推动 MCP 化",
@@ -487,8 +487,8 @@
     },
     "status": {
       "none": {
-        "label": "无需 MCP",
-        "short": "无需",
+        "label": "暂无 MCP 诉求",
+        "short": "暂无",
         "desc": "工具维持现状即可，暂无 MCP 化计划。"
       },
       "dev": {
@@ -512,7 +512,7 @@
       "mcpActive": "MCP 推进率",
       "released": "已发布",
       "inDev": "开发中",
-      "noMcp": "无需 MCP",
+      "noMcp": "暂无 MCP 诉求",
       "leading": "领先",
       "lagging": "落后",
       "topReleased": "按发布率排名",
