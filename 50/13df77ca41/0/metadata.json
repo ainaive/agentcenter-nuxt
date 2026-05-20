@@ -1,0 +1,44 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "5013df77ca41",
+  "session_id": "5a687021-33fa-44b9-a314-cd84cf5d20bb",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-20T11:06:20.489215Z",
+  "branch": "feat/ext-list-elegance",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/filters/FilterBar.vue",
+    "app/components/filters/TagDrawer.vue",
+    "app/components/filters/ScopePills.vue",
+    "app/components/filters/DeptPicker.vue",
+    "app/components/filters/CreatorPicker.vue",
+    "app/components/filters/PublisherPicker.vue"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "c5045dc4fe2d",
+  "checkpoint_transcript_start": 366,
+  "transcript_lines_at_start": 366,
+  "token_usage": {
+    "input_tokens": 11,
+    "cache_creation_tokens": 15850,
+    "cache_read_tokens": 1913567,
+    "output_tokens": 11926,
+    "api_call_count": 11
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-20T11:06:20.454735Z",
+    "agent_lines": 27,
+    "agent_removed": 28,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 27,
+    "total_lines_changed": 55,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}
