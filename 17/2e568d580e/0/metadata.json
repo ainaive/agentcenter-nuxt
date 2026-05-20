@@ -1,0 +1,49 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "172e568d580e",
+  "session_id": "5a687021-33fa-44b9-a314-cd84cf5d20bb",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-20T11:03:24.109381Z",
+  "branch": "feat/ext-list-elegance",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/extension/ExtCard.vue",
+    "app/components/extension/ExtGridSkeleton.vue"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "c5045dc4fe2d",
+  "checkpoint_transcript_start": 290,
+  "transcript_lines_at_start": 290,
+  "token_usage": {
+    "input_tokens": 22,
+    "cache_creation_tokens": 48436,
+    "cache_read_tokens": 1800251,
+    "output_tokens": 29509,
+    "api_call_count": 12
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-20T11:03:24.077683Z",
+    "agent_lines": 20,
+    "agent_removed": 54,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 20,
+    "total_lines_changed": 74,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}

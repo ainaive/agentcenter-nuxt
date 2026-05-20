@@ -1,0 +1,5 @@
+not enought. 1. the horizontal line seems not good. 2. the card has too may things, I think we can remove tags and install button. and make the card wider, to be a rectangle. what do you think? 3. the filter functions at the top seems not elegant. can you make them better?
+
+---
+
+3 or more columns is better
