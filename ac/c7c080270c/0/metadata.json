@@ -1,0 +1,38 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "acc7c080270c",
+  "session_id": "c710d4ee-f364-4c18-aa95-b82c094a2a34",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-22T08:17:04.718645Z",
+  "branch": "feat/collections",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/components/extension/SaveButton.vue",
+    "app/components/extension/SaveToCollectionPopover.vue"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "aca5804852d8",
+  "token_usage": {
+    "input_tokens": 436,
+    "cache_creation_tokens": 339834,
+    "cache_read_tokens": 19846122,
+    "output_tokens": 98142,
+    "api_call_count": 129
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-22T08:17:04.690594Z",
+    "agent_lines": 239,
+    "agent_removed": 48,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 239,
+    "total_lines_changed": 287,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}
