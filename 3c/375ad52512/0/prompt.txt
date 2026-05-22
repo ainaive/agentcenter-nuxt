@@ -1,0 +1,9 @@
+open the PR
+
+---
+
+in the homepage, the "popular", "top related", "new" change to "official recommend", "popular", "new". and I think make the tab tag centered, and make the tab name prominent. it should be easy for user to find. what do you think?
+
+---
+
+not seperate one, commit on this branch, but do not push

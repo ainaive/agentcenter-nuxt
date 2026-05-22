@@ -1,0 +1,51 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "3c375ad52512",
+  "session_id": "df0956e2-0d8c-4234-966b-6c016ebca190",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-22T07:29:55.14666Z",
+  "branch": "feat/home-no-sidebar-centered-layout",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/home/HomeTabs.vue",
+    "app/components/home/HomeDiscovery.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "b99fc86ad94e",
+  "checkpoint_transcript_start": 165,
+  "transcript_lines_at_start": 165,
+  "token_usage": {
+    "input_tokens": 60,
+    "cache_creation_tokens": 27647,
+    "cache_read_tokens": 4003718,
+    "output_tokens": 15858,
+    "api_call_count": 45
+  },
+  "session_metrics": {
+    "turn_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-22T07:29:55.13509Z",
+    "agent_lines": 24,
+    "agent_removed": 12,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 24,
+    "total_lines_changed": 36,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}
