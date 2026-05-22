@@ -46,7 +46,10 @@ beforeEach(() => {
   DB.transaction.mockImplementation(async (cb) => cb(TX))
 
   // Common defaults — individual tests override.
-  vi.mocked(collectionsRepo.getOrCreateSystem).mockResolvedValue({ id: "col-1" })
+  vi.mocked(collectionsRepo.getOrCreateSystem).mockResolvedValue({
+    id: "col-1",
+    slug: "shortcode01",
+  })
   vi.mocked(installsRepo.findByUserAndExtension).mockResolvedValue(null)
 })
 
