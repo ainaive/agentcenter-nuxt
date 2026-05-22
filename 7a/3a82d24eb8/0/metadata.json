@@ -1,0 +1,42 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "7a3a82d24eb8",
+  "session_id": "8f9fec62-c9b1-437a-bf89-6900771bfbfd",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-22T02:44:24.945919Z",
+  "branch": "feat/home-skillhub-redesign",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/home/HomeHero.vue",
+    "app/components/home/HomeTabs.vue",
+    "app/components/home/HomeTagRail.vue",
+    "app/components/home/HomeDiscovery.vue"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "3b0b311d4bf2",
+  "checkpoint_transcript_start": 169,
+  "transcript_lines_at_start": 169,
+  "token_usage": {
+    "input_tokens": 11,
+    "cache_creation_tokens": 10629,
+    "cache_read_tokens": 1315043,
+    "output_tokens": 7795,
+    "api_call_count": 11
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-22T02:44:24.92117Z",
+    "agent_lines": 250,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 250,
+    "total_lines_changed": 250,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}
