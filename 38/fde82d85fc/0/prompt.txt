@@ -1,0 +1,13 @@
+I don't like the current Skills homepage. Please model it after https://skillhub.cn/ to redesign and reimplement the layout.
+
+---
+
+do you want to see the screenshot of skillhub.cn ?
+
+---
+
+[Image #1]
+
+---
+
+what about commits and PR? how may commits and PRs?

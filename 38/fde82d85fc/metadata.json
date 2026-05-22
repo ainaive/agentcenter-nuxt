@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "38fde82d85fc",
+  "strategy": "manual-commit",
+  "branch": "feat/home-skillhub-redesign",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/38/fde82d85fc/0/metadata.json",
+      "transcript": "/38/fde82d85fc/0/full.jsonl",
+      "content_hash": "/38/fde82d85fc/0/content_hash.txt",
+      "prompt": "/38/fde82d85fc/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 1547,
+    "cache_creation_tokens": 151472,
+    "cache_read_tokens": 2695891,
+    "output_tokens": 33026,
+    "api_call_count": 31
+  }
+}
