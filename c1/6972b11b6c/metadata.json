@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "c16972b11b6c",
+  "strategy": "manual-commit",
+  "branch": "feat/collections",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "drizzle/0007_wakeful_cloak.sql",
+    "drizzle/meta/0007_snapshot.json",
+    "drizzle/meta/_journal.json",
+    "shared/db/schema/collection.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/c1/6972b11b6c/0/metadata.json",
+      "transcript": "/c1/6972b11b6c/0/full.jsonl",
+      "content_hash": "/c1/6972b11b6c/0/content_hash.txt",
+      "prompt": "/c1/6972b11b6c/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 432,
+    "cache_creation_tokens": 337239,
+    "cache_read_tokens": 18890010,
+    "output_tokens": 96145,
+    "api_call_count": 125
+  }
+}
