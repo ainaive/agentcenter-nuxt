@@ -88,7 +88,7 @@ function pageLink(n: number) {
           :to="pageLink(n)"
           class="rounded-md border px-3 py-1.5 text-sm transition-colors"
           :class="n === page
-            ? 'border-(--color-accent) text-(--color-accent) font-medium'
+            ? 'border-(--color-border) bg-(--color-sidebar) text-(--color-ink) font-medium'
             : 'border-(--color-border) text-(--color-ink-muted) hover:text-(--color-ink)'"
         >
           {{ n }}

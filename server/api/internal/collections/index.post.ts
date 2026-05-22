@@ -6,15 +6,18 @@ export default defineEventHandler(async (event) => {
   const body = await readValidatedBody(event, (raw) =>
     CreateCollectionInput.parse(raw),
   )
-  const db = useDb()
-  const created = await collectionsRepo.create(db, {
-    ownerUserId: user.id,
-    input: body,
-  })
-  return {
-    ok: true as const,
-    slug: created.slug,
-    id: created.id,
-    visibility: created.visibility,
+  try {
+    const created = await collectionsRepo.create(useDb(), {
+      ownerUserId: user.id,
+      input: body,
+    })
+    return {
+      ok: true as const,
+      slug: created.slug,
+      id: created.id,
+      visibility: created.visibility,
+    }
+  } catch (err) {
+    throw mapCollectionError(err)
   }
 })

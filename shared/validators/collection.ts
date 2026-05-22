@@ -36,10 +36,20 @@ export const CreateCollectionInput = z.object({
 
 export type CreateCollectionInput = z.infer<typeof CreateCollectionInput>
 
-export const UpdateCollectionInput = CreateCollectionInput.partial()
+// `.partial()` alone would inherit the `.default("private")` from
+// CreateCollectionInput.visibility — in Zod v4 the default is materialized
+// even when the field is omitted, which would silently reset a public
+// collection to private on every PATCH that didn't touch visibility.
+// Omit, partial, then re-add visibility as plain optional so an omitted
+// field stays `undefined` and the repo's `!== undefined` check correctly
+// skips the column.
+export const UpdateCollectionInput = CreateCollectionInput
+  .omit({ visibility: true })
+  .partial()
+  .extend({ visibility: CollectionVisibility.optional() })
 export type UpdateCollectionInput = z.infer<typeof UpdateCollectionInput>
 
 export const AddItemInput = z.object({
-  extensionId: z.string().min(1),
+  extensionId: z.string().trim().min(1),
 })
 export type AddItemInput = z.infer<typeof AddItemInput>

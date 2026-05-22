@@ -6,6 +6,7 @@ import Input from "~/components/ui/Input.vue"
 import Popover from "~/components/ui/Popover.vue"
 import PopoverContent from "~/components/ui/PopoverContent.vue"
 import PopoverTrigger from "~/components/ui/PopoverTrigger.vue"
+import { COLLECTION_NAME_MAX } from "~~/shared/validators/collection"
 
 interface CollectionRow {
   id: string
@@ -162,7 +163,7 @@ function onSubmitCreate(event: Event) {
         :aria-label="isMember ? t('common.saved') : t('common.save')"
         class="inline-flex items-center gap-1.5 rounded-md border px-3.5 py-2 text-[14px] transition-colors disabled:opacity-60"
         :class="isMember
-          ? 'border-(--color-accent) bg-(--color-accent)/10 text-(--color-accent)'
+          ? 'border-(--color-border) bg-(--color-sidebar) text-(--color-ink) font-medium'
           : 'border-(--color-border) bg-(--color-card) text-(--color-ink) hover:bg-(--color-sidebar)'"
       >
         <component :is="isMember ? BookmarkCheck : Bookmark" :size="14" aria-hidden="true" />
@@ -220,6 +221,7 @@ function onSubmitCreate(event: Event) {
           v-model="newName"
           :placeholder="t('collections.form.namePlaceholder')"
           :disabled="creating"
+          :maxlength="COLLECTION_NAME_MAX"
           class="h-8 text-sm"
         />
         <button
