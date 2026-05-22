@@ -60,29 +60,26 @@ function submitSearch() {
       }}
     </h2>
 
-    <form class="mx-auto mt-8 flex max-w-3xl gap-3" @submit.prevent="submitSearch">
-      <label class="sr-only" for="home-search">{{ t("home.discoverySearchPlaceholder") }}</label>
+    <form class="mx-auto mt-8 flex max-w-3xl items-stretch gap-3" @submit.prevent="submitSearch">
+      <Label for="home-search" class="sr-only">{{ t("home.discoverySearchPlaceholder") }}</Label>
       <div class="relative flex-1">
         <Search
           :size="16"
           aria-hidden="true"
-          class="absolute top-1/2 left-4 -translate-y-1/2 text-(--color-ink-muted)"
+          class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-(--color-ink-muted)"
         />
-        <input
+        <Input
           id="home-search"
           v-model="searchInput"
           type="search"
           :placeholder="t('home.discoverySearchPlaceholder')"
-          class="w-full rounded-full border border-(--color-border) bg-(--color-card) py-3 pr-4 pl-11 text-sm text-(--color-ink) shadow-sm transition placeholder:text-(--color-ink-muted) focus:border-(--color-accent)/50 focus:outline-none focus:ring-2 focus:ring-(--color-accent)/20"
-        >
+          class="h-11 pl-10"
+        />
       </div>
-      <button
-        type="submit"
-        class="inline-flex shrink-0 items-center gap-2 rounded-full bg-(--color-accent) px-5 py-3 text-sm font-semibold text-(--color-accent-fg) transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-accent)/40"
-      >
-        <Sparkles :size="14" aria-hidden="true" />
+      <Button type="submit" size="lg" class="shrink-0">
+        <Sparkles aria-hidden="true" />
         {{ t("home.discoveryExploreAll") }}
-      </button>
+      </Button>
     </form>
 
     <div class="mt-10">
