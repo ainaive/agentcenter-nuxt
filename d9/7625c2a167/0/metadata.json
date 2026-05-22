@@ -1,0 +1,39 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "d97625c2a167",
+  "session_id": "8f9fec62-c9b1-437a-bf89-6900771bfbfd",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-22T02:45:09.453718Z",
+  "branch": "feat/home-skillhub-redesign",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/pages/index.vue"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "3b0b311d4bf2",
+  "checkpoint_transcript_start": 209,
+  "transcript_lines_at_start": 209,
+  "token_usage": {
+    "input_tokens": 5,
+    "cache_creation_tokens": 3770,
+    "cache_read_tokens": 641799,
+    "output_tokens": 1036,
+    "api_call_count": 5
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-22T02:45:09.422705Z",
+    "agent_lines": 4,
+    "agent_removed": 61,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 4,
+    "total_lines_changed": 65,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}
