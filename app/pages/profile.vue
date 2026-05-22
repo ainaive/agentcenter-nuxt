@@ -11,6 +11,7 @@ const SECTIONS: ReadonlyArray<ProfileSectionKey> = [
   "published",
   "drafts",
   "saved",
+  "collections",
   "activity",
   "settings",
 ]
@@ -92,6 +93,10 @@ const { data: section, error: sectionError } = await useFetch(
           />
           <SectionSaved
             v-else-if="active === 'saved' && section?.section === 'saved'"
+            :rows="section.rows"
+          />
+          <SectionCollections
+            v-else-if="active === 'collections' && section?.section === 'collections'"
             :rows="section.rows"
           />
           <SectionActivity

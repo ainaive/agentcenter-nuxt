@@ -5,10 +5,13 @@
     "installed": "Installed",
     "save": "Save",
     "saved": "Saved",
-    "addToGroup": "Add to group"
+    "addToGroup": "Add to group",
+    "saveToCollection": "Save to collection",
+    "newCollection": "New"
   },
   "nav": {
     "explore": "Explore",
+    "collections": "Collections",
     "publish": "Publish",
     "mcpPanorama": "MCP Panorama",
     "docs": "Docs",
@@ -409,6 +412,7 @@
       "published": "Published",
       "drafts": "Drafts",
       "saved": "Saved",
+      "collections": "Collections",
       "activity": "Activity",
       "settings": "Settings"
     },
@@ -444,6 +448,10 @@
     "emptySaved": {
       "title": "Nothing saved yet",
       "body": "Bookmark extensions you want to come back to."
+    },
+    "emptyCollections": {
+      "title": "No collections yet",
+      "body": "Create a collection to organize extensions and share curated bundles."
     },
     "emptyActivity": {
       "title": "No activity yet",
@@ -580,5 +588,52 @@
     "daysAgo": "{n} days ago",
     "weeksAgo": "{n} weeks ago",
     "never": "—"
+  },
+  "collections": {
+    "savedSystemName": "Saved",
+    "itemCount": "{count} items | {count} item | {count} items",
+    "browse": {
+      "title": "Public collections",
+      "subtitle": "Curated bundles of extensions, shared by the community.",
+      "empty": "No public collections yet.",
+      "pagination": "Pagination"
+    },
+    "popover": {
+      "title": "Save to collection",
+      "systemLabel": "System"
+    },
+    "form": {
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Daily SRE toolkit",
+      "nameZhLabel": "Name (Chinese)",
+      "nameZhPlaceholder": "Optional",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "What's in this collection?",
+      "descriptionZhLabel": "Description (Chinese)",
+      "descriptionZhPlaceholder": "Optional",
+      "visibilityLabel": "Visibility",
+      "visibilityHelp": "Private collections are only visible to you. Public collections appear on the browse page and can be shared by URL."
+    },
+    "actions": {
+      "create": "Create collection",
+      "rename": "Edit",
+      "delete": "Delete",
+      "remove": "Remove",
+      "makePublic": "Make public",
+      "makePrivate": "Make private",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "detail": {
+      "visibilityPrivate": "Private",
+      "visibilityPublic": "Public",
+      "owner": "by",
+      "itemsHeading": "Extensions ({count})",
+      "empty": "No extensions in this collection yet.",
+      "copyLink": "Copy link",
+      "linkCopied": "Copied",
+      "confirmDelete": "Delete this collection? The extensions themselves are not deleted.",
+      "notFoundTitle": "Collection not found"
+    }
   }
 }

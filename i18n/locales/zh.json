@@ -5,10 +5,13 @@
     "installed": "已安装",
     "save": "收藏",
     "saved": "已收藏",
-    "addToGroup": "添加到分组"
+    "addToGroup": "添加到分组",
+    "saveToCollection": "保存到合集",
+    "newCollection": "新建"
   },
   "nav": {
     "explore": "探索",
+    "collections": "合集",
     "publish": "发布",
     "mcpPanorama": "MCP 全景图",
     "docs": "文档",
@@ -409,6 +412,7 @@
       "published": "已发布",
       "drafts": "草稿",
       "saved": "收藏",
+      "collections": "合集",
       "activity": "动态",
       "settings": "设置"
     },
@@ -444,6 +448,10 @@
     "emptySaved": {
       "title": "暂无收藏",
       "body": "收藏你想稍后回来看看的扩展。"
+    },
+    "emptyCollections": {
+      "title": "暂无合集",
+      "body": "创建合集来整理扩展，或分享精选给他人。"
     },
     "emptyActivity": {
       "title": "暂无动态",
@@ -580,5 +588,52 @@
     "daysAgo": "{n} 天前",
     "weeksAgo": "{n} 周前",
     "never": "—"
+  },
+  "collections": {
+    "savedSystemName": "收藏",
+    "itemCount": "{count} 个扩展",
+    "browse": {
+      "title": "公开合集",
+      "subtitle": "社区精心整理的扩展合集。",
+      "empty": "暂无公开合集。",
+      "pagination": "分页"
+    },
+    "popover": {
+      "title": "保存到合集",
+      "systemLabel": "系统"
+    },
+    "form": {
+      "nameLabel": "名称",
+      "namePlaceholder": "例如：日常 SRE 工具集",
+      "nameZhLabel": "中文名称",
+      "nameZhPlaceholder": "可选",
+      "descriptionLabel": "描述",
+      "descriptionPlaceholder": "这个合集里有什么？",
+      "descriptionZhLabel": "中文描述",
+      "descriptionZhPlaceholder": "可选",
+      "visibilityLabel": "可见性",
+      "visibilityHelp": "私有合集仅自己可见；公开合集会出现在浏览页，可通过链接分享。"
+    },
+    "actions": {
+      "create": "新建合集",
+      "rename": "编辑",
+      "delete": "删除",
+      "remove": "移除",
+      "makePublic": "设为公开",
+      "makePrivate": "设为私有",
+      "save": "保存",
+      "cancel": "取消"
+    },
+    "detail": {
+      "visibilityPrivate": "私有",
+      "visibilityPublic": "公开",
+      "owner": "创建者",
+      "itemsHeading": "扩展（{count}）",
+      "empty": "该合集暂无扩展。",
+      "copyLink": "复制链接",
+      "linkCopied": "已复制",
+      "confirmDelete": "确定删除该合集？扩展本身不会被删除。",
+      "notFoundTitle": "未找到该合集"
+    }
   }
 }

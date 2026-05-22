@@ -50,6 +50,13 @@
       "when": 1779160412086,
       "tag": "0006_third_pete_wisdom",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1779436266174,
+      "tag": "0007_wakeful_cloak",
+      "breakpoints": true
     }
   ]
 }

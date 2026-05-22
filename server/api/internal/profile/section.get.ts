@@ -1,3 +1,5 @@
+import * as collectionsRepo from "~~/server/repositories/collections"
+import { listForOwner as listCollectionsForOwner } from "~~/server/utils/queries/collections"
 import {
   getActivityForUser,
   getDraftsForUser,
@@ -7,21 +9,36 @@ import {
 } from "~~/server/utils/queries/profile"
 import type {
   ProfileActivityEvent,
+  ProfileCollectionRow,
   ProfileDraftRow,
   ProfileInstalledRow,
   ProfilePublishedRow,
   ProfileSavedRow,
 } from "~~/shared/types"
 
-export type SectionKey = "installed" | "published" | "drafts" | "saved" | "activity"
+export type SectionKey =
+  | "installed"
+  | "published"
+  | "drafts"
+  | "saved"
+  | "collections"
+  | "activity"
 
-const KEYS: ReadonlySet<SectionKey> = new Set(["installed", "published", "drafts", "saved", "activity"])
+const KEYS: ReadonlySet<SectionKey> = new Set([
+  "installed",
+  "published",
+  "drafts",
+  "saved",
+  "collections",
+  "activity",
+])
 
 export type SectionResponse =
   | { section: "installed"; rows: ProfileInstalledRow[] }
   | { section: "published"; rows: ProfilePublishedRow[] }
   | { section: "drafts"; rows: ProfileDraftRow[] }
   | { section: "saved"; rows: ProfileSavedRow[] }
+  | { section: "collections"; rows: ProfileCollectionRow[] }
   | { section: "activity"; rows: ProfileActivityEvent[] }
 
 // Map Date fields to ISO strings so the endpoint's return type matches what
@@ -59,6 +76,15 @@ export default defineEventHandler(async (event): Promise<SectionResponse> => {
       return {
         section: "saved",
         rows: rows.map((r) => ({ ...r, savedAt: r.savedAt.toISOString() })),
+      }
+    }
+    case "collections": {
+      // Lazily seed the 'Saved' system row so it always appears in the list.
+      await collectionsRepo.getOrCreateSystem(useDb(), session.id, "saved")
+      const rows = await listCollectionsForOwner(session.id)
+      return {
+        section: "collections",
+        rows: rows.map((r) => ({ ...r, updatedAt: r.updatedAt.toISOString() })),
       }
     }
     case "activity": {

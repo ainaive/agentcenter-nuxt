@@ -7,6 +7,8 @@ import { DEPARTMENTS } from "../shared/data/departments"
 import { EXTENSIONS } from "../shared/data/extensions"
 import * as schema from "../shared/db/schema"
 import {
+  collectionItems,
+  collections,
   departments,
   extensions,
   extensionTags,
@@ -224,9 +226,39 @@ async function main() {
   console.log(`seed: inserting ${extTagRows.length} extension-tag links`)
   await db.insert(extensionTags).values(extTagRows)
 
-  console.log(
-    `seed: skipping ${COLLECTIONS.length} mock collections (user-owned, seeded post-signup in P9)`,
+  // Wipe and re-seed editorial public collections so the /collections browse
+  // page has realistic material in dev/staging. CASCADE clears
+  // collection_items as well. Anything a real signed-in user created
+  // (including the system 'Saved' row) goes too — re-running the seed is
+  // explicitly a "reset to demo state" operation.
+  console.log(`seed: re-seeding ${COLLECTIONS.length} editorial collections`)
+  await db.execute(sql`TRUNCATE TABLE ${collections} CASCADE`)
+
+  const now = new Date()
+  const collectionRows = COLLECTIONS.map((c) => ({
+    id: crypto.randomUUID(),
+    slug: c.slug,
+    ownerUserId: c.ownerUserId,
+    name: c.name,
+    nameZh: c.nameZh,
+    description: c.description,
+    descriptionZh: c.descriptionZh,
+    systemKind: null,
+    visibility: "public" as const,
+    publishedAt: now,
+    createdAt: now,
+    updatedAt: now,
+  }))
+  await db.insert(collections).values(collectionRows)
+
+  const itemRows = COLLECTIONS.flatMap((c, i) =>
+    c.extensionIds.map((extNumId) => ({
+      collectionId: collectionRows[i]!.id,
+      extensionId: `ext-${extNumId}`,
+    })),
   )
+  console.log(`seed: inserting ${itemRows.length} collection items`)
+  await db.insert(collectionItems).values(itemRows)
 
   // ─── MCP Panorama landscape ────────────────────────────────────────────────
   // Shared with scripts/seed-mcp-landscape.ts (the standalone Vercel-build

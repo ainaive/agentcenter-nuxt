@@ -149,6 +149,13 @@ const exploreActive = computed(() => {
         </PopoverContent>
       </Popover>
       <NuxtLink
+        :to="localePath('/collections')"
+        class="px-3 py-1.5 rounded text-(--color-ink-muted) hover:text-(--color-ink) hover:bg-(--color-sidebar)"
+        active-class="text-(--color-ink) font-semibold bg-(--color-sidebar)/60"
+      >
+        {{ t("nav.collections") }}
+      </NuxtLink>
+      <NuxtLink
         :to="localePath('/publish')"
         class="px-3 py-1.5 rounded text-(--color-ink-muted) hover:text-(--color-ink) hover:bg-(--color-sidebar)"
         active-class="text-(--color-ink) font-semibold bg-(--color-sidebar)/60"

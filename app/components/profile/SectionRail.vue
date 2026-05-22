@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { Activity, Bookmark, Download, FileText, Settings, Upload } from "lucide-vue-next"
+import { Activity, Bookmark, Download, FileText, FolderOpen, Settings, Upload } from "lucide-vue-next"
 
 export type ProfileSectionKey =
   | "installed"
   | "published"
   | "drafts"
   | "saved"
+  | "collections"
   | "activity"
   | "settings"
 
@@ -21,6 +22,7 @@ const items: Array<{ key: ProfileSectionKey; icon: typeof Download }> = [
   { key: "published", icon: Upload },
   { key: "drafts", icon: FileText },
   { key: "saved", icon: Bookmark },
+  { key: "collections", icon: FolderOpen },
   { key: "activity", icon: Activity },
   { key: "settings", icon: Settings },
 ]
