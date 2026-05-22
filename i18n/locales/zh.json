@@ -28,12 +28,26 @@
     "comingSoon": "敬请期待"
   },
   "home": {
-    "featuredLabel": "本周精选",
-    "featuredDescription": "AI 智能体扩展市场 — Skill、MCP、斜杠命令与插件。",
-    "trendingTitle": "热门",
-    "browseAll": "浏览全部 {count} 个",
-    "viewExtension": "查看扩展",
-    "installsCount": "{count} 次安装"
+    "heroEyebrow": "AGENTCENTER · 精选 AI 技能",
+    "heroTitleBefore": "装上 ",
+    "heroTitleBrand": "AgentCenter",
+    "heroTitleAfter": "，解锁 AI 超能力。",
+    "heroSubtitle": "精选推荐、高速安装、轻松发现 — 收录的技能可直接接入你的团队。",
+    "heroCtaBrowse": "浏览技能",
+    "heroCtaCli": "安装 CLI",
+    "heroInstallCommand": "npm i -g @agentcenter/cli",
+    "discoveryHeading": "收录 {count} 个技能，为你的团队精选。",
+    "discoveryHeadingEmpty": "为你的团队精选 AI 技能。",
+    "discoverySearchPlaceholder": "按名称、描述或任务搜索技能…",
+    "discoveryExploreAll": "探索全部技能",
+    "tabs": {
+      "popular": "热门",
+      "topRated": "高分",
+      "recent": "新上"
+    },
+    "tagRailLabel": "按主题浏览",
+    "tagRailAll": "全部技能",
+    "viewMore": "查看更多"
   },
   "errors": {
     "generic": {
