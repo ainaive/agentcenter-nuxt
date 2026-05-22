@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "503223091129",
+  "strategy": "manual-commit",
+  "branch": "feat/home-no-sidebar-centered-layout",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/home/HomeTabs.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/50/3223091129/0/metadata.json",
+      "transcript": "/50/3223091129/0/full.jsonl",
+      "content_hash": "/50/3223091129/0/content_hash.txt",
+      "prompt": "/50/3223091129/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 13,
+    "cache_creation_tokens": 5754,
+    "cache_read_tokens": 856086,
+    "output_tokens": 4952,
+    "api_call_count": 8
+  }
+}
