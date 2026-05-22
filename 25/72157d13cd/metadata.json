@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "2572157d13cd",
+  "strategy": "manual-commit",
+  "branch": "feat/home-skillhub-redesign",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/home/HomeHero.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/25/72157d13cd/0/metadata.json",
+      "transcript": "/25/72157d13cd/0/full.jsonl",
+      "content_hash": "/25/72157d13cd/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 35,
+    "cache_creation_tokens": 30547,
+    "cache_read_tokens": 5124314,
+    "output_tokens": 16011,
+    "api_call_count": 35
+  }
+}
