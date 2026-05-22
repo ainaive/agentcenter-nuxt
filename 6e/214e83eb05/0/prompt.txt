@@ -1,0 +1,9 @@
+ok, go ahead
+
+---
+
+push and open PR
+
+---
+
+change the chinease name of collection from "收藏夹" to "合集"
