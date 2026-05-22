@@ -1,0 +1,5 @@
+let's continue to improve the layout, 1. in the homepage, the sidebar do not need. 2. and when enter other pages, it shows the sidebar, the sidebar is better to be center with main block, not left side. what do you think?
+
+---
+
+I can not understand why centered max-width? and now auth is not in the sidebar.
