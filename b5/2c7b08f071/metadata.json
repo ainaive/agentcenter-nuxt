@@ -1,0 +1,29 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "b52c7b08f071",
+  "strategy": "manual-commit",
+  "branch": "feat/collections",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/components/profile/SectionCollections.vue",
+    "app/components/profile/SectionRail.vue",
+    "app/pages/profile.vue",
+    "server/api/internal/profile/section.get.ts",
+    "shared/types.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/b5/2c7b08f071/0/metadata.json",
+      "transcript": "/b5/2c7b08f071/0/full.jsonl",
+      "content_hash": "/b5/2c7b08f071/0/content_hash.txt",
+      "prompt": "/b5/2c7b08f071/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 438,
+    "cache_creation_tokens": 340969,
+    "cache_read_tokens": 20328147,
+    "output_tokens": 98935,
+    "api_call_count": 131
+  }
+}
