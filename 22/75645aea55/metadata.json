@@ -1,0 +1,34 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "2275645aea55",
+  "strategy": "manual-commit",
+  "branch": "feat/collections",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "server/api/internal/collection-memberships.get.ts",
+    "server/api/internal/collections/[slug].get.ts",
+    "server/api/internal/collections/[slug]/delete.post.ts",
+    "server/api/internal/collections/[slug]/items.post.ts",
+    "server/api/internal/collections/[slug]/items/[extensionId]/remove.post.ts",
+    "server/api/internal/collections/[slug]/update.post.ts",
+    "server/api/internal/collections/index.get.ts",
+    "server/api/internal/collections/index.post.ts",
+    "server/api/internal/collections/public.get.ts",
+    "server/utils/collections/errors.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/22/75645aea55/0/metadata.json",
+      "transcript": "/22/75645aea55/0/full.jsonl",
+      "content_hash": "/22/75645aea55/0/content_hash.txt",
+      "prompt": "/22/75645aea55/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 435,
+    "cache_creation_tokens": 339042,
+    "cache_read_tokens": 19606178,
+    "output_tokens": 97730,
+    "api_call_count": 128
+  }
+}
