@@ -22,7 +22,7 @@ function toggleSidebar() {
       <TopBar :collapsed="sidebarCollapsed" @toggle-sidebar="toggleSidebar" />
     </header>
 
-    <div class="flex flex-1 min-h-0">
+    <div class="mx-auto w-full max-w-7xl flex flex-1 min-h-0">
       <aside
         class="overflow-hidden flex flex-col transition-[width] duration-200"
         :class="sidebarCollapsed ? 'w-0' : 'w-[240px]'"

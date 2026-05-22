@@ -11,7 +11,9 @@ import {
 } from "lucide-vue-next"
 import type { Component } from "vue"
 
-defineProps<{ collapsed: boolean }>()
+withDefaults(defineProps<{ collapsed: boolean; noSidebar?: boolean }>(), {
+  noSidebar: false,
+})
 const emit = defineEmits<{ "toggle-sidebar": [] }>()
 
 const { t } = useI18n()
@@ -74,6 +76,7 @@ const exploreActive = computed(() => {
 <template>
   <div class="contents">
     <button
+      v-if="!noSidebar"
       type="button"
       class="p-2 rounded hover:bg-(--color-sidebar) focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-accent)"
       :aria-label="t('nav.toggleSidebar')"
