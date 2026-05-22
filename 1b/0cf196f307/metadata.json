@@ -1,0 +1,29 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "1b0cf196f307",
+  "strategy": "manual-commit",
+  "branch": "feat/collections",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/components/collection/CollectionCard.vue",
+    "app/components/collection/CollectionForm.vue",
+    "app/components/layout/TopBar.vue",
+    "app/pages/collections/[slug].vue",
+    "app/pages/collections/index.vue"
+  ],
+  "sessions": [
+    {
+      "metadata": "/1b/0cf196f307/0/metadata.json",
+      "transcript": "/1b/0cf196f307/0/full.jsonl",
+      "content_hash": "/1b/0cf196f307/0/content_hash.txt",
+      "prompt": "/1b/0cf196f307/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 437,
+    "cache_creation_tokens": 340387,
+    "cache_read_tokens": 20086858,
+    "output_tokens": 98602,
+    "api_call_count": 130
+  }
+}
