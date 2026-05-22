@@ -3,6 +3,8 @@ import { ArrowRight, Terminal } from "lucide-vue-next"
 
 const { t } = useI18n()
 const localePath = useLocalePath()
+
+const INSTALL_COMMAND = "npm i -g @agentcenter/cli"
 </script>
 
 <template>
@@ -42,7 +44,7 @@ const localePath = useLocalePath()
       </div>
 
       <div id="install-cli" class="mx-auto mt-8 max-w-xl">
-        <InstallCommand :command="t('home.heroInstallCommand')" />
+        <InstallCommand :command="INSTALL_COMMAND" />
       </div>
     </div>
   </section>

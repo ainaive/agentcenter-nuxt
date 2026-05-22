@@ -35,7 +35,6 @@
     "heroSubtitle": "精选推荐、高速安装、轻松发现 — 收录的技能可直接接入你的团队。",
     "heroCtaBrowse": "浏览技能",
     "heroCtaCli": "安装 CLI",
-    "heroInstallCommand": "npm i -g @agentcenter/cli",
     "discoveryHeading": "收录 {count} 个技能，为你的团队精选。",
     "discoveryHeadingEmpty": "为你的团队精选 AI 技能。",
     "discoverySearchPlaceholder": "按名称、描述或任务搜索技能…",
@@ -97,14 +96,6 @@
       "showingZero": "暂无匹配",
       "clearAll": "清除全部",
       "removeFilter": "移除 {label} 筛选"
-    },
-    "mcpPanoramaFeature": {
-      "eyebrow": "MCP 全景图",
-      "title": "MCP 化的全景视图",
-      "description": "两个层级、每个产业与平台域，一眼看清哪些工具已上线、在建或尚未启动。",
-      "stats": "{domains} 个域 · {tools} 个工具 · 2 个层级",
-      "statsFallback": "浏览所有工具、产业与领域",
-      "cta": "进入全景图"
     },
     "mcpPanoramaLink": "查看 MCP 全景图",
     "backToBrowse": "浏览扩展",

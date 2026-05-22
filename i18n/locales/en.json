@@ -35,7 +35,6 @@
     "heroSubtitle": "Curated picks, fast installs, easy discovery — ready to drop into your team.",
     "heroCtaBrowse": "Browse skills",
     "heroCtaCli": "Install the CLI",
-    "heroInstallCommand": "npm i -g @agentcenter/cli",
     "discoveryHeading": "{count} skills, curated for your team.",
     "discoveryHeadingEmpty": "AI skills, curated for your team.",
     "discoverySearchPlaceholder": "Search skills by name, description, or task…",
@@ -97,14 +96,6 @@
       "showingZero": "No matches",
       "clearAll": "Clear all",
       "removeFilter": "Remove {label} filter"
-    },
-    "mcpPanoramaFeature": {
-      "eyebrow": "MCP PANORAMA",
-      "title": "The MCP adoption landscape",
-      "description": "Two layers, every sector and platform domain — see which tools are live, in build, or yet to start.",
-      "stats": "{domains} domains · {tools} tools · 2 layers",
-      "statsFallback": "Browse every tool, sector, and domain",
-      "cta": "Open the panorama"
     },
     "mcpPanoramaLink": "View the MCP Panorama",
     "backToBrowse": "Browse extensions",
