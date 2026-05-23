@@ -12,7 +12,7 @@ const { t } = useI18n()
     </a>
 
     <header
-      class="sticky top-0 z-10 h-16 border-b border-(--color-border) bg-(--color-card) flex items-center px-5 gap-4"
+      class="sticky top-0 z-10 h-16 border-b border-(--color-border) bg-(--color-card)"
       role="banner"
     >
       <TopBar :collapsed="true" no-sidebar />
