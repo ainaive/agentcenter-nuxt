@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "ab077481ee19",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "scripts/seed-editorial-collections.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/ab/077481ee19/0/metadata.json",
+      "transcript": "/ab/077481ee19/0/full.jsonl",
+      "content_hash": "/ab/077481ee19/0/content_hash.txt",
+      "prompt": "/ab/077481ee19/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 164,
+    "cache_creation_tokens": 463356,
+    "cache_read_tokens": 31583635,
+    "output_tokens": 61907,
+    "api_call_count": 104
+  }
+}
