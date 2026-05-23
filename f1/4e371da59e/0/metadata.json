@@ -1,0 +1,39 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "f14e371da59e",
+  "session_id": "ad0c3134-bc82-4320-90f2-1d93692cac19",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-23T01:18:03.456185Z",
+  "branch": "refactor/layout-shell",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/layout/Sidebar.vue",
+    "app/components/layout/Sidebar.nuxt.test.ts",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "2022421ceef0",
+  "checkpoint_transcript_start": 146,
+  "transcript_lines_at_start": 146,
+  "token_usage": {
+    "input_tokens": 9,
+    "cache_creation_tokens": 12064,
+    "cache_read_tokens": 798329,
+    "output_tokens": 9009,
+    "api_call_count": 9
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-23T01:18:03.443559Z",
+    "agent_lines": 16,
+    "agent_removed": 65,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 16,
+    "total_lines_changed": 81,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}
