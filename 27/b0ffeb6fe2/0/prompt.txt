@@ -1,0 +1,5 @@
+now let's improve the design of the whole layout, think carefully of the main layout. what do you find? let me show what I found: 1. the nav bar is not good, it not align with the main content, because now the sidebar is centered alignment. what do you think? 2. the browse menu in the sidebar is awkward, is it better to be in the navbar? 3. the searbar in the navbar is not good too, is it better to remove it. 4. in the left sidebar, the catergories show in all pages is weird. is it better to only show in index page? what do you think?
+
+---
+
+what about commits and PRs?
