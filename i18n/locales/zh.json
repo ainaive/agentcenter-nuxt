@@ -110,6 +110,7 @@
   },
   "sidebar": {
     "categories": "分类",
+    "allCategories": "全部",
     "skills": "Skill",
     "mcpServers": "MCP",
     "slashCommands": "斜杠命令",

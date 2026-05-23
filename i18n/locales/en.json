@@ -110,6 +110,7 @@
   },
   "sidebar": {
     "categories": "Categories",
+    "allCategories": "All",
     "skills": "Skills",
     "mcpServers": "MCP Servers",
     "slashCommands": "Slash Commands",

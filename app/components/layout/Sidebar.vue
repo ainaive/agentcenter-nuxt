@@ -36,6 +36,15 @@ function buildHref(updates: Record<string, string | null>): string {
       {{ t("sidebar.categories") }}
     </h2>
     <div class="flex flex-col gap-px">
+      <NuxtLink
+        :to="buildHref({ funcCat: null, subCat: null, l2: null })"
+        class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-[15px] font-semibold transition hover:bg-(--color-card)"
+        :class="!activeFuncCat && !activeSubCat && !activeL2 ? 'bg-(--color-sidebar)/60 text-(--color-ink)' : 'text-(--color-ink)'"
+      >
+        <span class="bg-(--color-ink-muted) size-[9px] shrink-0 rounded-sm" />
+        <span class="flex-1">{{ t("sidebar.allCategories") }}</span>
+      </NuxtLink>
+
       <div v-for="cat in FUNC_TAXONOMY" :key="cat.key">
         <NuxtLink
           :to="buildHref({ funcCat: activeFuncCat === cat.key && !activeSubCat && !activeL2 ? null : cat.key, subCat: null, l2: null })"
