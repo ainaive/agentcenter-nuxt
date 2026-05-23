@@ -6,26 +6,25 @@ import { expect, test } from "@playwright/test"
 // runtime and stay fast.
 
 test.describe("browse page", () => {
-  test("/en/extensions returns 200 and renders the browse title", async ({ request }) => {
+  test("/en/extensions returns 200 and SSRs the search toolbar", async ({ request }) => {
     const response = await request.get("/en/extensions")
     expect(response.status()).toBe(200)
     const html = await response.text()
-    expect(html).toContain("Browse all")
+    expect(html).toContain("Search skills")
   })
 
   test("/zh/extensions returns 200 and uses zh wording", async ({ request }) => {
     const response = await request.get("/zh/extensions")
     expect(response.status()).toBe(200)
     const html = await response.text()
-    // "浏览全部" or similar — covered by the locked Chinese-i18n decision.
     expect(html).toMatch(/lang="zh"/)
   })
 
   test("filter chips + scope pills + sort select are SSR'd into the page", async ({ request }) => {
     const response = await request.get("/en/extensions")
     const html = await response.text()
-    // Mode B filter UI per locked decision #3 — the three rows must be in
-    // the response, not lazy-mounted client-side.
+    // Single-row pill rail per locked decision #3 — pills + sort must be in
+    // the SSR response, not lazy-mounted client-side.
     expect(html).toContain("Scope")
     expect(html).toContain("Sort by")
   })
