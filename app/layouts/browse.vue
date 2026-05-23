@@ -7,7 +7,7 @@ function toggleSidebar() {
 </script>
 
 <template>
-  <div class="h-screen flex flex-col bg-(--color-bg) text-(--color-ink)">
+  <div class="min-h-screen flex flex-col bg-(--color-bg) text-(--color-ink)">
     <a
       href="#main-content"
       class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-3 focus:py-2 focus:bg-(--color-card) focus:text-(--color-ink) focus:rounded-md focus:shadow"
@@ -22,16 +22,16 @@ function toggleSidebar() {
       <TopBar :collapsed="sidebarCollapsed" @toggle-sidebar="toggleSidebar" />
     </header>
 
-    <div class="mx-auto w-full max-w-7xl flex flex-1 min-h-0">
+    <div class="mx-auto w-full max-w-7xl flex flex-1">
       <aside
-        class="overflow-hidden flex flex-col transition-[width] duration-200"
+        class="sticky top-16 self-start h-[calc(100vh-4rem)] overflow-hidden flex flex-col transition-[width] duration-200"
         :class="sidebarCollapsed ? 'w-0' : 'w-[240px]'"
         role="navigation"
       >
         <Sidebar :collapsed="sidebarCollapsed" />
       </aside>
 
-      <main id="main-content" tabindex="-1" class="flex-1 overflow-y-auto focus:outline-none">
+      <main id="main-content" tabindex="-1" class="flex-1 min-w-0 focus:outline-none">
         <slot />
       </main>
     </div>

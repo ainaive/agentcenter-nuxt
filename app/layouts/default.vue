@@ -3,7 +3,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div class="h-screen flex flex-col bg-(--color-bg) text-(--color-ink)">
+  <div class="min-h-screen flex flex-col bg-(--color-bg) text-(--color-ink)">
     <a
       href="#main-content"
       class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-3 focus:py-2 focus:bg-(--color-card) focus:text-(--color-ink) focus:rounded-md focus:shadow"
@@ -18,7 +18,7 @@ const { t } = useI18n()
       <TopBar :collapsed="true" no-sidebar />
     </header>
 
-    <main id="main-content" tabindex="-1" class="flex-1 overflow-y-auto focus:outline-none">
+    <main id="main-content" tabindex="-1" class="flex-1 focus:outline-none">
       <slot />
     </main>
   </div>
