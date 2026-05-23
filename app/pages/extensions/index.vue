@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ArrowUpRight } from "lucide-vue-next"
 
+definePageMeta({ layout: "browse" })
+
 const { t } = useI18n()
 const route = useRoute()
 const { filters } = useFilters()
