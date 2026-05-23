@@ -1,0 +1,65 @@
+seed more skills or extensions and more collections, what do you think?
+
+---
+
+ok, go ahead
+
+---
+
+is it better to show the extension as same card as in extension list page? what do you think?
+
+---
+
+ok, go ahead
+
+---
+
+please check the code reviews on the PR
+
+---
+
+ok, go ahead
+
+---
+
+push it
+
+---
+
+the PR is clean, merge it
+
+---
+
+migrate and seed the production db
+
+---
+
+run the migration via Vercel
+
+---
+
+how to run migration and seed on vercel?
+
+---
+
+yes, write it
+
+---
+
+ok, go ahead
+
+---
+
+how can this script be executed on vercel?
+
+---
+
+or can I run some commands on vercel admin?
+
+---
+
+but how do we seed the data before?
+
+---
+
+ok, I agree, please do taht
