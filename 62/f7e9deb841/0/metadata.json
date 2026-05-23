@@ -1,0 +1,42 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "62f7e9deb841",
+  "session_id": "ad0c3134-bc82-4320-90f2-1d93692cac19",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-23T01:20:27.680633Z",
+  "branch": "refactor/layout-shell",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/layout/TopBar.vue",
+    "app/layouts/default.vue",
+    "app/layouts/browse.vue",
+    "app/layouts/home.vue",
+    "app/layouts/mcp-panorama.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "2022421ceef0",
+  "checkpoint_transcript_start": 197,
+  "transcript_lines_at_start": 197,
+  "token_usage": {
+    "input_tokens": 10,
+    "cache_creation_tokens": 13176,
+    "cache_read_tokens": 1006149,
+    "output_tokens": 9074,
+    "api_call_count": 10
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-23T01:20:27.667009Z",
+    "agent_lines": 30,
+    "agent_removed": 125,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 30,
+    "total_lines_changed": 155,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}

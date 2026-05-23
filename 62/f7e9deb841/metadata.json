@@ -1,0 +1,31 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "62f7e9deb841",
+  "strategy": "manual-commit",
+  "branch": "refactor/layout-shell",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/layout/TopBar.vue",
+    "app/layouts/browse.vue",
+    "app/layouts/default.vue",
+    "app/layouts/home.vue",
+    "app/layouts/mcp-panorama.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/62/f7e9deb841/0/metadata.json",
+      "transcript": "/62/f7e9deb841/0/full.jsonl",
+      "content_hash": "/62/f7e9deb841/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 10,
+    "cache_creation_tokens": 13176,
+    "cache_read_tokens": 1006149,
+    "output_tokens": 9074,
+    "api_call_count": 10
+  }
+}
