@@ -1,11 +1,17 @@
-// Editorial public collections used by the seed script to make the
-// /collections browse page feel real in dev/staging. Each one is owned by
-// one of the seeded creator users (see scripts/seed.ts) and curates a mix
-// of existing EXTENSIONS by their numeric id.
+// Editorial public collections rendered on /collections. References owners
+// by email and items by extension slug so the same data file resolves
+// against any environment (local dev with the demo seed, staging with
+// partial data, prod with real users + real published extensions) without
+// hardcoding generated IDs.
 //
-// Slugs are intentionally readable (not the 10-char base36 the runtime
-// shortcode helper produces) — these are seed URLs only, demo-friendly, and
-// the `slug` column just requires uniqueness.
+// A collection is materialized only when its owner email exists in the DB;
+// individual items are skipped when their extensionSlug is absent. So in
+// dev all five appear, and in prod the script logs the gaps and inserts
+// what it can — see scripts/seed-editorial-collections.ts.
+//
+// Slugs on the row itself are intentionally readable (not the 10-char
+// base36 the runtime shortcode helper produces) — these are seed URLs
+// only, and the `slug` column just requires uniqueness.
 
 export interface SeedCollection {
   slug: string
@@ -13,8 +19,8 @@ export interface SeedCollection {
   nameZh: string
   description: string
   descriptionZh: string
-  ownerUserId: string
-  extensionIds: number[]
+  ownerEmail: string
+  extensionSlugs: string[]
 }
 
 export const COLLECTIONS: SeedCollection[] = [
@@ -25,8 +31,14 @@ export const COLLECTIONS: SeedCollection[] = [
     description:
       "Everything you reach for on a typical on-call day — talk to your infra, your DB, and your team.",
     descriptionZh: "日常 on-call 必备：与基础设施、数据库和团队对话。",
-    ownerUserId: "user-amy",
-    extensionIds: [3, 14, 11, 7, 12], // GitHub MCP, K8s MCP, Postgres MCP, Slack MCP, /explain
+    ownerEmail: "amy@agentcenter.dev",
+    extensionSlugs: [
+      "github-mcp",
+      "k8s-mcp",
+      "postgres-mcp",
+      "slack-mcp",
+      "explain",
+    ],
   },
   {
     slug: "frontend-starter",
@@ -35,8 +47,14 @@ export const COLLECTIONS: SeedCollection[] = [
     description:
       "Curated picks for web developers — code, design notes, screenshots, and ticket flow.",
     descriptionZh: "前端开发者精选：代码、设计稿、截图与工单流。",
-    ownerUserId: "user-ben",
-    extensionIds: [2, 4, 5, 6, 3], // Code Interpreter, Notion Sync, /summarize, Image Vision, GitHub MCP
+    ownerEmail: "ben@agentcenter.dev",
+    extensionSlugs: [
+      "code-interpreter",
+      "notion-sync",
+      "summarize",
+      "image-vision",
+      "github-mcp",
+    ],
   },
   {
     slug: "research-kit",
@@ -45,8 +63,14 @@ export const COLLECTIONS: SeedCollection[] = [
     description:
       "For analysts and writers: search, summarize, translate, and crunch numbers.",
     descriptionZh: "面向分析师与写作者：搜索、摘要、翻译、数据。",
-    ownerUserId: "user-cory",
-    extensionIds: [1, 5, 8, 10, 6], // Web Search Pro, /summarize, /translate, Data Analyst, Image Vision
+    ownerEmail: "cory@agentcenter.dev",
+    extensionSlugs: [
+      "web-search-pro",
+      "summarize",
+      "translate",
+      "data-analyst",
+      "image-vision",
+    ],
   },
   {
     slug: "ops-productivity",
@@ -55,8 +79,14 @@ export const COLLECTIONS: SeedCollection[] = [
     description:
       "Stop context-switching: calendar, docs, chat, and quick translation in one place.",
     descriptionZh: "减少切换：日历、文档、聊天与快捷翻译一站式。",
-    ownerUserId: "user-dao",
-    extensionIds: [9, 4, 7, 5, 8], // Calendar Agent, Notion Sync, Slack MCP, /summarize, /translate
+    ownerEmail: "dao@agentcenter.dev",
+    extensionSlugs: [
+      "calendar-agent",
+      "notion-sync",
+      "slack-mcp",
+      "summarize",
+      "translate",
+    ],
   },
   {
     slug: "code-review-pack",
@@ -65,7 +95,13 @@ export const COLLECTIONS: SeedCollection[] = [
     description:
       "For tech leads doing PR-heavy days — architecture, tests, and inline explanation.",
     descriptionZh: "面向 PR 评审为主的工程负责人：架构、测试与解释。",
-    ownerUserId: "user-eli",
-    extensionIds: [13, 15, 3, 12, 2], // Arch Reviewer, Test Generator, GitHub MCP, /explain, Code Interpreter
+    ownerEmail: "eli@agentcenter.dev",
+    extensionSlugs: [
+      "arch-reviewer",
+      "test-generator",
+      "github-mcp",
+      "explain",
+      "code-interpreter",
+    ],
   },
 ]

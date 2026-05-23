@@ -1,26 +1,30 @@
 /**
  * Idempotent insert of the editorial public collections defined in
- * shared/data/collections.ts. Intended for one-off use against prod (or any
- * environment) where running the full `db:seed` is too destructive.
- *
- * Invocation (locally pointing at any DB):
- *   DATABASE_URL='postgresql://…' bun scripts/seed-editorial-collections.ts
- *
- * Against prod from your laptop:
- *   vercel env pull --environment=production .env.prod.real
- *   DATABASE_URL="$(grep ^DATABASE_URL .env.prod.real | cut -d= -f2- | tr -d '"')" \
- *     bun scripts/seed-editorial-collections.ts
- *   rm .env.prod.real
+ * shared/data/collections.ts. Safe enough to live in `vercel-build` — when
+ * a collection's prerequisites are missing the script logs a warning and
+ * skips, never blocks the deploy.
  *
  * Behaviour:
- *   - Verifies the seeded owner users (user-amy, user-ben, …) and the
- *     referenced extensions (ext-1, ext-3, …) all exist; halts cleanly if not.
- *   - Inserts each collection only if its slug is free. Already-present rows
- *     are left untouched (no metadata overwrite, no visibility flip).
- *   - Inserts collection_items with onConflictDoNothing so re-runs are safe
- *     even after editing the COLLECTIONS list (new items get added, existing
- *     ones are skipped).
- *   - Never truncates anything, never touches other tables.
+ *   - Resolves each collection's owner by email and each item by extension
+ *     slug. Both lookups are batched into a single query each.
+ *   - Skips a collection whose owner email isn't present in the DB.
+ *   - Skips individual items whose extension slug isn't present, but still
+ *     creates the collection if at least one item resolves.
+ *   - Inserts each collection only when its `slug` (the readable URL slug,
+ *     not the runtime shortcode) is free; existing rows are left untouched
+ *     (no metadata overwrite, no visibility flip).
+ *   - Inserts collection_items with onConflictDoNothing on the composite PK,
+ *     so re-runs pick up newly-added extensionSlugs and zero-change re-runs
+ *     are no-ops.
+ *   - Exits 0 unless the DB itself is unreachable.
+ *
+ * Invocation paths:
+ *   - Local: `DATABASE_URL=… bun scripts/seed-editorial-collections.ts`
+ *   - Vercel build: chained into the `vercel-build` script in package.json
+ *     so prod deploys re-attempt every push. On a fresh prod (no demo
+ *     users / extensions) every collection is skipped and the script
+ *     prints its plan. When real owners/extensions appear later the
+ *     curations materialize automatically.
  */
 
 import { eq, inArray } from "drizzle-orm"
@@ -47,56 +51,63 @@ async function main() {
   const db = drizzle(client, { schema, casing: "snake_case" })
 
   console.log(
-    `seed-editorial-collections: ${COLLECTIONS.length} collection(s) to ensure`,
+    `seed-editorial-collections: ${COLLECTIONS.length} collection(s) to consider`,
   )
 
-  // Verify prerequisites up-front so we don't end up in a half-applied state.
-  const requiredOwnerIds = [...new Set(COLLECTIONS.map((c) => c.ownerUserId))]
-  const requiredExtIds = [
-    ...new Set(
-      COLLECTIONS.flatMap((c) => c.extensionIds.map((n) => `ext-${n}`)),
-    ),
+  // Resolve owners (email → user.id) and items (slug → extension.id) up
+  // front. Two batched lookups, then everything else is in-memory.
+  const wantedEmails = [...new Set(COLLECTIONS.map((c) => c.ownerEmail))]
+  const wantedSlugs = [
+    ...new Set(COLLECTIONS.flatMap((c) => c.extensionSlugs)),
   ]
 
-  const presentUsers = await db
-    .select({ id: users.id })
-    .from(users)
-    .where(inArray(users.id, requiredOwnerIds))
-  const missingOwners = requiredOwnerIds.filter(
-    (id) => !presentUsers.some((u) => u.id === id),
-  )
+  const userRows = wantedEmails.length
+    ? await db
+        .select({ id: users.id, email: users.email })
+        .from(users)
+        .where(inArray(users.email, wantedEmails))
+    : []
+  const userByEmail = new Map(userRows.map((r) => [r.email, r.id]))
 
-  const presentExts = await db
-    .select({ id: extensions.id })
-    .from(extensions)
-    .where(inArray(extensions.id, requiredExtIds))
-  const missingExts = requiredExtIds.filter(
-    (id) => !presentExts.some((e) => e.id === id),
-  )
-
-  if (missingOwners.length > 0 || missingExts.length > 0) {
-    console.error("seed-editorial-collections: missing prerequisites")
-    if (missingOwners.length > 0) {
-      console.error(`  users not found: ${missingOwners.join(", ")}`)
-      console.error(
-        "  → these are seeded by `bun run db:seed`. On prod, insert them by hand or run a scoped users insert before re-running this script.",
-      )
-    }
-    if (missingExts.length > 0) {
-      console.error(`  extensions not found: ${missingExts.join(", ")}`)
-      console.error(
-        "  → editorial collections reference the demo EXTENSIONS fixtures. Without them in this DB, the curations would have no items.",
-      )
-    }
-    await client.end()
-    process.exit(1)
-  }
+  const extRows = wantedSlugs.length
+    ? await db
+        .select({ id: extensions.id, slug: extensions.slug })
+        .from(extensions)
+        .where(inArray(extensions.slug, wantedSlugs))
+    : []
+  const extBySlug = new Map(extRows.map((r) => [r.slug, r.id]))
 
   let createdCount = 0
   let existingCount = 0
+  let skippedCollections = 0
   let itemsInserted = 0
 
   for (const c of COLLECTIONS) {
+    const ownerId = userByEmail.get(c.ownerEmail)
+    if (!ownerId) {
+      console.log(
+        `  ${c.slug}: skipped — owner ${c.ownerEmail} not in this DB`,
+      )
+      skippedCollections += 1
+      continue
+    }
+
+    const resolvedItems: { collectionId: string; extensionId: string }[] = []
+    const missingSlugs: string[] = []
+    for (const slug of c.extensionSlugs) {
+      const extId = extBySlug.get(slug)
+      if (extId) resolvedItems.push({ collectionId: "", extensionId: extId })
+      else missingSlugs.push(slug)
+    }
+
+    if (resolvedItems.length === 0) {
+      console.log(
+        `  ${c.slug}: skipped — none of [${c.extensionSlugs.join(", ")}] are in this DB`,
+      )
+      skippedCollections += 1
+      continue
+    }
+
     const [existing] = await db
       .select({ id: collections.id })
       .from(collections)
@@ -114,7 +125,7 @@ async function main() {
       await db.insert(collections).values({
         id: collectionId,
         slug: c.slug,
-        ownerUserId: c.ownerUserId,
+        ownerUserId: ownerId,
         name: c.name,
         nameZh: c.nameZh,
         description: c.description,
@@ -126,26 +137,23 @@ async function main() {
         updatedAt: now,
       })
       createdCount += 1
-      console.log(`  ${c.slug}: created`)
+      const tail = missingSlugs.length
+        ? ` (missing items: ${missingSlugs.join(", ")})`
+        : ""
+      console.log(`  ${c.slug}: created${tail}`)
     }
 
-    // The PK is (collectionId, extensionId) — onConflictDoNothing means rerun
-    // after adding a new extensionId to the seed file picks it up cleanly,
-    // and rerun with no changes is a no-op.
-    const itemRows = c.extensionIds.map((extNumId) => ({
-      collectionId,
-      extensionId: `ext-${extNumId}`,
-    }))
+    for (const item of resolvedItems) item.collectionId = collectionId
     const inserted = await db
       .insert(collectionItems)
-      .values(itemRows)
+      .values(resolvedItems)
       .onConflictDoNothing()
       .returning({ extensionId: collectionItems.extensionId })
     itemsInserted += inserted.length
   }
 
   console.log(
-    `seed-editorial-collections: created ${createdCount}, kept ${existingCount}, inserted ${itemsInserted} item(s)`,
+    `seed-editorial-collections: created ${createdCount}, kept ${existingCount}, skipped ${skippedCollections}, inserted ${itemsInserted} item(s)`,
   )
 
   await client.end()

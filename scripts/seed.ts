@@ -234,28 +234,50 @@ async function main() {
   console.log(`seed: re-seeding ${COLLECTIONS.length} editorial collections`)
   await db.execute(sql`TRUNCATE TABLE ${collections} CASCADE`)
 
+  // Resolve email → userId and slug → extensionId from the rows just
+  // inserted above, so the local seed shares the same lookup model as
+  // scripts/seed-editorial-collections.ts.
+  const userIdByEmail = new Map(CREATORS.map((u) => [u.email, u.id]))
+  const extIdBySlug = new Map(extRows.map((r) => [r.slug, r.id]))
+
   const now = new Date()
-  const collectionRows = COLLECTIONS.map((c) => ({
-    id: crypto.randomUUID(),
-    slug: c.slug,
-    ownerUserId: c.ownerUserId,
-    name: c.name,
-    nameZh: c.nameZh,
-    description: c.description,
-    descriptionZh: c.descriptionZh,
-    systemKind: null,
-    visibility: "public" as const,
-    publishedAt: now,
-    createdAt: now,
-    updatedAt: now,
-  }))
+  const collectionRows = COLLECTIONS.map((c) => {
+    const ownerId = userIdByEmail.get(c.ownerEmail)
+    if (!ownerId) {
+      throw new Error(
+        `seed: editorial collection "${c.slug}" references unknown owner ${c.ownerEmail}`,
+      )
+    }
+    return {
+      id: crypto.randomUUID(),
+      slug: c.slug,
+      ownerUserId: ownerId,
+      name: c.name,
+      nameZh: c.nameZh,
+      description: c.description,
+      descriptionZh: c.descriptionZh,
+      systemKind: null,
+      visibility: "public" as const,
+      publishedAt: now,
+      createdAt: now,
+      updatedAt: now,
+    }
+  })
   await db.insert(collections).values(collectionRows)
 
   const itemRows = COLLECTIONS.flatMap((c, i) =>
-    c.extensionIds.map((extNumId) => ({
-      collectionId: collectionRows[i]!.id,
-      extensionId: `ext-${extNumId}`,
-    })),
+    c.extensionSlugs.map((extSlug) => {
+      const extId = extIdBySlug.get(extSlug)
+      if (!extId) {
+        throw new Error(
+          `seed: editorial collection "${c.slug}" references unknown extension slug "${extSlug}"`,
+        )
+      }
+      return {
+        collectionId: collectionRows[i]!.id,
+        extensionId: extId,
+      }
+    }),
   )
   console.log(`seed: inserting ${itemRows.length} collection items`)
   await db.insert(collectionItems).values(itemRows)
