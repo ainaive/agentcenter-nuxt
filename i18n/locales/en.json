@@ -10,13 +10,12 @@
     "newCollection": "New"
   },
   "nav": {
-    "explore": "Explore",
+    "primary": "Primary",
     "collections": "Collections",
     "publish": "Publish",
     "mcpPanorama": "MCP Panorama",
     "docs": "Docs",
     "skipToContent": "Skip to main content",
-    "toggleSidebar": "Toggle sidebar",
     "searchLabel": "Search the marketplace",
     "themeLabel": "Theme",
     "themeIvory": "Ivory",
@@ -109,8 +108,8 @@
     }
   },
   "sidebar": {
-    "browse": "Browse",
     "categories": "Categories",
+    "allCategories": "All",
     "skills": "Skills",
     "mcpServers": "MCP Servers",
     "slashCommands": "Slash Commands",

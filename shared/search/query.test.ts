@@ -47,6 +47,17 @@ describe("buildExtensionWhere", () => {
     expect(buildExtensionWhere(fakeDb, {})).toBeDefined()
   })
 
+  it("dept clause admits NULL deptId so system-scoped rows are visible", () => {
+    // Catalog + mcp-landscape seed entries have deptId=null because they
+    // are cross-org. The dept WHERE must include `IS NULL` as a third
+    // branch so they show up regardless of which dept the user lands on.
+    // Render the assembled SQL via the postgres-js dialect to inspect text.
+    const where = buildExtensionWhere(fakeDb, { dept: "eng.cloud" })
+    expect(where).toBeDefined()
+    const { sql } = fakeDb.select().from(schema.extensions).where(where).toSQL()
+    expect(sql.toLowerCase()).toContain("is null")
+  })
+
   it("returns a SQL object for a creator filter", () => {
     expect(buildExtensionWhere(fakeDb, { creator: "user-amy" })).toBeDefined()
   })

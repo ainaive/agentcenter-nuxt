@@ -10,13 +10,13 @@ test.describe("navigation", () => {
     await expect(page).toHaveURL(/\/(en|zh)$/)
   })
 
-  test("/en home → /en/extensions via top-nav Explore link", async ({ page }) => {
+  test("/en home → /en/extensions via top-nav Skills link", async ({ page }) => {
     await page.goto("/en")
-    const explore = page.getByRole("link", { name: "Explore" }).first()
-    await expect(explore).toBeVisible()
-    await explore.click()
-    await page.waitForURL("**/en/extensions")
-    await expect(page.getByRole("heading", { name: /Browse all/ })).toBeVisible()
+    const skills = page.getByRole("link", { name: "Skills" }).first()
+    await expect(skills).toBeVisible()
+    await skills.click()
+    await page.waitForURL("**/en/extensions**")
+    await expect(page.getByPlaceholder(/Search skills/)).toBeVisible()
   })
 
   test("protected route /en/publish redirects unauthenticated users to /sign-in", async ({

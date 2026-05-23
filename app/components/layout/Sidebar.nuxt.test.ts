@@ -11,43 +11,40 @@ const NuxtLinkStub = defineComponent({
 })
 
 const mountOpts = {
-  props: { collapsed: false },
   global: { stubs: { NuxtLink: NuxtLinkStub } },
 }
 
 describe("Sidebar", () => {
-  it("renders Browse and Categories section headers as non-clickable labels", async () => {
+  it("renders a single Categories section header", async () => {
     const wrapper = await mountSuspended(Sidebar, mountOpts)
     const html = wrapper.html().toLowerCase()
-    expect(html).toContain("browse")
     expect(html).toContain("categor")
-    // Section headers are <h2>, not <button> — sections are always expanded.
+    // Browse moved to the navbar — only Categories remains as an h2.
     const h2s = wrapper.findAll("h2")
-    expect(h2s.length).toBe(2)
+    expect(h2s.length).toBe(1)
   })
 
-  it("no longer renders the Collections placeholder section", async () => {
+  it("no longer renders a Browse section (type pills moved to TopBar)", async () => {
     const wrapper = await mountSuspended(Sidebar, mountOpts)
-    const html = wrapper.html().toLowerCase()
-    expect(html).not.toContain("collection")
-    expect(html).not.toContain("my tools")
-    expect(html).not.toContain("new group")
+    const text = wrapper.text().toLowerCase()
+    expect(text).not.toContain("browse")
+    // No more category=skills/mcp/slash/plugins links in the sidebar.
+    const categoryLinks = wrapper
+      .findAll("a")
+      .filter((a) => /[?&]category=/.test(a.attributes("href") ?? ""))
+    expect(categoryLinks.length).toBe(0)
   })
 
   it("does not render a primary-nav 'Explore' section (that moved to TopBar)", async () => {
     const wrapper = await mountSuspended(Sidebar, mountOpts)
-    // Assert on rendered text, not the i18n key — catches a regression
-    // whether someone re-adds the missing key or hard-codes the label.
     expect(wrapper.text().toLowerCase()).not.toContain("explore")
   })
 
-  it("Browse links target /extensions (one per type, no 'All Extensions' item)", async () => {
+  it("does not render the old Collections placeholder section", async () => {
     const wrapper = await mountSuspended(Sidebar, mountOpts)
-    const browseLinks = wrapper
-      .findAll("a")
-      .filter((a) => /[?&]category=/.test(a.attributes("href") ?? ""))
-    // Exactly 4 type pills: skills / mcp / slash / plugins. No "All" item.
-    expect(browseLinks.length).toBe(4)
+    const html = wrapper.html().toLowerCase()
+    expect(html).not.toContain("my tools")
+    expect(html).not.toContain("new group")
   })
 
   it("renders all three funcCat L0 labels collapsed by default", async () => {
@@ -65,11 +62,4 @@ describe("Sidebar", () => {
     expect(html).not.toContain("network protocols")
   })
 
-  it("collapsed prop hides the inner content", async () => {
-    const wrapper = await mountSuspended(Sidebar, {
-      ...mountOpts,
-      props: { collapsed: true },
-    })
-    expect(wrapper.findAll("a").length).toBe(0)
-  })
 })

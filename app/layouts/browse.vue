@@ -1,12 +1,9 @@
 <script setup lang="ts">
 const { t } = useI18n()
-// The MCP Panorama page renders its own LayerSidebar inside <main>; this
-// layout omits the global aside slot so the page-owned sidebar owns the
-// gutter. Primary nav stays reachable through the TopBar.
 </script>
 
 <template>
-  <div class="h-screen flex flex-col bg-(--color-bg) text-(--color-ink)">
+  <div class="min-h-screen flex flex-col bg-(--color-bg) text-(--color-ink)">
     <a
       href="#main-content"
       class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-3 focus:py-2 focus:bg-(--color-card) focus:text-(--color-ink) focus:rounded-md focus:shadow"
@@ -21,8 +18,18 @@ const { t } = useI18n()
       <TopBar />
     </header>
 
-    <main id="main-content" tabindex="-1" class="flex flex-1 min-h-0 focus:outline-none">
-      <slot />
-    </main>
+    <div class="mx-auto w-full max-w-7xl flex flex-1">
+      <aside
+        class="hidden md:flex sticky top-16 self-start h-[calc(100vh-4rem)] w-[240px] overflow-hidden flex-col"
+        role="navigation"
+        :aria-label="t('sidebar.categories')"
+      >
+        <Sidebar />
+      </aside>
+
+      <main id="main-content" tabindex="-1" class="flex-1 min-w-0 focus:outline-none">
+        <slot />
+      </main>
+    </div>
   </div>
 </template>

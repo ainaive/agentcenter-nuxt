@@ -40,9 +40,14 @@ export function buildExtensionWhere(
     (() => {
       const dept = filters.dept ?? fallbackDeptId ?? MY_DEPT_ID
       if (dept === ALL_DEPTS) return undefined
+      // NULL deptId means "system-scoped, applies to every dept" — the
+      // catalog seeder and seed-mcp-landscape both leave it null because
+      // their entries are cross-org. Without this branch, those rows are
+      // invisible to anyone whose default filter lands on a real dept.
       return or(
         eq(extensions.deptId, dept),
         like(extensions.deptId, `${dept}.%`),
+        sql`${extensions.deptId} IS NULL`,
       )
     })(),
 
