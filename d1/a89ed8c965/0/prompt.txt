@@ -1,0 +1,9 @@
+push it and open a PR
+
+---
+
+let's make more improvements: 1. add "all" to categoreis in the sidebar, 2. in extension index page, replace "browse all " with search/filter bar. 3. is it better to put tags in the sidebar? and other filers. what do you think?
+
+---
+
+just commit on this branch, but not push
