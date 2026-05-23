@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "1d427c601b6c",
+  "strategy": "manual-commit",
+  "branch": "refactor/layout-shell",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/components/layout/Sidebar.nuxt.test.ts",
+    "app/components/layout/Sidebar.vue",
+    "app/components/layout/TopBar.vue",
+    "app/layouts/mcp-panorama.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/1d/427c601b6c/0/metadata.json",
+      "transcript": "/1d/427c601b6c/0/full.jsonl",
+      "content_hash": "/1d/427c601b6c/0/content_hash.txt",
+      "prompt": "/1d/427c601b6c/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 1347,
+    "cache_creation_tokens": 658826,
+    "cache_read_tokens": 27925348,
+    "output_tokens": 159359,
+    "api_call_count": 152
+  }
+}
