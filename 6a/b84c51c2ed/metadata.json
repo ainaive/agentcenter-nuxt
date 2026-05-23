@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "6ab84c51c2ed",
+  "strategy": "manual-commit",
+  "branch": "refactor/layout-shell",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/layouts/browse.vue",
+    "app/layouts/default.vue"
+  ],
+  "sessions": [
+    {
+      "metadata": "/6a/b84c51c2ed/0/metadata.json",
+      "transcript": "/6a/b84c51c2ed/0/full.jsonl",
+      "content_hash": "/6a/b84c51c2ed/0/content_hash.txt",
+      "prompt": "/6a/b84c51c2ed/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 1331,
+    "cache_creation_tokens": 645494,
+    "cache_read_tokens": 24613245,
+    "output_tokens": 150366,
+    "api_call_count": 141
+  }
+}

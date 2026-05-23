@@ -1,0 +1,25 @@
+push it and open a PR
+
+---
+
+let's make more improvements: 1. add "all" to categoreis in the sidebar, 2. in extension index page, replace "browse all " with search/filter bar. 3. is it better to put tags in the sidebar? and other filers. what do you think?
+
+---
+
+just commit on this branch, but not push
+
+---
+
+is it better to move tags to the sidebar? what do you think?
+
+---
+
+now there are only 2 skills, please seeds more, 50+ skills is better. what do you think? and remember to add seeds scripts to vercel build.
+
+---
+
+why I still see only 2 skills in dev mode?
+
+---
+
+I don't like the vertical scrollbar in the extension list page, what do you think?
