@@ -1,0 +1,1 @@
+let's take a look at the home page, try to refine it. 1, I think the slogan fonts seems too big, may be small is better. 2. the number of "x skills, cureated for your team" is not right, I think it should show the totoal number of this site 3. do you think we need add some other extensions in the homepage, like MCP. what do you think of these?
