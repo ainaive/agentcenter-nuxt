@@ -1,0 +1,1 @@
+let's improve more: I think we need to refine the nav bar, 1. add "热榜" (please recommend the english name), when click it, go th the recommend section on homepage 2. collapse commands and plugins to more. 3. the publish seems not a explore menu, is it better to be a icon in the right side. what do you think?

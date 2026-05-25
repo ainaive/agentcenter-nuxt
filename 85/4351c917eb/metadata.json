@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "854351c917eb",
+  "strategy": "manual-commit",
+  "branch": "refactor/home-cohesion-pass",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/home/HomeDiscovery.vue",
+    "app/components/layout/TopBar.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/85/4351c917eb/0/metadata.json",
+      "transcript": "/85/4351c917eb/0/full.jsonl",
+      "content_hash": "/85/4351c917eb/0/content_hash.txt",
+      "prompt": "/85/4351c917eb/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 27,
+    "cache_creation_tokens": 31561,
+    "cache_read_tokens": 1906557,
+    "output_tokens": 17127,
+    "api_call_count": 17
+  }
+}
