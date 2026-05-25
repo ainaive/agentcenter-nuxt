@@ -29,6 +29,13 @@ function isCategoryActive(key: CategoryKey): boolean {
       AgentCenter
     </NuxtLink>
 
+    <NuxtLink
+      :to="{ path: localeExtensionsPath, query: { category: 'skills' } }"
+      class="md:hidden text-sm text-(--color-ink-muted) hover:text-(--color-ink)"
+    >
+      {{ t("nav.browse") }}
+    </NuxtLink>
+
     <nav
       class="hidden md:flex items-center gap-1 text-sm flex-1"
       :aria-label="t('nav.primary')"
@@ -37,22 +44,22 @@ function isCategoryActive(key: CategoryKey): boolean {
         v-for="item in CATEGORY_ITEMS"
         :key="item.key"
         :to="{ path: localeExtensionsPath, query: { category: item.key } }"
-        class="px-3 py-1.5 rounded text-(--color-ink-muted) hover:text-(--color-ink) hover:bg-(--color-sidebar)"
-        :class="isCategoryActive(item.key) ? 'text-(--color-ink) font-semibold bg-(--color-sidebar)/60' : ''"
+        class="relative px-3 py-1.5 text-(--color-ink-muted) transition-colors hover:text-(--color-ink) after:absolute after:inset-x-3 after:-bottom-px after:h-px after:bg-transparent"
+        :class="isCategoryActive(item.key) ? 'text-(--color-ink) font-semibold after:bg-(--color-ink)' : ''"
       >
         {{ t(item.labelKey) }}
       </NuxtLink>
       <NuxtLink
         :to="localePath('/collections')"
-        class="px-3 py-1.5 rounded text-(--color-ink-muted) hover:text-(--color-ink) hover:bg-(--color-sidebar)"
-        active-class="text-(--color-ink) font-semibold bg-(--color-sidebar)/60"
+        class="relative px-3 py-1.5 text-(--color-ink-muted) transition-colors hover:text-(--color-ink) after:absolute after:inset-x-3 after:-bottom-px after:h-px after:bg-transparent"
+        active-class="text-(--color-ink) font-semibold after:bg-(--color-ink)"
       >
         {{ t("nav.collections") }}
       </NuxtLink>
       <NuxtLink
         :to="localePath('/publish')"
-        class="px-3 py-1.5 rounded text-(--color-ink-muted) hover:text-(--color-ink) hover:bg-(--color-sidebar)"
-        active-class="text-(--color-ink) font-semibold bg-(--color-sidebar)/60"
+        class="relative px-3 py-1.5 text-(--color-ink-muted) transition-colors hover:text-(--color-ink) after:absolute after:inset-x-3 after:-bottom-px after:h-px after:bg-transparent"
+        active-class="text-(--color-ink) font-semibold after:bg-(--color-ink)"
       >
         {{ t("nav.publish") }}
       </NuxtLink>
