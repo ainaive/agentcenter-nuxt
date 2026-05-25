@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "6864709b1508",
+  "strategy": "manual-commit",
+  "branch": "refactor/ext-detail-polish",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/components/extension/ExtHero.vue",
+    "app/pages/extensions/[slug].vue",
+    "server/repositories/extensions.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/68/64709b1508/0/metadata.json",
+      "transcript": "/68/64709b1508/0/full.jsonl",
+      "content_hash": "/68/64709b1508/0/content_hash.txt",
+      "prompt": "/68/64709b1508/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 61,
+    "cache_creation_tokens": 185963,
+    "cache_read_tokens": 2143096,
+    "output_tokens": 23189,
+    "api_call_count": 36
+  }
+}

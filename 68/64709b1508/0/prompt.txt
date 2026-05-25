@@ -1,0 +1,9 @@
+let's try to refine the detail page of extension, take a look at https://agentcenter.vercel.app/zh/extensions/web-search-pro, I think we can learn from some of it.
+
+---
+
+ok, go ahead
+
+---
+
+why always prompt?
