@@ -49,7 +49,7 @@ const updatedRelative = computed(() => {
   if (diffMs > 0) return null
   const rtf = new Intl.RelativeTimeFormat(locale.value, { numeric: "auto" })
   for (const [unit, ms] of UNITS) {
-    const value = Math.round(diffMs / ms)
+    const value = Math.trunc(diffMs / ms)
     if (Math.abs(value) >= 1) return rtf.format(value, unit)
   }
   return rtf.format(0, "day")
