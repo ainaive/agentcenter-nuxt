@@ -27,18 +27,19 @@
     "switchToZh": "切换到中文",
     "switchToEn": "切换到英文",
     "userMenu": "账号菜单",
-    "comingSoon": "敬请期待"
+    "comingSoon": "敬请期待",
+    "browse": "浏览",
+    "trending": "热榜",
+    "more": "更多"
   },
   "home": {
-    "heroEyebrow": "AGENTCENTER · 精选 AI 技能",
+    "heroEyebrow": "AI 扩展注册中心",
     "heroTitleBefore": "装上 ",
     "heroTitleBrand": "AgentCenter",
     "heroTitleAfter": "，解锁 AI 超能力。",
     "heroSubtitle": "精选推荐、高速安装、轻松发现 — 收录的技能可直接接入你的团队。",
-    "heroCtaBrowse": "浏览技能",
-    "heroCtaCli": "安装 CLI",
-    "discoveryHeading": "收录 {count} 个扩展，为你的团队精选。",
-    "discoveryHeadingEmpty": "为你的团队精选 AI 扩展。",
+    "discoveryHeading": "{count} 个技能，为你的团队而备。",
+    "discoveryHeadingEmpty": "AI 技能，为你的团队而备。",
     "discoverySearchPlaceholder": "按名称、描述或任务搜索技能…",
     "discoveryExploreAll": "探索全部技能",
     "tabs": {

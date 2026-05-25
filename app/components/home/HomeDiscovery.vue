@@ -31,11 +31,13 @@ const { data: gridData } = await useFetch("/api/internal/extensions", {
   }),
 })
 
-// Site-wide total of all published extensions across every category. Fetched
-// once, independently of the active tab, so the heading number stays stable
-// when the user flips between Recommended / Popular / Recent.
+// Total of published skills (the only category the discovery section
+// renders). Fetched once, independently of the active tab, so the heading
+// number stays stable when the user flips between Recommended / Popular /
+// Recent.
 const { data: totalData } = await useFetch("/api/internal/extensions", {
   key: "home-discovery-total",
+  query: { category: "skills" },
   default: () => ({
     items: [] as ExtensionListItem[],
     total: 0,
@@ -70,7 +72,7 @@ function submitSearch() {
 </script>
 
 <template>
-  <section class="mx-auto max-w-7xl px-6 py-12 sm:py-16">
+  <section id="discovery" class="mx-auto max-w-7xl px-6 py-12 sm:py-16 scroll-mt-16">
     <h2 class="text-center font-serif text-3xl tracking-tight text-(--color-ink) sm:text-4xl">
       {{
         total > 0

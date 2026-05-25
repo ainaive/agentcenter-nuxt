@@ -27,18 +27,19 @@
     "switchToZh": "Switch to Chinese",
     "switchToEn": "Switch to English",
     "userMenu": "Account menu",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "browse": "Browse",
+    "trending": "Trending",
+    "more": "More"
   },
   "home": {
-    "heroEyebrow": "AGENTCENTER · CURATED AI SKILLS",
+    "heroEyebrow": "THE AI EXTENSION REGISTRY",
     "heroTitleBefore": "Install ",
     "heroTitleBrand": "AgentCenter",
     "heroTitleAfter": ", unlock Claude's superpowers.",
     "heroSubtitle": "Curated picks, fast installs, easy discovery — ready to drop into your team.",
-    "heroCtaBrowse": "Browse skills",
-    "heroCtaCli": "Install the CLI",
-    "discoveryHeading": "{count} extensions, curated for your team.",
-    "discoveryHeadingEmpty": "AI extensions, curated for your team.",
+    "discoveryHeading": "{count} skills for your team.",
+    "discoveryHeadingEmpty": "AI skills for your team.",
     "discoverySearchPlaceholder": "Search skills by name, description, or task…",
     "discoveryExploreAll": "Explore all skills",
     "tabs": {

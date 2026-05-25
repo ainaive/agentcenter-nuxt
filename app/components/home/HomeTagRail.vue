@@ -19,7 +19,7 @@ function labelOf(tag: TagFacet) {
   <nav :aria-label="t('home.tagRailLabel')" class="flex gap-2 overflow-x-auto whitespace-nowrap pb-1">
     <NuxtLink
       :to="localePath({ path: '/extensions', query: { category: 'skills' } })"
-      class="shrink-0 rounded-full border border-(--color-ink)/25 bg-(--color-ink)/5 px-3 py-1 text-[12px] font-semibold text-(--color-ink) transition hover:bg-(--color-ink)/10"
+      class="shrink-0 rounded-full border border-(--color-border) px-3 py-1 text-[12px] font-semibold text-(--color-ink) transition hover:border-(--color-ink)/30"
     >
       {{ t("home.tagRailAll") }}
     </NuxtLink>
