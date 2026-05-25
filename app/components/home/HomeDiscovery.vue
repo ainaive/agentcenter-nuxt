@@ -70,7 +70,7 @@ function submitSearch() {
 </script>
 
 <template>
-  <section class="mx-auto max-w-7xl px-6 py-12 sm:py-16">
+  <section id="discovery" class="mx-auto max-w-7xl px-6 py-12 sm:py-16 scroll-mt-16">
     <h2 class="text-center font-serif text-3xl tracking-tight text-(--color-ink) sm:text-4xl">
       {{
         total > 0

@@ -1,13 +1,18 @@
 <script setup lang="ts">
+import { ChevronDown, Upload } from "lucide-vue-next"
+
 const { t } = useI18n()
 const route = useRoute()
 const localePath = useLocalePath()
 
 type CategoryKey = "skills" | "mcp" | "slash" | "plugins"
 
-const CATEGORY_ITEMS: { key: CategoryKey; labelKey: string }[] = [
+const PRIMARY_ITEMS: { key: CategoryKey; labelKey: string }[] = [
   { key: "skills", labelKey: "sidebar.skills" },
   { key: "mcp", labelKey: "sidebar.mcpServers" },
+]
+
+const MORE_ITEMS: { key: CategoryKey; labelKey: string }[] = [
   { key: "slash", labelKey: "sidebar.slashCommands" },
   { key: "plugins", labelKey: "sidebar.plugins" },
 ]
@@ -18,6 +23,9 @@ function isCategoryActive(key: CategoryKey): boolean {
   if (route.path !== localeExtensionsPath.value) return false
   return route.query.category === key
 }
+
+const isMoreActive = computed(() => MORE_ITEMS.some(it => isCategoryActive(it.key)))
+const moreOpen = ref(false)
 </script>
 
 <template>
@@ -41,7 +49,14 @@ function isCategoryActive(key: CategoryKey): boolean {
       :aria-label="t('nav.primary')"
     >
       <NuxtLink
-        v-for="item in CATEGORY_ITEMS"
+        :to="localePath({ path: '/', hash: '#discovery' })"
+        class="relative px-3 py-1.5 text-(--color-ink-muted) transition-colors hover:text-(--color-ink)"
+      >
+        {{ t("nav.trending") }}
+      </NuxtLink>
+
+      <NuxtLink
+        v-for="item in PRIMARY_ITEMS"
         :key="item.key"
         :to="{ path: localeExtensionsPath, query: { category: item.key } }"
         class="relative px-3 py-1.5 text-(--color-ink-muted) transition-colors hover:text-(--color-ink) after:absolute after:inset-x-3 after:-bottom-px after:h-px after:bg-transparent"
@@ -49,6 +64,41 @@ function isCategoryActive(key: CategoryKey): boolean {
       >
         {{ t(item.labelKey) }}
       </NuxtLink>
+
+      <Popover v-model:open="moreOpen">
+        <PopoverTrigger as-child>
+          <button
+            type="button"
+            class="relative inline-flex items-center gap-1 px-3 py-1.5 text-(--color-ink-muted) transition-colors hover:text-(--color-ink) focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-accent) after:absolute after:inset-x-3 after:-bottom-px after:h-px after:bg-transparent"
+            :class="isMoreActive ? 'text-(--color-ink) font-semibold after:bg-(--color-ink)' : ''"
+            :aria-label="t('nav.more')"
+          >
+            {{ t("nav.more") }}
+            <ChevronDown :size="14" aria-hidden="true" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          :side-offset="8"
+          class="w-48 p-1 rounded-lg shadow-lg"
+        >
+          <NuxtLink
+            v-for="item in MORE_ITEMS"
+            :key="item.key"
+            :to="{ path: localeExtensionsPath, query: { category: item.key } }"
+            class="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-(--color-ink-muted) transition-colors hover:bg-(--color-sidebar) hover:text-(--color-ink)"
+            :class="isCategoryActive(item.key) ? 'text-(--color-ink) font-semibold' : ''"
+            @click="moreOpen = false"
+          >
+            <span
+              class="w-[1.5px] shrink-0 self-stretch rounded bg-(--color-ink)"
+              :class="isCategoryActive(item.key) ? 'opacity-100' : 'opacity-0'"
+            />
+            <span class="flex-1">{{ t(item.labelKey) }}</span>
+          </NuxtLink>
+        </PopoverContent>
+      </Popover>
+
       <NuxtLink
         :to="localePath('/collections')"
         class="relative px-3 py-1.5 text-(--color-ink-muted) transition-colors hover:text-(--color-ink) after:absolute after:inset-x-3 after:-bottom-px after:h-px after:bg-transparent"
@@ -56,14 +106,17 @@ function isCategoryActive(key: CategoryKey): boolean {
       >
         {{ t("nav.collections") }}
       </NuxtLink>
-      <NuxtLink
-        :to="localePath('/publish')"
-        class="relative px-3 py-1.5 text-(--color-ink-muted) transition-colors hover:text-(--color-ink) after:absolute after:inset-x-3 after:-bottom-px after:h-px after:bg-transparent"
-        active-class="text-(--color-ink) font-semibold after:bg-(--color-ink)"
-      >
-        {{ t("nav.publish") }}
-      </NuxtLink>
     </nav>
+
+    <NuxtLink
+      :to="localePath('/publish')"
+      class="hidden md:inline-flex size-8 rounded-full items-center justify-center border border-transparent text-(--color-ink-muted) hover:bg-(--color-sidebar) hover:text-(--color-ink) focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-accent)"
+      :aria-label="t('nav.publish')"
+      :title="t('nav.publish')"
+      active-class="text-(--color-ink)"
+    >
+      <Upload :size="16" aria-hidden="true" />
+    </NuxtLink>
 
     <ThemeSwitch />
     <LocaleSwitch />
