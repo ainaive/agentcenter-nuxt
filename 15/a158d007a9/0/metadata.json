@@ -1,0 +1,39 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "15a158d007a9",
+  "session_id": "ad97225b-e610-4feb-846a-d9713c030512",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-25T08:53:42.937934Z",
+  "branch": "refactor/home-cohesion-pass",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/components/home/HomeDiscovery.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "188bed72ac07",
+  "token_usage": {
+    "input_tokens": 197,
+    "cache_creation_tokens": 236590,
+    "cache_read_tokens": 11543184,
+    "output_tokens": 79424,
+    "api_call_count": 103
+  },
+  "session_metrics": {
+    "turn_count": 6
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-25T08:53:42.920336Z",
+    "agent_lines": 9,
+    "agent_removed": 7,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 9,
+    "total_lines_changed": 16,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}
