@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "608af9cdf1fa",
+  "strategy": "manual-commit",
+  "branch": "refactor/home-cohesion-pass",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/home/HomeHero.vue"
+  ],
+  "sessions": [
+    {
+      "metadata": "/60/8af9cdf1fa/0/metadata.json",
+      "transcript": "/60/8af9cdf1fa/0/full.jsonl",
+      "content_hash": "/60/8af9cdf1fa/0/content_hash.txt",
+      "prompt": "/60/8af9cdf1fa/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 32,
+    "cache_creation_tokens": 7422,
+    "cache_read_tokens": 2401738,
+    "output_tokens": 4879,
+    "api_call_count": 12
+  }
+}

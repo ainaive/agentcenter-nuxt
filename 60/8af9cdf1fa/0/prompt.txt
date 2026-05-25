@@ -1,0 +1,13 @@
+but now the homepage still shows 3 recommended skills, how to add more?
+
+---
+
+please run local and add to vercel build
+
+---
+
+ok, there is a horizeontal line on background of the homepage, it seems not good. what do you think?
+
+---
+
+yes, drop it
