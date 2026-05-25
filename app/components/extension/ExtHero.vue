@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Download, Star } from "lucide-vue-next"
-import type { Locale } from "~~/shared/types"
+import type { ExtensionBadge, Locale } from "~~/shared/types"
 import { deptPath } from "~~/shared/data/departments"
 
 const props = defineProps<{
@@ -9,13 +9,21 @@ const props = defineProps<{
   description: string | null
   iconEmoji: string | null
   iconColor: string | null
+  badge: ExtensionBadge | null
   starsAvg: string
   downloadsCount: number
+  updatedAt: string | null
   deptId: string | null
   shareUrl: string
 }>()
 
-const { locale } = useI18n()
+const { t, locale } = useI18n()
+
+const BADGE_CLASS = {
+  official: "badge-official",
+  popular: "badge-popular",
+  new: "badge-new",
+} as const
 
 const deptTrail = computed(() =>
   props.deptId ? deptPath(props.deptId, locale.value as Locale).join(" / ") : null,
@@ -25,6 +33,27 @@ function formatCount(n: number): string {
   if (n < 1000) return String(n)
   return `${(n / 1000).toFixed(n >= 100000 ? 0 : 1)}k`
 }
+
+const UNITS: Array<[Intl.RelativeTimeFormatUnit, number]> = [
+  ["year", 365 * 24 * 60 * 60 * 1000],
+  ["month", 30 * 24 * 60 * 60 * 1000],
+  ["week", 7 * 24 * 60 * 60 * 1000],
+  ["day", 24 * 60 * 60 * 1000],
+]
+
+const updatedRelative = computed(() => {
+  if (!props.updatedAt) return null
+  const then = new Date(props.updatedAt).getTime()
+  if (Number.isNaN(then)) return null
+  const diffMs = then - Date.now()
+  if (diffMs > 0) return null
+  const rtf = new Intl.RelativeTimeFormat(locale.value, { numeric: "auto" })
+  for (const [unit, ms] of UNITS) {
+    const value = Math.round(diffMs / ms)
+    if (Math.abs(value) >= 1) return rtf.format(value, unit)
+  }
+  return rtf.format(0, "day")
+})
 </script>
 
 <template>
@@ -40,7 +69,16 @@ function formatCount(n: number): string {
         {{ iconEmoji }}
       </div>
       <div class="min-w-0 flex-1">
-        <h1 class="font-serif text-4xl tracking-tight text-(--color-ink)">{{ name }}</h1>
+        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h1 class="font-serif text-4xl tracking-tight text-(--color-ink)">{{ name }}</h1>
+          <span
+            v-if="badge"
+            class="rounded px-1.5 py-0.5 text-[11px] font-semibold"
+            :class="BADGE_CLASS[badge]"
+          >
+            {{ t(`extensions.badges.${badge}`) }}
+          </span>
+        </div>
         <p
           v-if="description"
           class="mt-3 text-[17px] leading-[1.55] text-(--color-ink-muted)"
@@ -57,6 +95,10 @@ function formatCount(n: number): string {
             <Download :size="14" aria-hidden="true" />
             <span class="font-mono">{{ formatCount(downloadsCount) }}</span>
           </span>
+          <template v-if="updatedRelative">
+            <span aria-hidden="true" class="text-(--color-ink-muted)/50">·</span>
+            <span>{{ t("extensions.updated", { relative: updatedRelative }) }}</span>
+          </template>
           <template v-if="deptTrail">
             <span aria-hidden="true" class="text-(--color-ink-muted)/50">·</span>
             <span>{{ deptTrail }}</span>

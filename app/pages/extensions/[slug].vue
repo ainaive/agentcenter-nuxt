@@ -30,6 +30,9 @@ const description = computed(() =>
 const publishedAt = computed(() =>
   ext.value.publishedAt ? new Date(ext.value.publishedAt).toISOString() : null,
 )
+const updatedAt = computed(() =>
+  ext.value.updatedAt ? new Date(ext.value.updatedAt).toISOString() : null,
+)
 const permissions = computed(
   () => (ext.value.permissions ?? null) as Record<string, unknown> | null,
 )
@@ -62,8 +65,10 @@ defineOgImageComponent("Frame", {
           :description="description"
           :icon-emoji="ext.iconEmoji"
           :icon-color="ext.iconColor"
+          :badge="ext.badge"
           :stars-avg="ext.starsAvg"
           :downloads-count="ext.downloadsCount"
+          :updated-at="updatedAt"
           :dept-id="ext.deptId"
           :share-url="shareUrl"
         />

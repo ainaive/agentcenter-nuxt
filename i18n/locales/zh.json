@@ -72,6 +72,7 @@
     "license": "许可",
     "scope": "范围",
     "published": "发布",
+    "updated": "更新于 {relative}",
     "homepage": "主页",
     "repository": "代码仓库",
     "related": "相关",

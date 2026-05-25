@@ -72,6 +72,7 @@ const detailSelect = {
   starsAvg: extensions.starsAvg,
   ratingsCount: extensions.ratingsCount,
   publishedAt: extensions.publishedAt,
+  updatedAt: extensions.updatedAt,
   publisherUserId: extensions.publisherUserId,
   ownerOrgId: extensions.ownerOrgId,
   visibility: extensions.visibility,

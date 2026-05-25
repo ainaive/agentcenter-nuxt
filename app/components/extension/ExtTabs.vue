@@ -35,6 +35,12 @@ const permissionEntries = computed(() => {
       <div
         class="mt-4 rounded-(--radius-card) border border-(--color-border) bg-(--color-card) p-6"
       >
+        <div class="mb-5">
+          <p class="mb-2 text-[13px] text-(--color-ink-muted)">
+            {{ t("extensions.setupHint") }}
+          </p>
+          <InstallCommand :command="installCommand" />
+        </div>
         <Markdown v-if="readmeMd" :source="readmeMd" />
         <p v-else class="text-(--color-ink-muted) italic">{{ t("extensions.noReadme") }}</p>
         <div
