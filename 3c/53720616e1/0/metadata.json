@@ -1,0 +1,48 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "3c53720616e1",
+  "session_id": "ad97225b-e610-4feb-846a-d9713c030512",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-25T09:01:32.703954Z",
+  "branch": "refactor/home-cohesion-pass",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "shared/data/catalog.test.ts"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "a9bcc360c0ef",
+  "checkpoint_transcript_start": 672,
+  "transcript_lines_at_start": 672,
+  "token_usage": {
+    "input_tokens": 19,
+    "cache_creation_tokens": 3247,
+    "cache_read_tokens": 1866432,
+    "output_tokens": 4167,
+    "api_call_count": 9
+  },
+  "session_metrics": {
+    "turn_count": 12
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-25T09:01:32.679199Z",
+    "agent_lines": 21,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 21,
+    "total_lines_changed": 21,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}

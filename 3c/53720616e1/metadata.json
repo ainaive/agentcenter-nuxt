@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "3c53720616e1",
+  "strategy": "manual-commit",
+  "branch": "refactor/home-cohesion-pass",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "shared/data/catalog.test.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/3c/53720616e1/0/metadata.json",
+      "transcript": "/3c/53720616e1/0/full.jsonl",
+      "content_hash": "/3c/53720616e1/0/content_hash.txt",
+      "prompt": "/3c/53720616e1/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 19,
+    "cache_creation_tokens": 3247,
+    "cache_read_tokens": 1866432,
+    "output_tokens": 4167,
+    "api_call_count": 9
+  }
+}
