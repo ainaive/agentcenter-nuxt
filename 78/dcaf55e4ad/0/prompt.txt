@@ -1,0 +1,5 @@
+let's take a look at the trending area, now it only shows skills, so the words above that shows "xx skills for you r team" seems better, what do you think? and I think it is better to show more recommend/popular/new skills, 3 lines? what do you think?
+
+---
+
+but now I only can see 1 line, 3 recommended skills on homepage
