@@ -14,7 +14,7 @@ const isPanoramaRoute = computed(() => baseName.value === "mcp-panorama")
 const isMcpIndexRoute = computed(() => baseName.value === "mcp")
 const isMcpMode = computed(() => isMcpIndexRoute.value || isPanoramaRoute.value)
 const byTypesHref = computed(() => localePath("/mcp"))
-const byPanoramaHref = computed(() => localePath("/mcp-panorama"))
+const byPanoramaHref = computed(() => localePath("/mcp/panorama"))
 
 function buildHref(updates: Record<string, string | null>): string {
   const params = new URLSearchParams()

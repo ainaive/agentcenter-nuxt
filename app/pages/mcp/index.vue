@@ -70,7 +70,7 @@ onBeforeUnmount(() => {
   <div class="px-6 py-8 max-w-7xl mx-auto">
     <div class="mb-3 flex justify-end md:hidden">
       <NuxtLink
-        :to="localePath('/mcp-panorama')"
+        :to="localePath('/mcp/panorama')"
         class="inline-flex items-center gap-1.5 text-[13px] font-medium text-(--color-ink-muted) transition-colors hover:gap-2 hover:text-(--color-ink) transition-[gap]"
       >
         {{ t("extensions.mcpPanoramaLink") }}

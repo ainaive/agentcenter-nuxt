@@ -8,11 +8,6 @@ const route = useRoute()
 const { filters, update } = useFilters()
 const localePath = useLocalePath()
 
-if (route.query.category === "mcp") {
-  const { category: _category, ...rest } = route.query
-  await navigateTo({ path: localePath("/mcp"), query: rest }, { replace: true })
-}
-
 const { data, pending, refresh } = await useFetch("/api/internal/extensions", {
   query: computed(() => route.query),
   default: () => ({ items: [], total: 0, filters: {} }),
