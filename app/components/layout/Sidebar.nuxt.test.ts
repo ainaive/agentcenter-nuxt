@@ -1,5 +1,5 @@
 // @vitest-environment nuxt
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, beforeEach } from "vitest"
 import { mountSuspended } from "@nuxt/test-utils/runtime"
 import { defineComponent } from "vue"
 import Sidebar from "./Sidebar.vue"
@@ -13,6 +13,13 @@ const NuxtLinkStub = defineComponent({
 const mountOpts = {
   global: { stubs: { NuxtLink: NuxtLinkStub } },
 }
+
+beforeEach(async () => {
+  // Reset to a non-MCP route so each describe block starts from a known
+  // baseline. Tests that exercise MCP routing navigate explicitly.
+  const router = useRouter()
+  await router.replace("/en/extensions")
+})
 
 describe("Sidebar", () => {
   it("renders a single Categories section header", async () => {
@@ -62,4 +69,59 @@ describe("Sidebar", () => {
     expect(html).not.toContain("network protocols")
   })
 
+})
+
+describe("Sidebar — Browse MCP block", () => {
+  it("does not render the Browse MCP block on non-MCP routes", async () => {
+    const wrapper = await mountSuspended(Sidebar, { ...mountOpts, route: "/en/skills" })
+    const html = wrapper.html().toLowerCase()
+    expect(html).not.toContain("browse mcp")
+  })
+
+  it("on /mcp shows the Browse MCP block with By function as the active pill", async () => {
+    const wrapper = await mountSuspended(Sidebar, { ...mountOpts, route: "/en/mcp" })
+
+    // Heading is present
+    const html = wrapper.html().toLowerCase()
+    expect(html).toContain("browse mcp")
+
+    // By function is the active (aria-current) pill on /mcp
+    const active = wrapper.find('[aria-current="page"]')
+    expect(active.exists()).toBe(true)
+    expect(active.text().toLowerCase()).toContain("by function")
+
+    // By system is rendered as a link to /mcp/panorama
+    const systemLink = wrapper
+      .findAll("a")
+      .find((a) => a.text().toLowerCase().includes("by system"))
+    expect(systemLink).toBeTruthy()
+    expect(systemLink!.attributes("href")).toBe("/en/mcp/panorama")
+
+    // FUNC_TAXONOMY (Categories) still renders below the pills
+    expect(html).toContain("categor")
+    expect(html).toContain("work task")
+  })
+
+  it("on /mcp/panorama shows By system as the active pill and swaps the bottom section", async () => {
+    const wrapper = await mountSuspended(Sidebar, { ...mountOpts, route: "/en/mcp/panorama" })
+
+    const html = wrapper.html().toLowerCase()
+    expect(html).toContain("browse mcp")
+
+    // By system is now the active (aria-current) pill
+    const active = wrapper.find('[aria-current="page"]')
+    expect(active.exists()).toBe(true)
+    expect(active.text().toLowerCase()).toContain("by system")
+
+    // By function is rendered as a link back to /mcp
+    const typesLink = wrapper
+      .findAll("a")
+      .find((a) => a.text().toLowerCase().includes("by function"))
+    expect(typesLink).toBeTruthy()
+    expect(typesLink!.attributes("href")).toBe("/en/mcp")
+
+    // FUNC_TAXONOMY does NOT render on the panorama route
+    expect(html).not.toContain("work task")
+    expect(html).not.toContain("business")
+  })
 })

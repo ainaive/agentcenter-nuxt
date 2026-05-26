@@ -89,8 +89,9 @@
     "share": "Share",
     "empty": {
       "noResultsFor": "No results for \"{query}\"",
-      "noResultsFiltered": "No extensions match these filters",
-      "noExtensionsYet": "No extensions yet",
+      "noResultsFiltered": "No {label} match these filters",
+      "noExtensionsYet": "No {label} yet",
+      "defaultLabel": "extensions",
       "hintAdjust": "Try a different search or relax some filters.",
       "hintCheckBack": "New extensions land here as the marketplace grows.",
       "clearFilters": "Clear filters"
@@ -101,6 +102,28 @@
       "clearAll": "Clear all",
       "removeFilter": "Remove {label} filter"
     },
+    "category": {
+      "all": {
+        "searchPlaceholder": "Search skills, MCP servers, slash commands…",
+        "label": "extensions"
+      },
+      "skills": {
+        "searchPlaceholder": "Search skills…",
+        "label": "skills"
+      },
+      "mcp": {
+        "searchPlaceholder": "Search MCP servers…",
+        "label": "MCP servers"
+      },
+      "slash": {
+        "searchPlaceholder": "Search slash commands…",
+        "label": "slash commands"
+      },
+      "plugins": {
+        "searchPlaceholder": "Search plugins…",
+        "label": "plugins"
+      }
+    },
     "mcpPanoramaLink": "View the MCP Panorama",
     "backToBrowse": "Browse extensions",
     "badges": {
@@ -110,12 +133,18 @@
     }
   },
   "sidebar": {
+    "label": "Sidebar navigation",
     "categories": "Categories",
     "allCategories": "All",
     "skills": "Skills",
     "mcpServers": "MCP Servers",
     "slashCommands": "Slash Commands",
-    "plugins": "Plugins"
+    "plugins": "Plugins",
+    "mcp": {
+      "heading": "Browse MCP",
+      "byTypes": "By function",
+      "byPanorama": "By system"
+    }
   },
   "search": {
     "placeholder": "Search skills, MCP servers, slash commands…"

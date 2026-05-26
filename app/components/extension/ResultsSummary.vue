@@ -161,5 +161,7 @@ function clearAll() {
         {{ t("extensions.summary.clearAll") }}
       </button>
     </div>
+
+    <SortSelect class="ml-auto" />
   </div>
 </template>

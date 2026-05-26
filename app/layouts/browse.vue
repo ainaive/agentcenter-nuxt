@@ -22,7 +22,7 @@ const { t } = useI18n()
       <aside
         class="hidden md:flex sticky top-16 self-start h-[calc(100vh-4rem)] w-[240px] overflow-hidden flex-col"
         role="navigation"
-        :aria-label="t('sidebar.categories')"
+        :aria-label="t('sidebar.label')"
       >
         <Sidebar />
       </aside>

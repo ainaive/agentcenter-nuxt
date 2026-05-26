@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LayoutGrid, List, X } from "lucide-vue-next"
+import { Factory, Globe2, LayoutGrid, List, X } from "lucide-vue-next"
 import type { McpStatus } from "~~/shared/data/mcp-landscape"
 import {
   groupDisplayTitle,
@@ -25,6 +25,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   "update:statusFilter": ["all" | McpStatus]
   "update:viewMode": ["panorama" | "list"]
+  "update:layer": [Layer]
   clearDrill: []
 }>()
 
@@ -83,7 +84,41 @@ function statusLabel(s: McpStatus): string {
 </script>
 
 <template>
-  <div class="px-7 pt-6 pb-4 flex flex-col">
+  <div class="pt-2 pb-4 flex flex-col">
+    <!-- Mobile-only layer toggle (sidebar is hidden below md) -->
+    <div class="md:hidden mb-4 grid grid-cols-2 gap-1.5 rounded-md border border-(--color-border) bg-(--color-bg) p-1">
+      <button
+        type="button"
+        class="flex cursor-pointer items-center justify-center gap-1.5 rounded px-2 py-1.5 text-[12px] transition-colors"
+        :class="layer === 'industry'
+          ? 'bg-(--color-card) text-(--color-ink) font-semibold shadow-[0_1px_2px_rgba(60,40,20,0.06)]'
+          : 'text-(--color-ink-muted) font-medium hover:text-(--color-ink)'"
+        @click="emit('update:layer', 'industry')"
+      >
+        <Factory
+          :size="12"
+          :class="layer === 'industry' ? 'text-(--color-layer-industry)' : ''"
+          aria-hidden="true"
+        />
+        {{ t("mcpPanorama.layer.industryShort") }}
+      </button>
+      <button
+        type="button"
+        class="flex cursor-pointer items-center justify-center gap-1.5 rounded px-2 py-1.5 text-[12px] transition-colors"
+        :class="layer === 'public'
+          ? 'bg-(--color-card) text-(--color-ink) font-semibold shadow-[0_1px_2px_rgba(60,40,20,0.06)]'
+          : 'text-(--color-ink-muted) font-medium hover:text-(--color-ink)'"
+        @click="emit('update:layer', 'public')"
+      >
+        <Globe2
+          :size="12"
+          :class="layer === 'public' ? 'text-(--color-layer-public)' : ''"
+          aria-hidden="true"
+        />
+        {{ t("mcpPanorama.layer.publicShort") }}
+      </button>
+    </div>
+
     <!-- Tier 1: title -->
     <div class="min-w-0">
       <div

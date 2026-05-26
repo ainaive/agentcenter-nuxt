@@ -3,5 +3,5 @@ definePageMeta({ layout: "browse" })
 </script>
 
 <template>
-  <ExtensionListing category="all" />
+  <ExtensionListing category="plugins" />
 </template>

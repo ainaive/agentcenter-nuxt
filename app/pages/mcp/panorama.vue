@@ -2,13 +2,12 @@
 import type { McpStatus } from "~~/shared/data/mcp-landscape"
 import type {
   Group,
-  Layer,
   LayerPayload,
   McpDto,
   ToolDto,
 } from "~~/shared/mcp-panorama"
 
-definePageMeta({ layout: "mcp-panorama" })
+definePageMeta({ layout: "browse" })
 
 const { t } = useI18n()
 const head = useLocaleHead()
@@ -17,25 +16,34 @@ useHead(() => ({
   htmlAttrs: head.value.htmlAttrs ?? {},
 }))
 
-const layer = ref<Layer>("public")
-const activePrimary = ref<string | null>(null)
-const activeSecondary = ref<string | null>(null)
-const statusFilter = ref<"all" | McpStatus>("all")
-const viewMode = ref<"panorama" | "list">("panorama")
+const {
+  layer,
+  primary: activePrimary,
+  secondary: activeSecondary,
+  status: statusFilter,
+  viewMode,
+  setLayer,
+  setDrill,
+  clearDrill,
+  setStatus,
+  toggleStatus,
+  setView,
+} = usePanoramaState()
+
 const active = ref<{ tool: ToolDto; mcp: McpDto } | null>(null)
 
 // Re-fetch when layer changes; everything else filters client-side.
 const { data, pending, error, refresh } = await useFetch<LayerPayload>(
   "/api/internal/mcp-landscape",
   {
-    query: { layer },
+    query: computed(() => ({ layer: layer.value })),
     key: "mcp-landscape",
   },
 )
 
+// Clear the detail panel when the layer changes; drill state is already
+// reset inside the composable's setLayer.
 watch(layer, () => {
-  activePrimary.value = null
-  activeSecondary.value = null
   active.value = null
 })
 
@@ -122,55 +130,24 @@ const visibleCounts = computed(() => {
 
 const totals = computed(() => ({ total: data.value?.layerStats.total ?? 0 }))
 
-function setActive(primary: string | null, secondary: string | null) {
-  activePrimary.value = primary
-  activeSecondary.value = secondary
-  active.value = null
-}
-
-function clearDrill() {
-  activePrimary.value = null
-  activeSecondary.value = null
-}
-
 function pickMcp(payload: { tool: ToolDto; mcp: McpDto }) {
   active.value = payload
 }
 
 function drillTo(primary: string) {
-  activePrimary.value = primary
-  activeSecondary.value = null
+  setDrill(primary, null)
   active.value = null
 }
 
 function filterTo(status: McpStatus) {
   // Same toggle behavior as the StatusChip buttons in SectionHeader —
   // clicking the active status flips back to "all".
-  statusFilter.value = statusFilter.value === status ? "all" : status
+  toggleStatus(status)
 }
 </script>
 
 <template>
-  <div class="contents">
-    <!-- Sidebar -->
-    <ClientOnly>
-    <LayerSidebar
-      v-if="data"
-      :layer="layer"
-      :groups="data.groups"
-      :total-count="totals.total"
-      :active-primary="activePrimary"
-      :active-secondary="activeSecondary"
-      @update:layer="(l: Layer) => (layer = l)"
-      @set-active="setActive"
-    />
-    <template #fallback>
-      <div class="w-[268px] shrink-0 border-r border-(--color-border) bg-(--color-sidebar)" />
-    </template>
-  </ClientOnly>
-
-  <!-- Main + side panel -->
-  <div class="flex-1 overflow-auto bg-(--color-bg) relative">
+  <div class="px-6 py-8">
     <SectionHeader
       v-if="data"
       :layer="layer"
@@ -181,16 +158,17 @@ function filterTo(status: McpStatus) {
       :status-filter="statusFilter"
       :view-mode="viewMode"
       :groups="data.groups"
-      @update:status-filter="(v: 'all' | McpStatus) => (statusFilter = v)"
-      @update:view-mode="(v: 'panorama' | 'list') => (viewMode = v)"
+      @update:status-filter="setStatus"
+      @update:view-mode="setView"
+      @update:layer="setLayer"
       @clear-drill="clearDrill"
     />
 
-    <div v-if="pending && !data" class="px-7 pb-7 pt-2 text-(--color-ink-muted)">
+    <div v-if="pending && !data" class="pt-2 text-(--color-ink-muted)">
       <div class="h-6 w-40 rounded bg-(--color-border) animate-pulse" />
     </div>
 
-    <div v-if="error" class="px-7 pb-7 pt-2">
+    <div v-if="error" class="pt-2">
       <div class="text-(--color-ink-muted) text-[13px] mb-2">{{ t("mcpPanorama.page.errorLoad") }}</div>
       <button
         type="button"
@@ -220,7 +198,6 @@ function filterTo(status: McpStatus) {
       :active-mcp-id="active?.mcp.id ?? null"
       @pick="pickMcp"
     />
-  </div>
 
     <ToolDetailPanel
       :active="active"
