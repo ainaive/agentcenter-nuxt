@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "ce8274d0d914",
+  "strategy": "manual-commit",
+  "branch": "refactor/extensions-listing-cohesion",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/ce/8274d0d914/0/metadata.json",
+      "transcript": "/ce/8274d0d914/0/full.jsonl",
+      "content_hash": "/ce/8274d0d914/0/content_hash.txt",
+      "prompt": "/ce/8274d0d914/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 461,
+    "cache_creation_tokens": 681288,
+    "cache_read_tokens": 38971333,
+    "output_tokens": 195332,
+    "api_call_count": 199
+  }
+}

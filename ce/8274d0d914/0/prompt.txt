@@ -1,0 +1,25 @@
+let's improve more: 1, move Panorama link to sidebar, make the sidebar as two kinds showing of mcp, show mcp by types(list), or show mcp by panorama. what do you think? 2. the download order seems to be better at the top of the list, right at "showing xx", what do you think?
+
+---
+
+ok, go ahead
+
+---
+
+now the panorama's style is not same like list of mcp, please make it same, and not treat panorama as a separate link, treat it same as types. when click panorama, the botton categories should change to the panorama sidebar types.
+
+---
+
+ok, go ahead
+
+---
+
+check all the code reviews on PR #36
+
+---
+
+ok, go ahead
+
+---
+
+let's continue to improve, please commit on this branch: 1. in sidebar, "按类型" change to "按作业类型", "按全景图" change to "按目标系统"  2. the url of mcp index change to "/mcp" . and what do you think?
