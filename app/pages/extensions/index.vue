@@ -29,6 +29,16 @@ const filtersActive = computed(() => {
 })
 const isMcpCategory = computed(() => route.query.category === "mcp")
 
+type CategoryKey = "all" | "skills" | "mcp" | "slash" | "plugins"
+const categoryKey = computed<CategoryKey>(() => {
+  const c = route.query.category
+  return c === "skills" || c === "mcp" || c === "slash" || c === "plugins" ? c : "all"
+})
+const searchPlaceholder = computed(() =>
+  t(`extensions.category.${categoryKey.value}.searchPlaceholder`),
+)
+const categoryLabel = computed(() => t(`extensions.category.${categoryKey.value}.label`))
+
 const q = ref<string>(typeof route.query.q === "string" ? route.query.q : "")
 let pushTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -67,6 +77,16 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="px-6 py-8 max-w-7xl mx-auto">
+    <div v-if="isMcpCategory" class="mb-3 flex justify-end">
+      <NuxtLink
+        :to="localePath('/mcp-panorama')"
+        class="inline-flex items-center gap-1.5 text-[13px] font-medium text-(--color-accent) hover:gap-2 transition-[gap]"
+      >
+        {{ t("extensions.mcpPanoramaLink") }}
+        <ArrowUpRight :size="14" aria-hidden="true" />
+      </NuxtLink>
+    </div>
+
     <div class="mb-4 flex flex-wrap items-center gap-3">
       <form
         role="search"
@@ -83,18 +103,10 @@ onBeforeUnmount(() => {
           id="extensions-search"
           v-model="q"
           type="search"
-          :placeholder="t('search.placeholder')"
+          :placeholder="searchPlaceholder"
           class="w-full h-9 pl-9 pr-3 rounded-md border border-(--color-border) bg-(--color-bg) text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-(--color-accent)"
         >
       </form>
-      <NuxtLink
-        v-if="isMcpCategory"
-        :to="localePath('/mcp-panorama')"
-        class="inline-flex items-center gap-1.5 text-[13px] font-medium text-(--color-accent) hover:gap-2 transition-[gap]"
-      >
-        {{ t("extensions.mcpPanoramaLink") }}
-        <ArrowUpRight :size="14" aria-hidden="true" />
-      </NuxtLink>
       <SortSelect />
     </div>
 
@@ -116,6 +128,7 @@ onBeforeUnmount(() => {
       v-else
       :items="items"
       :query="query"
+      :category-label="categoryLabel"
       :clear-filters-href="filtersActive ? localePath('/extensions') : undefined"
     />
   </div>

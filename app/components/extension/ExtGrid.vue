@@ -6,11 +6,13 @@ const props = defineProps<{
   items: ExtensionListItem[]
   query?: string | undefined
   clearFiltersHref?: string | undefined
+  categoryLabel?: string | undefined
 }>()
 
 const { t } = useI18n()
 
 const filtersActive = computed(() => Boolean(props.query) || Boolean(props.clearFiltersHref))
+const label = computed(() => props.categoryLabel ?? t("extensions.empty.defaultLabel"))
 </script>
 
 <template>
@@ -21,8 +23,8 @@ const filtersActive = computed(() => Boolean(props.query) || Boolean(props.clear
     <SearchX :size="32" class="text-(--color-ink-muted)/50" aria-hidden="true" />
     <h2 class="text-base font-semibold">
       <template v-if="query">{{ t("extensions.empty.noResultsFor", { query }) }}</template>
-      <template v-else-if="filtersActive">{{ t("extensions.empty.noResultsFiltered") }}</template>
-      <template v-else>{{ t("extensions.empty.noExtensionsYet") }}</template>
+      <template v-else-if="filtersActive">{{ t("extensions.empty.noResultsFiltered", { label }) }}</template>
+      <template v-else>{{ t("extensions.empty.noExtensionsYet", { label }) }}</template>
     </h2>
     <p class="text-(--color-ink-muted) max-w-xs text-[13px] leading-relaxed">
       {{ filtersActive ? t("extensions.empty.hintAdjust") : t("extensions.empty.hintCheckBack") }}

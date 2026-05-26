@@ -89,8 +89,9 @@
     "share": "分享",
     "empty": {
       "noResultsFor": "没有\"{query}\"的结果",
-      "noResultsFiltered": "没有符合当前筛选条件的扩展",
-      "noExtensionsYet": "暂无扩展",
+      "noResultsFiltered": "没有符合当前筛选条件的{label}",
+      "noExtensionsYet": "暂无{label}",
+      "defaultLabel": "扩展",
       "hintAdjust": "试试其他关键词或调整筛选条件。",
       "hintCheckBack": "市场不断扩充中，请稍后再来看看。",
       "clearFilters": "清除筛选"
@@ -100,6 +101,28 @@
       "showingZero": "暂无匹配",
       "clearAll": "清除全部",
       "removeFilter": "移除 {label} 筛选"
+    },
+    "category": {
+      "all": {
+        "searchPlaceholder": "搜索 Skill、MCP、斜杠命令…",
+        "label": "扩展"
+      },
+      "skills": {
+        "searchPlaceholder": "搜索 Skill…",
+        "label": "Skill"
+      },
+      "mcp": {
+        "searchPlaceholder": "搜索 MCP 服务器…",
+        "label": "MCP 服务器"
+      },
+      "slash": {
+        "searchPlaceholder": "搜索斜杠命令…",
+        "label": "斜杠命令"
+      },
+      "plugins": {
+        "searchPlaceholder": "搜索插件…",
+        "label": "插件"
+      }
     },
     "mcpPanoramaLink": "查看 MCP 全景图",
     "backToBrowse": "浏览扩展",
