@@ -2,7 +2,6 @@
 import type { McpStatus } from "~~/shared/data/mcp-landscape"
 import type {
   Group,
-  Layer,
   LayerPayload,
   McpDto,
   ToolDto,
@@ -17,25 +16,34 @@ useHead(() => ({
   htmlAttrs: head.value.htmlAttrs ?? {},
 }))
 
-const layer = ref<Layer>("public")
-const activePrimary = ref<string | null>(null)
-const activeSecondary = ref<string | null>(null)
-const statusFilter = ref<"all" | McpStatus>("all")
-const viewMode = ref<"panorama" | "list">("panorama")
+const {
+  layer,
+  primary: activePrimary,
+  secondary: activeSecondary,
+  status: statusFilter,
+  viewMode,
+  setLayer,
+  setDrill,
+  clearDrill,
+  setStatus,
+  toggleStatus,
+  setView,
+} = usePanoramaState()
+
 const active = ref<{ tool: ToolDto; mcp: McpDto } | null>(null)
 
 // Re-fetch when layer changes; everything else filters client-side.
 const { data, pending, error, refresh } = await useFetch<LayerPayload>(
   "/api/internal/mcp-landscape",
   {
-    query: { layer },
+    query: computed(() => ({ layer: layer.value })),
     key: "mcp-landscape",
   },
 )
 
+// Clear the detail panel when the layer changes; drill state is already
+// reset inside the composable's setLayer.
 watch(layer, () => {
-  activePrimary.value = null
-  activeSecondary.value = null
   active.value = null
 })
 
@@ -123,14 +131,8 @@ const visibleCounts = computed(() => {
 const totals = computed(() => ({ total: data.value?.layerStats.total ?? 0 }))
 
 function setActive(primary: string | null, secondary: string | null) {
-  activePrimary.value = primary
-  activeSecondary.value = secondary
+  setDrill(primary, secondary)
   active.value = null
-}
-
-function clearDrill() {
-  activePrimary.value = null
-  activeSecondary.value = null
 }
 
 function pickMcp(payload: { tool: ToolDto; mcp: McpDto }) {
@@ -138,15 +140,14 @@ function pickMcp(payload: { tool: ToolDto; mcp: McpDto }) {
 }
 
 function drillTo(primary: string) {
-  activePrimary.value = primary
-  activeSecondary.value = null
+  setDrill(primary, null)
   active.value = null
 }
 
 function filterTo(status: McpStatus) {
   // Same toggle behavior as the StatusChip buttons in SectionHeader —
   // clicking the active status flips back to "all".
-  statusFilter.value = statusFilter.value === status ? "all" : status
+  toggleStatus(status)
 }
 </script>
 
@@ -161,7 +162,7 @@ function filterTo(status: McpStatus) {
       :total-count="totals.total"
       :active-primary="activePrimary"
       :active-secondary="activeSecondary"
-      @update:layer="(l: Layer) => (layer = l)"
+      @update:layer="setLayer"
       @set-active="setActive"
     />
     <template #fallback>
@@ -181,8 +182,8 @@ function filterTo(status: McpStatus) {
       :status-filter="statusFilter"
       :view-mode="viewMode"
       :groups="data.groups"
-      @update:status-filter="(v: 'all' | McpStatus) => (statusFilter = v)"
-      @update:view-mode="(v: 'panorama' | 'list') => (viewMode = v)"
+      @update:status-filter="setStatus"
+      @update:view-mode="setView"
       @clear-drill="clearDrill"
     />
 
