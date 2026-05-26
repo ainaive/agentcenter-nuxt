@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "d3357ad26b17",
+  "strategy": "manual-commit",
+  "branch": "refactor/mcp-unified-chrome",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/d3/357ad26b17/0/metadata.json",
+      "transcript": "/d3/357ad26b17/0/full.jsonl",
+      "content_hash": "/d3/357ad26b17/0/content_hash.txt",
+      "prompt": "/d3/357ad26b17/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 408,
+    "cache_creation_tokens": 331770,
+    "cache_read_tokens": 28690472,
+    "output_tokens": 156043,
+    "api_call_count": 166
+  }
+}
