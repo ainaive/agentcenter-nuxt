@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "c7cd87a70937",
+  "strategy": "manual-commit",
+  "branch": "refactor/mcp-panorama-both-layers",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/components/layout/Sidebar.nuxt.test.ts",
+    "app/composables/usePanoramaState.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/c7/cd87a70937/0/metadata.json",
+      "transcript": "/c7/cd87a70937/0/full.jsonl",
+      "content_hash": "/c7/cd87a70937/0/content_hash.txt",
+      "prompt": "/c7/cd87a70937/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 670,
+    "cache_creation_tokens": 1499420,
+    "cache_read_tokens": 122776797,
+    "output_tokens": 351945,
+    "api_call_count": 373
+  }
+}
