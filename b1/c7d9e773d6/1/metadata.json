@@ -1,0 +1,50 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "b1c7d9e773d6",
+  "session_id": "c4ea0e6d-7955-4a48-8604-dcc7aba6c9a5",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-26T01:48:24.620252Z",
+  "branch": "refactor/extensions-listing-cohesion",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/pages/extensions/index.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "9eaf1c8f3f6d",
+  "checkpoint_transcript_start": 274,
+  "transcript_lines_at_start": 274,
+  "token_usage": {
+    "input_tokens": 77,
+    "cache_creation_tokens": 49011,
+    "cache_read_tokens": 3833883,
+    "output_tokens": 28099,
+    "api_call_count": 26
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-26T01:48:24.606109Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 32,
+    "human_modified": 24,
+    "human_removed": 0,
+    "total_committed": 32,
+    "total_lines_changed": 57,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}

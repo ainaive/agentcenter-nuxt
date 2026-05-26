@@ -1,0 +1,1 @@
+let's improve more: 1, move Panorama link to sidebar, make the sidebar as two kinds showing of mcp, show mcp by types(list), or show mcp by panorama. what do you think? 2. the download order seems to be better at the top of the list, right at "showing xx", what do you think?
