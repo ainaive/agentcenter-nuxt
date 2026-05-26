@@ -1,0 +1,5 @@
+let's take a look at the mcp panorama: Currently, the Public Services landscape supports two viewing modes: Panorama and List. I would like to add a third, more intuitive panorama mode that allows users to view the MCP status of all public target systems within a single, windowed viewport. In the current panorama view, when there are too many tools and MCPs, users are forced to use scrollbars to see everything. can you do that?
+
+---
+
+the blocks still need to represent the include relations, like domain contains PDT, PDT contails tools. please continue to refine.
