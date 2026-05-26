@@ -14,7 +14,10 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <article class="bg-(--color-card) border border-(--color-border) rounded-xl p-3.5 flex flex-col gap-3">
+  <article
+    :id="`group-${group.key}`"
+    class="bg-(--color-card) border border-(--color-border) rounded-xl p-3.5 flex flex-col gap-3 scroll-mt-20"
+  >
     <CardHeader :group="group" @drill="emit('drill', props.group.key)" />
     <div class="bg-(--color-bg) rounded-lg p-2.5 flex flex-col gap-1.5">
       <ToolMcpsCard

@@ -1,82 +1,22 @@
 <script setup lang="ts">
-import { Factory, Globe2, LayoutGrid, List, X } from "lucide-vue-next"
+import { LayoutGrid, List } from "lucide-vue-next"
 import type { McpStatus } from "~~/shared/data/mcp-landscape"
-import {
-  groupDisplayTitle,
-  pdtDisplayTitle,
-  STATUS_ORDER,
-  type Group,
-  type Layer,
-  type PdtBlock,
-} from "~~/shared/mcp-panorama"
+import { STATUS_ORDER } from "~~/shared/mcp-panorama"
 import StatusChip from "./StatusChip.vue"
 
-const props = defineProps<{
-  layer: Layer
-  activePrimary: string | null
-  activeSecondary: string | null
+defineProps<{
   visibleCounts: { total: number; released: number; dev: number; none: number }
   totals: { total: number }
   statusFilter: "all" | McpStatus
   viewMode: "panorama" | "list"
-  groups: Group[]
 }>()
 
 const emit = defineEmits<{
   "update:statusFilter": ["all" | McpStatus]
   "update:viewMode": ["panorama" | "list"]
-  "update:layer": [Layer]
-  clearDrill: []
 }>()
 
-const { locale, t } = useI18n()
-
-const layerLabel = computed(() => t(`mcpPanorama.layer.${props.layer}`))
-
-const titleAndCrumb = computed<{ title: string; crumb: string | null }>(() => {
-  if (!props.activePrimary) {
-    return { title: t("mcpPanorama.layer." + props.layer), crumb: null }
-  }
-  const primary = props.groups.find((g) => g.key === props.activePrimary)
-  if (!primary) return { title: props.activePrimary, crumb: layerLabel.value }
-  if (props.layer === "industry") {
-    return {
-      title: groupDisplayTitle(primary, locale.value),
-      crumb: layerLabel.value,
-    }
-  }
-  if (primary.kind !== "domain") {
-    return { title: groupDisplayTitle(primary, locale.value), crumb: layerLabel.value }
-  }
-  if (props.activeSecondary) {
-    const pdt = primary.pdts.find((p) => p.key === props.activeSecondary) as PdtBlock | undefined
-    if (pdt) {
-      return {
-        title: pdtDisplayTitle(pdt, locale.value),
-        crumb: `${layerLabel.value} / ${groupDisplayTitle(primary, locale.value)}`,
-      }
-    }
-  }
-  return {
-    title: groupDisplayTitle(primary, locale.value),
-    crumb: layerLabel.value,
-  }
-})
-
-const subtitle = computed(() => {
-  if (!props.activePrimary) {
-    return t("mcpPanorama.page.subtitleAll", {
-      visible: props.visibleCounts.total,
-      total: props.totals.total,
-    })
-  }
-  return t("mcpPanorama.page.subtitleScoped", {
-    visible: props.visibleCounts.total,
-    released: props.visibleCounts.released,
-    dev: props.visibleCounts.dev,
-    none: props.visibleCounts.none,
-  })
-})
+const { t } = useI18n()
 
 function statusLabel(s: McpStatus): string {
   return t(`mcpPanorama.status.${s}.label`)
@@ -85,60 +25,14 @@ function statusLabel(s: McpStatus): string {
 
 <template>
   <div class="pt-2 pb-4 flex flex-col">
-    <!-- Mobile-only layer toggle (sidebar is hidden below md) -->
-    <div class="md:hidden mb-4 grid grid-cols-2 gap-1.5 rounded-md border border-(--color-border) bg-(--color-bg) p-1">
-      <button
-        type="button"
-        class="flex cursor-pointer items-center justify-center gap-1.5 rounded px-2 py-1.5 text-[12px] transition-colors"
-        :class="layer === 'industry'
-          ? 'bg-(--color-card) text-(--color-ink) font-semibold shadow-[0_1px_2px_rgba(60,40,20,0.06)]'
-          : 'text-(--color-ink-muted) font-medium hover:text-(--color-ink)'"
-        @click="emit('update:layer', 'industry')"
-      >
-        <Factory
-          :size="12"
-          :class="layer === 'industry' ? 'text-(--color-layer-industry)' : ''"
-          aria-hidden="true"
-        />
-        {{ t("mcpPanorama.layer.industryShort") }}
-      </button>
-      <button
-        type="button"
-        class="flex cursor-pointer items-center justify-center gap-1.5 rounded px-2 py-1.5 text-[12px] transition-colors"
-        :class="layer === 'public'
-          ? 'bg-(--color-card) text-(--color-ink) font-semibold shadow-[0_1px_2px_rgba(60,40,20,0.06)]'
-          : 'text-(--color-ink-muted) font-medium hover:text-(--color-ink)'"
-        @click="emit('update:layer', 'public')"
-      >
-        <Globe2
-          :size="12"
-          :class="layer === 'public' ? 'text-(--color-layer-public)' : ''"
-          aria-hidden="true"
-        />
-        {{ t("mcpPanorama.layer.publicShort") }}
-      </button>
-    </div>
-
     <!-- Tier 1: title -->
     <div class="min-w-0">
-      <div
-        v-if="titleAndCrumb.crumb"
-        class="flex items-center gap-1.5 mb-1.5 font-mono text-[11px] tracking-wide uppercase text-(--color-ink-muted)"
-      >
-        <span>{{ titleAndCrumb.crumb }}</span>
-        <button
-          type="button"
-          class="inline-flex items-center justify-center size-[18px] rounded-full text-(--color-ink-muted) hover:text-(--color-ink) hover:bg-(--color-border)/60 cursor-pointer transition"
-          :aria-label="t('mcpPanorama.filter.clear')"
-          @click="emit('clearDrill')"
-        >
-          <X :size="11" aria-hidden="true" />
-        </button>
-      </div>
       <h1 class="font-serif text-[36px] font-medium tracking-tight m-0 text-(--color-ink) leading-[1.05]">
-        {{ titleAndCrumb.title }}
+        {{ t("mcpPanorama.page.title") }}
       </h1>
-      <p class="mt-1.5 text-[13px] text-(--color-ink-muted)">{{ subtitle }}</p>
+      <p class="mt-1.5 text-[13px] text-(--color-ink-muted)">
+        {{ t("mcpPanorama.page.subtitleAll", { visible: visibleCounts.total, total: totals.total }) }}
+      </p>
     </div>
 
     <!-- Tier 2: controls -->

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronDown, ChevronRight, Factory, Globe2 } from "lucide-vue-next"
+import { ChevronDown, ChevronRight } from "lucide-vue-next"
 import {
   groupDisplayTitle,
   pdtDisplayTitle,
@@ -8,43 +8,22 @@ import {
 } from "~~/shared/mcp-panorama"
 
 const { locale, t } = useI18n()
-const { layer, primary, secondary, setLayer, setDrill } = usePanoramaState()
 
-const { data } = await useFetch<LayerPayload>("/api/internal/mcp-landscape", {
-  query: computed(() => ({ layer: layer.value })),
-  key: "mcp-landscape",
-})
-
-const groups = computed<Group[]>(() => data.value?.groups ?? [])
-const totalCount = computed<number>(() => data.value?.layerStats.total ?? 0)
-
-const expanded = ref<Record<string, boolean>>({})
-
-watch(layer, () => {
-  expanded.value = {}
-})
-
-watch(
-  primary,
-  (k) => {
-    if (k && layer.value === "public") expanded.value = { ...expanded.value, [k]: true }
-  },
-  { immediate: true },
+const { data: industryData } = await useFetch<LayerPayload>(
+  "/api/internal/mcp-landscape",
+  { query: { layer: "industry" }, key: "mcp-landscape-industry" },
+)
+const { data: publicData } = await useFetch<LayerPayload>(
+  "/api/internal/mcp-landscape",
+  { query: { layer: "public" }, key: "mcp-landscape-public" },
 )
 
-function setActivePrimary(key: string) {
-  if (primary.value === key && !secondary.value) {
-    setDrill(null, null)
-  } else {
-    setDrill(key, null)
-    if (layer.value === "public") expanded.value = { ...expanded.value, [key]: true }
-  }
-}
+const industryGroups = computed<Group[]>(() => industryData.value?.groups ?? [])
+const publicGroups = computed<Group[]>(() => publicData.value?.groups ?? [])
+const industryTotal = computed(() => industryData.value?.layerStats.total ?? 0)
+const publicTotal = computed(() => publicData.value?.layerStats.total ?? 0)
 
-function setActivePdt(domainKey: string, pdtKey: string) {
-  const isActive = primary.value === domainKey && secondary.value === pdtKey
-  setDrill(domainKey, isActive ? null : pdtKey)
-}
+const expanded = ref<Record<string, boolean>>({})
 
 function toggle(k: string) {
   expanded.value = { ...expanded.value, [k]: !expanded.value[k] }
@@ -57,77 +36,59 @@ function rowTitle(g: Group): string {
 function pdtMcpCount(items: { mcps: { id: number }[] }[]): number {
   return items.reduce((acc, t) => acc + t.mcps.length, 0)
 }
+
+function scrollToAnchor(anchorId: string) {
+  if (typeof document === "undefined") return
+  const el = document.getElementById(anchorId)
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" })
+}
 </script>
 
 <template>
   <section>
+    <!-- Industry -->
     <h2 class="px-2 pb-1.5 font-serif text-[12px] italic tracking-wide text-(--color-ink-muted)">
-      {{ t("mcpPanorama.sidebar.serviceLayer") }}
+      {{ t("mcpPanorama.layer.industry") }}
     </h2>
-
-    <div class="mb-3 grid grid-cols-2 gap-1.5 rounded-md border border-(--color-border) bg-(--color-bg) p-1">
+    <div class="mb-4 flex flex-col gap-px">
       <button
         type="button"
-        class="flex cursor-pointer items-center justify-center gap-1.5 rounded px-2 py-1.5 text-[12px] transition-colors"
-        :class="layer === 'industry'
-          ? 'bg-(--color-card) text-(--color-ink) font-semibold shadow-[0_1px_2px_rgba(60,40,20,0.06)]'
-          : 'text-(--color-ink-muted) font-medium hover:text-(--color-ink)'"
-        @click="setLayer('industry')"
-      >
-        <Factory
-          :size="12"
-          :class="layer === 'industry' ? 'text-(--color-layer-industry)' : ''"
-          aria-hidden="true"
-        />
-        {{ t("mcpPanorama.layer.industryShort") }}
-      </button>
-      <button
-        type="button"
-        class="flex cursor-pointer items-center justify-center gap-1.5 rounded px-2 py-1.5 text-[12px] transition-colors"
-        :class="layer === 'public'
-          ? 'bg-(--color-card) text-(--color-ink) font-semibold shadow-[0_1px_2px_rgba(60,40,20,0.06)]'
-          : 'text-(--color-ink-muted) font-medium hover:text-(--color-ink)'"
-        @click="setLayer('public')"
-      >
-        <Globe2
-          :size="12"
-          :class="layer === 'public' ? 'text-(--color-layer-public)' : ''"
-          aria-hidden="true"
-        />
-        {{ t("mcpPanorama.layer.publicShort") }}
-      </button>
-    </div>
-
-    <h2 class="px-2 pb-1.5 font-serif text-[12px] italic tracking-wide text-(--color-ink-muted)">
-      {{ layer === "industry" ? t("mcpPanorama.sidebar.sectors") : t("mcpPanorama.sidebar.domainsPdts") }}
-    </h2>
-
-    <div class="flex flex-col gap-px">
-      <button
-        type="button"
-        class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-[13.5px] transition hover:bg-(--color-card)"
-        :class="!primary && !secondary ? 'font-semibold text-(--color-ink)' : 'font-medium text-(--color-ink-muted)'"
-        @click="setDrill(null, null)"
+        class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-[13.5px] font-medium text-(--color-ink-muted) transition hover:bg-(--color-card) hover:text-(--color-ink)"
+        @click="scrollToAnchor('layer-industry')"
       >
         <span class="bg-(--color-ink-muted) size-[3px] shrink-0 rounded-full" />
         <span class="flex-1 truncate">{{ t("mcpPanorama.sidebar.allMcps") }}</span>
-        <span class="font-mono text-[10px] text-(--color-ink-muted)">{{ totalCount }}</span>
+        <span class="font-mono text-[10px] text-(--color-ink-muted)">{{ industryTotal }}</span>
       </button>
+      <button
+        v-for="g in industryGroups"
+        :key="g.key"
+        type="button"
+        class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-[13.5px] font-medium text-(--color-ink-muted) transition hover:bg-(--color-card) hover:text-(--color-ink)"
+        @click="scrollToAnchor(`group-${g.key}`)"
+      >
+        <span class="bg-(--color-ink-muted) size-[3px] shrink-0 rounded-full" />
+        <span class="flex-1 truncate">{{ rowTitle(g) }}</span>
+        <span class="font-mono text-[10px] text-(--color-ink-muted)">{{ g.stats.total }}</span>
+      </button>
+    </div>
 
-      <template v-for="g in groups" :key="g.key">
-        <button
-          v-if="layer === 'industry'"
-          type="button"
-          class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-[13.5px] transition hover:bg-(--color-card)"
-          :class="primary === g.key ? 'font-semibold text-(--color-ink)' : 'font-medium text-(--color-ink-muted)'"
-          @click="setActivePrimary(g.key)"
-        >
-          <span class="bg-(--color-ink-muted) size-[3px] shrink-0 rounded-full" />
-          <span class="flex-1 truncate">{{ rowTitle(g) }}</span>
-          <span class="font-mono text-[10px] text-(--color-ink-muted)">{{ g.stats.total }}</span>
-        </button>
-
-        <template v-else-if="g.kind === 'domain'">
+    <!-- Public -->
+    <h2 class="px-2 pb-1.5 font-serif text-[12px] italic tracking-wide text-(--color-ink-muted)">
+      {{ t("mcpPanorama.layer.public") }}
+    </h2>
+    <div class="flex flex-col gap-px">
+      <button
+        type="button"
+        class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-[13.5px] font-medium text-(--color-ink-muted) transition hover:bg-(--color-card) hover:text-(--color-ink)"
+        @click="scrollToAnchor('layer-public')"
+      >
+        <span class="bg-(--color-ink-muted) size-[3px] shrink-0 rounded-full" />
+        <span class="flex-1 truncate">{{ t("mcpPanorama.sidebar.allMcps") }}</span>
+        <span class="font-mono text-[10px] text-(--color-ink-muted)">{{ publicTotal }}</span>
+      </button>
+      <template v-for="g in publicGroups" :key="g.key">
+        <template v-if="g.kind === 'domain'">
           <div class="flex items-center">
             <button
               type="button"
@@ -140,11 +101,8 @@ function pdtMcpCount(items: { mcps: { id: number }[] }[]): number {
             </button>
             <button
               type="button"
-              class="flex flex-1 items-center gap-1.5 rounded-md px-1 py-1.5 text-left text-[13.5px] transition hover:bg-(--color-card)"
-              :class="primary === g.key && !secondary
-                ? 'font-semibold text-(--color-ink)'
-                : 'font-medium text-(--color-ink-muted)'"
-              @click="setActivePrimary(g.key)"
+              class="flex flex-1 items-center gap-1.5 rounded-md px-1 py-1.5 text-left text-[13.5px] font-medium text-(--color-ink-muted) transition hover:bg-(--color-card) hover:text-(--color-ink)"
+              @click="scrollToAnchor(`group-${g.key}`)"
             >
               <span class="flex-1 truncate">{{ rowTitle(g) }}</span>
               <span class="font-mono text-[10px] text-(--color-ink-muted)">{{ g.stats.total }}</span>
@@ -155,11 +113,8 @@ function pdtMcpCount(items: { mcps: { id: number }[] }[]): number {
             v-show="expanded[g.key]"
             :key="p.key"
             type="button"
-            class="flex w-full items-center gap-1.5 rounded-md py-1 pr-2 pl-7 text-left text-[12.5px] transition hover:bg-(--color-card)"
-            :class="primary === g.key && secondary === p.key
-              ? 'font-semibold text-(--color-ink)'
-              : 'font-medium text-(--color-ink-muted)'"
-            @click="setActivePdt(g.key, p.key)"
+            class="flex w-full items-center gap-1.5 rounded-md py-1 pr-2 pl-7 text-left text-[12.5px] font-medium text-(--color-ink-muted) transition hover:bg-(--color-card) hover:text-(--color-ink)"
+            @click="scrollToAnchor(`pdt-${g.key}-${p.key}`)"
           >
             <span class="flex-1 truncate">{{ pdtDisplayTitle(p, locale) }}</span>
             <span class="font-mono text-[10px] text-(--color-ink-muted)">{{ pdtMcpCount(p.items) }}</span>

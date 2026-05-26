@@ -2,6 +2,7 @@
 import type { McpStatus } from "~~/shared/data/mcp-landscape"
 import type {
   Group,
+  Layer,
   LayerPayload,
   McpDto,
   ToolDto,
@@ -10,89 +11,41 @@ import type {
 definePageMeta({ layout: "browse" })
 
 const { t } = useI18n()
+const route = useRoute()
+const router = useRouter()
 const head = useLocaleHead()
 useHead(() => ({
   title: t("mcpPanorama.page.title"),
   htmlAttrs: head.value.htmlAttrs ?? {},
 }))
 
-const {
-  layer,
-  primary: activePrimary,
-  secondary: activeSecondary,
-  status: statusFilter,
-  viewMode,
-  setLayer,
-  setDrill,
-  clearDrill,
-  setStatus,
-  toggleStatus,
-  setView,
-} = usePanoramaState()
+const { status: statusFilter, viewMode, setStatus, toggleStatus, setView } =
+  usePanoramaState()
 
 const active = ref<{ tool: ToolDto; mcp: McpDto } | null>(null)
 
-// Re-fetch when layer changes; everything else filters client-side.
-const { data, pending, error, refresh } = await useFetch<LayerPayload>(
-  "/api/internal/mcp-landscape",
-  {
-    query: computed(() => ({ layer: layer.value })),
-    key: "mcp-landscape",
-  },
-)
-
-// Clear the detail panel when the layer changes; drill state is already
-// reset inside the composable's setLayer.
-watch(layer, () => {
-  active.value = null
-})
-
-// All MCPs for the current layer (used for derived counts).
-const allMcps = computed<{ tool: ToolDto; mcp: McpDto }[]>(() => {
-  if (!data.value) return []
-  const out: { tool: ToolDto; mcp: McpDto }[] = []
-  for (const g of data.value.groups) {
-    for (const t of g.items) for (const m of t.mcps) out.push({ tool: t, mcp: m })
-  }
-  return out
-})
-
-function inDrill(tool: ToolDto): boolean {
-  if (activePrimary.value && tool.ownerPrimary !== activePrimary.value) return false
-  if (activeSecondary.value && tool.ownerSecondary !== activeSecondary.value) return false
-  return true
+const [industryRes, publicRes] = await Promise.all([
+  useFetch<LayerPayload>("/api/internal/mcp-landscape", {
+    query: { layer: "industry" },
+    key: "mcp-landscape-industry",
+  }),
+  useFetch<LayerPayload>("/api/internal/mcp-landscape", {
+    query: { layer: "public" },
+    key: "mcp-landscape-public",
+  }),
+])
+const industryData = industryRes.data
+const publicData = publicRes.data
+const pending = computed(() => industryRes.pending.value || publicRes.pending.value)
+const error = computed(() => industryRes.error.value ?? publicRes.error.value)
+function refresh() {
+  industryRes.refresh()
+  publicRes.refresh()
 }
 
 function passesStatus(mcp: McpDto): boolean {
   return statusFilter.value === "all" || mcp.status === statusFilter.value
 }
-
-// Re-shape groups with filtered MCPs, dropping tools that lose all their MCPs
-// after the status filter, and dropping empty groups/PDTs.
-const filteredGroups = computed<Group[]>(() => {
-  if (!data.value) return []
-  function filterTools(tools: ToolDto[]): ToolDto[] {
-    return tools
-      .filter(inDrill)
-      .map((tool) => ({
-        ...tool,
-        mcps: tool.mcps.filter(passesStatus),
-      }))
-      .filter((tool) => tool.mcps.length > 0)
-  }
-  return data.value.groups
-    .map((g): Group => {
-      const items = filterTools(g.items)
-      if (g.kind === "sector") {
-        return { ...g, items, stats: computeStats(items) }
-      }
-      const pdts = g.pdts
-        .map((p) => ({ ...p, items: filterTools(p.items) }))
-        .filter((p) => p.items.length > 0)
-      return { ...g, items, pdts, stats: computeStats(items) }
-    })
-    .filter((g) => g.items.length > 0)
-})
 
 function computeStats(items: ToolDto[]) {
   const counts = { released: 0, dev: 0, none: 0 }
@@ -115,56 +68,101 @@ function computeStats(items: ToolDto[]) {
   }
 }
 
-// Visible counts for the section header subtitle and filter chips. These
-// reflect drill-down but ignore the status filter — chips show how many
-// MCPs each status would surface if selected.
-const visibleCounts = computed(() => {
-  const counts = { released: 0, dev: 0, none: 0, total: 0 }
-  for (const { tool, mcp } of allMcps.value) {
-    if (!inDrill(tool)) continue
-    counts[mcp.status]++
-    counts.total++
+// Re-shape one layer's groups with the status filter applied. Drop tools that
+// lose all their MCPs, and drop empty groups/PDTs.
+function filterLayer(payload: LayerPayload | null | undefined): Group[] {
+  if (!payload) return []
+  function filterTools(tools: ToolDto[]): ToolDto[] {
+    return tools
+      .map((tool) => ({ ...tool, mcps: tool.mcps.filter(passesStatus) }))
+      .filter((tool) => tool.mcps.length > 0)
   }
-  return counts
-})
+  return payload.groups
+    .map((g): Group => {
+      const items = filterTools(g.items)
+      if (g.kind === "sector") {
+        return { ...g, items, stats: computeStats(items) }
+      }
+      const pdts = g.pdts
+        .map((p) => ({ ...p, items: filterTools(p.items) }))
+        .filter((p) => p.items.length > 0)
+      return { ...g, items, pdts, stats: computeStats(items) }
+    })
+    .filter((g) => g.items.length > 0)
+}
 
-const totals = computed(() => ({ total: data.value?.layerStats.total ?? 0 }))
+const industryGroups = computed<Group[]>(() => filterLayer(industryData.value))
+const publicGroups = computed<Group[]>(() => filterLayer(publicData.value))
+
+function rolledStats(groups: Group[]) {
+  return computeStats(groups.flatMap((g) => g.items))
+}
+
+const industryStats = computed(() =>
+  statusFilter.value === "all"
+    ? industryData.value?.layerStats ?? { total: 0, counts: { released: 0, dev: 0, none: 0 }, releasedPct: 0, activePct: 0, lagPct: 0 }
+    : rolledStats(industryGroups.value),
+)
+const publicStats = computed(() =>
+  statusFilter.value === "all"
+    ? publicData.value?.layerStats ?? { total: 0, counts: { released: 0, dev: 0, none: 0 }, releasedPct: 0, activePct: 0, lagPct: 0 }
+    : rolledStats(publicGroups.value),
+)
+
+const visibleCounts = computed(() => ({
+  released: industryStats.value.counts.released + publicStats.value.counts.released,
+  dev: industryStats.value.counts.dev + publicStats.value.counts.dev,
+  none: industryStats.value.counts.none + publicStats.value.counts.none,
+  total: industryStats.value.total + publicStats.value.total,
+}))
+const totals = computed(() => ({
+  total:
+    (industryData.value?.layerStats.total ?? 0) +
+    (publicData.value?.layerStats.total ?? 0),
+}))
 
 function pickMcp(payload: { tool: ToolDto; mcp: McpDto }) {
   active.value = payload
 }
 
-function drillTo(primary: string) {
-  setDrill(primary, null)
-  active.value = null
-}
-
 function filterTo(status: McpStatus) {
-  // Same toggle behavior as the StatusChip buttons in SectionHeader —
-  // clicking the active status flips back to "all".
   toggleStatus(status)
 }
+
+// Backwards-compat: ?layer=industry|public is treated as a scroll-on-load hint,
+// then stripped from the URL so the page canonicalizes to /mcp/panorama.
+onMounted(() => {
+  const layerHint = route.query.layer
+  if (layerHint === "industry" || layerHint === "public") {
+    const targetId = `layer-${layerHint}`
+    requestAnimationFrame(() => {
+      const el = document.getElementById(targetId)
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" })
+    })
+    const { layer: _layer, ...rest } = route.query
+    router.replace({ path: route.path, query: rest })
+  }
+})
+
+const allLayers: { key: Layer; groups: ComputedRef<Group[]>; stats: ComputedRef<ReturnType<typeof computeStats>>; titleKey: string }[] = [
+  { key: "industry", groups: industryGroups, stats: industryStats, titleKey: "mcpPanorama.layer.industry" },
+  { key: "public", groups: publicGroups, stats: publicStats, titleKey: "mcpPanorama.layer.public" },
+]
 </script>
 
 <template>
   <div class="px-6 py-8">
     <SectionHeader
-      v-if="data"
-      :layer="layer"
-      :active-primary="activePrimary"
-      :active-secondary="activeSecondary"
+      v-if="industryData || publicData"
       :visible-counts="visibleCounts"
       :totals="totals"
       :status-filter="statusFilter"
       :view-mode="viewMode"
-      :groups="data.groups"
       @update:status-filter="setStatus"
       @update:view-mode="setView"
-      @update:layer="setLayer"
-      @clear-drill="clearDrill"
     />
 
-    <div v-if="pending && !data" class="pt-2 text-(--color-ink-muted)">
+    <div v-if="pending && !industryData && !publicData" class="pt-2 text-(--color-ink-muted)">
       <div class="h-6 w-40 rounded bg-(--color-border) animate-pulse" />
     </div>
 
@@ -179,29 +177,33 @@ function filterTo(status: McpStatus) {
       </button>
     </div>
 
-    <PanoramaView
-      v-if="data && viewMode === 'panorama'"
-      :layer="layer"
-      :stats="!activePrimary && !activeSecondary && statusFilter === 'all'
-        ? data.layerStats
-        : computeStats(filteredGroups.flatMap((g) => g.items))"
-      :groups="filteredGroups"
-      :active-mcp-id="active?.mcp.id ?? null"
-      @pick="pickMcp"
-      @drill="drillTo"
-      @filter="filterTo"
-    />
-    <GroupedListView
-      v-else-if="data && viewMode === 'list'"
-      :layer="layer"
-      :groups="filteredGroups"
-      :active-mcp-id="active?.mcp.id ?? null"
-      @pick="pickMcp"
-    />
+    <section
+      v-for="layerDef in allLayers"
+      :id="`layer-${layerDef.key}`"
+      :key="layerDef.key"
+      class="scroll-mt-20"
+    >
+      <PanoramaView
+        v-if="viewMode === 'panorama' && layerDef.groups.value.length > 0"
+        :layer="layerDef.key"
+        :stats="layerDef.stats.value"
+        :groups="layerDef.groups.value"
+        :active-mcp-id="active?.mcp.id ?? null"
+        @pick="pickMcp"
+        @filter="filterTo"
+      />
+      <GroupedListView
+        v-else-if="viewMode === 'list' && layerDef.groups.value.length > 0"
+        :layer="layerDef.key"
+        :groups="layerDef.groups.value"
+        :active-mcp-id="active?.mcp.id ?? null"
+        @pick="pickMcp"
+      />
+    </section>
 
     <ToolDetailPanel
       :active="active"
-      :groups="data?.groups ?? []"
+      :groups="[...(industryData?.groups ?? []), ...(publicData?.groups ?? [])]"
       @close="active = null"
       @switch-mcp="pickMcp"
     />

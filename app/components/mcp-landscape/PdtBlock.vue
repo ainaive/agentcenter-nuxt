@@ -9,6 +9,7 @@ import ToolMcpsCard from "./ToolMcpsCard.vue"
 
 const props = defineProps<{
   pdt: PdtBlock
+  ownerDomainKey: string
   activeMcpId: number | null
 }>()
 const emit = defineEmits<{ pick: [{ tool: ToolDto; mcp: McpDto }] }>()
@@ -22,7 +23,10 @@ const mcpCount = computed(() =>
 </script>
 
 <template>
-  <section class="bg-(--color-bg) rounded-lg px-2.5 py-2.5 flex flex-col gap-2">
+  <section
+    :id="`pdt-${ownerDomainKey}-${pdt.key}`"
+    class="bg-(--color-bg) rounded-lg px-2.5 py-2.5 flex flex-col gap-2 scroll-mt-20"
+  >
     <header class="flex items-baseline justify-between gap-2 px-0.5">
       <span class="font-serif text-[13px] font-medium text-(--color-ink) tracking-tight truncate">
         {{ title }}
