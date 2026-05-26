@@ -1,0 +1,5 @@
+let's take a look at the mcp index page, let;s try to improve it make it more elegant.
+
+---
+
+I don't like the h1 title and description, I think they are redundant. what do you think?

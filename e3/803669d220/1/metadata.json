@@ -1,0 +1,63 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "e3803669d220",
+  "session_id": "c4ea0e6d-7955-4a48-8604-dcc7aba6c9a5",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-26T01:28:25.176254Z",
+  "branch": "refactor/extensions-listing-cohesion",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "app/components/extension/ExtGrid.vue",
+    "app/pages/extensions/index.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "69a662fbd3f5",
+  "token_usage": {
+    "input_tokens": 83,
+    "cache_creation_tokens": 142797,
+    "cache_read_tokens": 4176263,
+    "output_tokens": 38937,
+    "api_call_count": 53
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-26T01:28:25.166461Z",
+    "agent_lines": 73,
+    "agent_removed": 15,
+    "human_added": 0,
+    "human_modified": 3,
+    "human_removed": 31,
+    "total_committed": 76,
+    "total_lines_changed": 122,
+    "agent_percentage": 72.1311475409836,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 107,
+      "agent_lines_removed": 15
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 107,
+      "agent_lines_removed": 15
+    }
+  ]
+}
