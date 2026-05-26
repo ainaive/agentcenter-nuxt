@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowUpRight, ChevronDown, ChevronRight } from "lucide-vue-next"
+import { ChevronDown, ChevronRight } from "lucide-vue-next"
 import { FUNC_CAT_COLORS, FUNC_TAXONOMY } from "~~/shared/taxonomy"
 
 const { t } = useI18n()
@@ -50,7 +50,7 @@ function buildHref(updates: Record<string, string | null>): string {
         <NuxtLink
           v-else
           :to="byTypesHref"
-          class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-[15px] font-semibold text-(--color-ink-muted) transition hover:bg-(--color-card) hover:text-(--color-ink)"
+          class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-[15px] font-medium text-(--color-ink-muted) transition hover:bg-(--color-card) hover:text-(--color-ink)"
         >
           <span class="bg-(--color-ink-muted) size-[9px] shrink-0 rounded-sm" />
           <span class="flex-1">{{ t("sidebar.mcp.byTypes") }}</span>
@@ -59,19 +59,18 @@ function buildHref(updates: Record<string, string | null>): string {
         <span
           v-if="isPanoramaRoute"
           aria-current="page"
-          class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-[15px] font-semibold text-(--color-accent)"
+          class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-[15px] font-semibold text-(--color-ink)"
         >
-          <span class="bg-(--color-accent) size-[9px] shrink-0 rounded-sm" />
+          <span class="bg-(--color-ink) size-[9px] shrink-0 rounded-sm" />
           <span class="flex-1">{{ t("sidebar.mcp.byPanorama") }}</span>
         </span>
         <NuxtLink
           v-else
           :to="byPanoramaHref"
-          class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-[15px] font-semibold text-(--color-accent) transition hover:bg-(--color-card)"
+          class="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-[15px] font-medium text-(--color-ink-muted) transition hover:bg-(--color-card) hover:text-(--color-ink)"
         >
-          <span class="bg-(--color-accent) size-[9px] shrink-0 rounded-sm" />
+          <span class="bg-(--color-ink-muted) size-[9px] shrink-0 rounded-sm" />
           <span class="flex-1">{{ t("sidebar.mcp.byPanorama") }}</span>
-          <ArrowUpRight :size="14" class="shrink-0" aria-hidden="true" />
         </NuxtLink>
       </div>
     </section>
