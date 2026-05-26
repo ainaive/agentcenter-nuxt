@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "d2f226075cc5",
+  "session_id": "c4ea0e6d-7955-4a48-8604-dcc7aba6c9a5",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-26T03:05:46.780405Z",
+  "branch": "refactor/mcp-unified-chrome",
+  "checkpoints_count": 1,
+  "files_touched": [],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "a35c10f3bfb4",
+  "token_usage": {
+    "input_tokens": 397,
+    "cache_creation_tokens": 319527,
+    "cache_read_tokens": 25444973,
+    "output_tokens": 148119,
+    "api_call_count": 155
+  },
+  "session_metrics": {
+    "turn_count": 5
+  }
+}
