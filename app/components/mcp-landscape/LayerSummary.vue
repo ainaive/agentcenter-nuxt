@@ -15,9 +15,14 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  drill: [string]
   filter: [McpStatus]
 }>()
+
+function scrollToGroup(key: string) {
+  if (typeof document === "undefined") return
+  const el = document.getElementById(`group-${key}`)
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" })
+}
 
 const { locale, t } = useI18n()
 
@@ -152,8 +157,7 @@ function title(g: Group): string {
           :key="g.key"
           type="button"
           class="flex items-baseline justify-between gap-2 bg-transparent border-0 p-0 cursor-pointer text-left text-(--color-ink) hover:underline underline-offset-4 decoration-(--color-ink-muted) transition-colors"
-          :title="t('mcpPanorama.card.drillIn', { name: title(g) })"
-          @click="emit('drill', g.key)"
+          @click="scrollToGroup(g.key)"
         >
           <span class="text-[13px] truncate">
             <span class="font-mono text-[10px] text-(--color-ink-muted) mr-1.5">#{{ i + 1 }}</span>

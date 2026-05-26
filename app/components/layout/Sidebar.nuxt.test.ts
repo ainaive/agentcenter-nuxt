@@ -124,4 +124,28 @@ describe("Sidebar — Browse MCP block", () => {
     expect(html).not.toContain("work task")
     expect(html).not.toContain("business")
   })
+
+  it("on /mcp/panorama no longer exposes a layer-toggle widget", async () => {
+    // After the both-layers rendering pass the panorama sidebar dropped its
+    // Industry/Public layer toggle. Guard against it returning.
+    const wrapper = await mountSuspended(Sidebar, { ...mountOpts, route: "/en/mcp/panorama" })
+    const html = wrapper.html().toLowerCase()
+
+    // The previous toggle was a 2-column button grid. Asserting the absence of
+    // the per-layer "short" labels used inside those buttons keeps the test
+    // resilient to small style changes.
+    const industryShort = wrapper
+      .findAll("button")
+      .filter((b) => b.text().trim().toLowerCase() === "industry")
+    const publicShort = wrapper
+      .findAll("button")
+      .filter((b) => b.text().trim().toLowerCase() === "public")
+    expect(industryShort.length).toBe(0)
+    expect(publicShort.length).toBe(0)
+
+    // And no `mcppanorama.layer.publicdesc` / .industrydesc subtitle text
+    // (those only ever appeared inside the toggle).
+    expect(html).not.toContain("mcppanorama.layer.publicdesc")
+    expect(html).not.toContain("mcppanorama.layer.industrydesc")
+  })
 })

@@ -19,7 +19,6 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{
   pick: [{ tool: ToolDto; mcp: McpDto }]
-  drill: [string]
   filter: [McpStatus]
 }>()
 
@@ -36,7 +35,6 @@ const gridCols = computed(() =>
       :layer="layer"
       :stats="stats"
       :groups="groups"
-      @drill="(key) => emit('drill', key)"
       @filter="(s) => emit('filter', s)"
     />
     <div class="grid gap-3.5 items-start" :style="{ gridTemplateColumns: gridCols }">
@@ -46,14 +44,12 @@ const gridCols = computed(() =>
           :group="g"
           :active-mcp-id="activeMcpId"
           @pick="(p) => emit('pick', p)"
-          @drill="(key) => emit('drill', key)"
         />
         <DomainCard
           v-else
           :group="g"
           :active-mcp-id="activeMcpId"
           @pick="(p) => emit('pick', p)"
-          @drill="(key) => emit('drill', key)"
         />
       </template>
     </div>
