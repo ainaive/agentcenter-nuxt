@@ -16,6 +16,21 @@ const isMcpMode = computed(() => isMcpIndexRoute.value || isPanoramaRoute.value)
 const byTypesHref = computed(() => localePath("/mcp"))
 const byPanoramaHref = computed(() => localePath("/mcp/panorama"))
 
+function basePathForTaxonomy(): string {
+  switch (baseName.value) {
+    case "skills":
+      return localePath("/skills")
+    case "mcp":
+      return localePath("/mcp")
+    case "commands":
+      return localePath("/commands")
+    case "plugins":
+      return localePath("/plugins")
+    default:
+      return localePath("/extensions")
+  }
+}
+
 function buildHref(updates: Record<string, string | null>): string {
   const params = new URLSearchParams()
   for (const [k, v] of Object.entries(route.query)) {
@@ -26,7 +41,7 @@ function buildHref(updates: Record<string, string | null>): string {
     else params.set(k, v)
   }
   const qs = params.toString()
-  const path = localePath("/extensions")
+  const path = basePathForTaxonomy()
   return qs ? `${path}?${qs}` : path
 }
 </script>

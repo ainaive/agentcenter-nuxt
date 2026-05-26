@@ -20,7 +20,10 @@ describe("useFilters — parse", () => {
 
   it("parses single-value query params (category, sort)", async () => {
     const router = useRouter()
-    await router.replace("/en/extensions?category=skills&sort=recent")
+    // Use /skills (which doesn't trigger the legacy-categories redirect) so the
+    // category query param survives navigation. Composable just reads from the
+    // route — it doesn't care which page is rendered.
+    await router.replace("/en/skills?category=skills&sort=recent")
     const { filters } = useFilters()
     expect(filters.value.category).toBe("skills")
     expect(filters.value.sort).toBe("recent")
