@@ -179,8 +179,16 @@ function filterTo(status: McpStatus) {
       </button>
     </div>
 
+    <OverviewView
+      v-if="data && viewMode === 'overview'"
+      :layer="layer"
+      :groups="filteredGroups"
+      :active-mcp-id="active?.mcp.id ?? null"
+      @pick="pickMcp"
+      @drill="drillTo"
+    />
     <PanoramaView
-      v-if="data && viewMode === 'panorama'"
+      v-else-if="data && viewMode === 'panorama'"
       :layer="layer"
       :stats="!activePrimary && !activeSecondary && statusFilter === 'all'
         ? data.layerStats

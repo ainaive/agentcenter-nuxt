@@ -3,7 +3,7 @@ import type { Layer } from "~~/shared/mcp-panorama"
 
 const LAYERS = ["public", "industry"] as const satisfies readonly Layer[]
 const STATUSES = ["all", "released", "dev", "none"] as const
-const VIEWS = ["panorama", "list"] as const
+const VIEWS = ["overview", "panorama", "list"] as const
 
 export type StatusFilter = (typeof STATUSES)[number]
 export type ViewMode = (typeof VIEWS)[number]
@@ -29,7 +29,7 @@ export function usePanoramaState() {
   const primary = computed<string | null>(() => parseString(route.query.primary))
   const secondary = computed<string | null>(() => parseString(route.query.secondary))
   const status = computed<StatusFilter>(() => parseEnum(route.query.status, STATUSES, "all"))
-  const viewMode = computed<ViewMode>(() => parseEnum(route.query.view, VIEWS, "panorama"))
+  const viewMode = computed<ViewMode>(() => parseEnum(route.query.view, VIEWS, "overview"))
 
   function push(partial: Record<string, string | null>) {
     const merged: Record<string, string | null> = {}
@@ -65,7 +65,7 @@ export function usePanoramaState() {
   }
 
   function setView(value: ViewMode) {
-    push({ view: value === "panorama" ? null : value })
+    push({ view: value === "overview" ? null : value })
   }
 
   return {

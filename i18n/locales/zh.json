@@ -583,6 +583,7 @@
       "drillIn": "查看 {name}"
     },
     "view": {
+      "overview": "总览",
       "panorama": "全景图",
       "list": "列表"
     },
