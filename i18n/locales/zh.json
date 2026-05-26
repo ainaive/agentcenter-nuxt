@@ -133,6 +133,7 @@
     }
   },
   "sidebar": {
+    "label": "侧边导航",
     "categories": "分类",
     "allCategories": "全部",
     "skills": "Skill",

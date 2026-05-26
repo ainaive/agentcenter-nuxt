@@ -133,6 +133,7 @@
     }
   },
   "sidebar": {
+    "label": "Sidebar navigation",
     "categories": "Categories",
     "allCategories": "All",
     "skills": "Skills",
