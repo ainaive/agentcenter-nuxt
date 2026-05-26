@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.6.2",
+  "checkpoint_id": "266688e7c040",
+  "session_id": "c4ea0e6d-7955-4a48-8604-dcc7aba6c9a5",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-26T06:19:27.096643Z",
+  "branch": "refactor/extensions-listing-cohesion",
+  "checkpoints_count": 1,
+  "files_touched": [],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "ca0a8efd8fe2",
+  "token_usage": {
+    "input_tokens": 539,
+    "cache_creation_tokens": 779533,
+    "cache_read_tokens": 66577278,
+    "output_tokens": 250219,
+    "api_call_count": 267
+  },
+  "session_metrics": {
+    "turn_count": 11
+  }
+}
