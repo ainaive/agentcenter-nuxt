@@ -80,7 +80,7 @@ onBeforeUnmount(() => {
     <div v-if="isMcpCategory" class="mb-3 flex justify-end md:hidden">
       <NuxtLink
         :to="localePath('/mcp-panorama')"
-        class="inline-flex items-center gap-1.5 text-[13px] font-medium text-(--color-accent) hover:gap-2 transition-[gap]"
+        class="inline-flex items-center gap-1.5 text-[13px] font-medium text-(--color-ink-muted) transition-colors hover:gap-2 hover:text-(--color-ink) transition-[gap]"
       >
         {{ t("extensions.mcpPanoramaLink") }}
         <ArrowUpRight :size="14" aria-hidden="true" />

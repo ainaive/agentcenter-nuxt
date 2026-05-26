@@ -24,9 +24,13 @@ watch(layer, () => {
   expanded.value = {}
 })
 
-watch(primary, (k) => {
-  if (k && layer.value === "public") expanded.value = { ...expanded.value, [k]: true }
-})
+watch(
+  primary,
+  (k) => {
+    if (k && layer.value === "public") expanded.value = { ...expanded.value, [k]: true }
+  },
+  { immediate: true },
+)
 
 function setActivePrimary(key: string) {
   if (primary.value === key && !secondary.value) {
