@@ -142,8 +142,8 @@
     "plugins": "Plugins",
     "mcp": {
       "heading": "Browse MCP",
-      "byTypes": "By types",
-      "byPanorama": "By panorama"
+      "byTypes": "By function",
+      "byPanorama": "By system"
     }
   },
   "search": {

@@ -142,8 +142,8 @@
     "plugins": "插件",
     "mcp": {
       "heading": "浏览 MCP",
-      "byTypes": "按类型",
-      "byPanorama": "按全景图"
+      "byTypes": "按作业类型",
+      "byPanorama": "按目标系统"
     }
   },
   "search": {
