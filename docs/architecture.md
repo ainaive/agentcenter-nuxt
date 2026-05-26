@@ -31,21 +31,31 @@ The web app and the CLI hit the same Nuxt deployment. Bundles flow directly betw
 app/                              # Vue + composables (browser + SSR render)
 ├── app.vue                       # entry — useTheme(), useHead, NuxtLayout/Page
 ├── error.vue                     # global error boundary
-├── layouts/default.vue           # skip link + TopBar + Sidebar + main slot
+├── layouts/
+│   ├── default.vue               # skip link + TopBar + main slot
+│   └── browse.vue                # default + 240px aside hosting the global Sidebar
 ├── pages/                        # @nuxtjs/i18n auto-prefixes /en, /zh
 │   ├── index.vue                 # home (featured + trending grid)
+│   ├── skills.vue                # /skills      — ExtensionListing(category="skills")
+│   ├── mcp/
+│   │   ├── index.vue             # /mcp         — ExtensionListing(category="mcp")
+│   │   └── panorama.vue          # /mcp/panorama — MCP landscape view
+│   ├── commands.vue              # /commands    — slash commands (URL diverges from enum "slash")
+│   ├── plugins.vue               # /plugins     — ExtensionListing(category="plugins")
 │   ├── extensions/
-│   │   ├── index.vue             # browse
+│   │   ├── index.vue             # /extensions  — ExtensionListing(category="all"), unfiltered
 │   │   └── [slug].vue            # detail
+│   ├── collections/{index,[slug]}.vue
 │   ├── sign-in.vue / sign-up.vue / onboard.vue
 │   ├── cli/auth.vue              # device-code authorization
-│   └── publish/{index,new}.vue
+│   └── publish/{index,new,[id]/edit}.vue
 ├── components/
 │   ├── layout/                   # TopBar, Sidebar, ThemeSwitch, LocaleSwitch, UserButton
-│   ├── extension/                # ExtCard, ExtGrid, InstallButton, Markdown
-│   └── filters/                  # FilterBar, ScopePills, FilterChips, SortSelect
-├── composables/                  # useTheme, useFilters, useAuth
-├── middleware/                   # require-auth, require-onboard
+│   ├── extension/                # ExtensionListing, ExtCard, ExtGrid, ResultsSummary, InstallButton, Markdown
+│   ├── filters/                  # FilterBar, ScopePills, FilterChips, SortSelect
+│   └── mcp-landscape/            # PanoramaView, GroupedListView, PanoramaSidebarSection, ToolDetailPanel, …
+├── composables/                  # useTheme, useFilters, usePanoramaState, useAuth
+├── middleware/                   # require-auth, require-onboard, legacy-categories.global (URL canonicalization)
 └── assets/css/tailwind.css       # @theme tokens + .dark variant
 server/                           # Nitro request handlers + server utilities
 ├── api/
@@ -93,15 +103,51 @@ cli/      ──▶  (its own world; only sees /api/v1)
 
 `no-restricted-imports` rules in `eslint.config.mjs` enforce this. Violations fail CI.
 
+## Category URL structure
+
+Each primary category browses at its own top-level route, sharing a single `<ExtensionListing :category="…">` component:
+
+```text
+/skills           Skills           (ExtensionListing category="skills")
+/mcp              MCP Servers      (ExtensionListing category="mcp", By function pill active)
+/mcp/panorama     MCP landscape    (PanoramaView / GroupedListView, By system pill active)
+/commands         Slash Commands   (ExtensionListing category="slash"; URL diverges from enum)
+/plugins          Plugins          (ExtensionListing category="plugins")
+/extensions       All categories   (ExtensionListing category="all", unfiltered)
+/extensions/<slug> Detail page     (category-agnostic, shared slug pool)
+```
+
+`app/middleware/legacy-categories.global.ts` canonicalizes the previous query-param URLs:
+
+```text
+/extensions?category=skills   → /skills
+/extensions?category=mcp      → /mcp
+/extensions?category=slash    → /commands
+/extensions?category=plugins  → /plugins
+/mcp-panorama                 → /mcp/panorama
+```
+
+Filters (`sort`, `tags`, `scope`, …) survive the rewrite; only `category` is stripped because the URL itself now encodes it. The category enum value `"slash"` stays in the data layer — only the URL surface diverges to `/commands` for readability.
+
+`/mcp` and `/mcp/panorama` share the browse layout's global `<Sidebar>`. The sidebar's top half always shows a "Browse MCP" block with two pills when in MCP mode; the bottom half swaps:
+
+```text
+on /mcp           → FUNC_TAXONOMY (function/task categories)
+on /mcp/panorama  → PanoramaSidebarSection (layer toggle + sector/PDT drill tree)
+```
+
+Panorama state (`layer`, `primary`, `secondary`, `status`, `view`) lives in `usePanoramaState()` — URL-driven via `route.query` so the page and the sidebar component read the same source of truth. The detail-panel `active` ref stays page-local (ephemeral interaction state).
+
 ## Request flows
 
 ### Browse (anonymous read)
 
 ```text
-GET /en/extensions?category=skills&sort=stars
-  └─ app/pages/extensions/index.vue (SSR'd by Nitro)
+GET /en/skills?sort=stars
+  └─ app/pages/skills.vue → <ExtensionListing category="skills">
       ├─ useFilters() reads route.query → parseFilters() typed Filters
-      └─ useFetch("/api/internal/extensions", { query: route.query })
+      ├─ fetchQuery = { ...route.query, category: "skills" } (locked to page identity)
+      └─ useFetch("/api/internal/extensions", { query: fetchQuery })
                                        │
             ┌──────────────────────────┘
             ▼
