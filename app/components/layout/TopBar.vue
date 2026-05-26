@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ChevronDown, Upload } from "lucide-vue-next"
+import type { RouteLocationRaw } from "vue-router"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -18,8 +19,15 @@ const MORE_ITEMS: { key: CategoryKey; labelKey: string }[] = [
 ]
 
 const localeExtensionsPath = computed(() => localePath("/extensions"))
+const baseName = computed(() => (route.name?.toString() ?? "").split("___")[0] ?? "")
+
+function hrefFor(key: CategoryKey): RouteLocationRaw {
+  if (key === "mcp") return localePath("/mcp")
+  return { path: localeExtensionsPath.value, query: { category: key } }
+}
 
 function isCategoryActive(key: CategoryKey): boolean {
+  if (key === "mcp") return baseName.value === "mcp" || baseName.value === "mcp-panorama"
   if (route.path !== localeExtensionsPath.value) return false
   return route.query.category === key
 }
@@ -58,7 +66,7 @@ const moreOpen = ref(false)
       <NuxtLink
         v-for="item in PRIMARY_ITEMS"
         :key="item.key"
-        :to="{ path: localeExtensionsPath, query: { category: item.key } }"
+        :to="hrefFor(item.key)"
         class="relative px-3 py-1.5 text-(--color-ink-muted) transition-colors hover:text-(--color-ink) after:absolute after:inset-x-3 after:-bottom-px after:h-px after:bg-transparent"
         :class="isCategoryActive(item.key) ? 'text-(--color-ink) font-semibold after:bg-(--color-ink)' : ''"
       >
@@ -93,7 +101,7 @@ const moreOpen = ref(false)
           <NuxtLink
             v-for="item in MORE_ITEMS"
             :key="item.key"
-            :to="{ path: localeExtensionsPath, query: { category: item.key } }"
+            :to="hrefFor(item.key)"
             class="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-(--color-ink-muted) transition-colors hover:bg-(--color-sidebar) hover:text-(--color-ink)"
             :class="isCategoryActive(item.key) ? 'text-(--color-ink) font-semibold' : ''"
             @click="moreOpen = false"

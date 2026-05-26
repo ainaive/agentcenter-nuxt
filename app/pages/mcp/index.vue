@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Search } from "lucide-vue-next"
+import { ArrowUpRight, Search } from "lucide-vue-next"
 
 definePageMeta({ layout: "browse" })
 
@@ -8,17 +8,13 @@ const route = useRoute()
 const { filters, update } = useFilters()
 const localePath = useLocalePath()
 
-if (route.query.category === "mcp") {
-  const { category: _category, ...rest } = route.query
-  await navigateTo({ path: localePath("/mcp"), query: rest }, { replace: true })
-}
+const fetchQuery = computed(() => ({ ...route.query, category: "mcp" }))
 
 const { data, pending, refresh } = await useFetch("/api/internal/extensions", {
-  query: computed(() => route.query),
+  query: fetchQuery,
   default: () => ({ items: [], total: 0, filters: {} }),
 })
 
-// Facets don't depend on filters — fetch once and reuse across navigations.
 const { data: facets } = await useFetch("/api/internal/facets", {
   default: () => ({ creators: [], publishers: [], tags: [] }),
 })
@@ -33,15 +29,8 @@ const filtersActive = computed(() => {
   return Object.keys(f).some((k) => k !== "page" && f[k as keyof typeof f] !== undefined)
 })
 
-type CategoryKey = "all" | "skills" | "slash" | "plugins"
-const categoryKey = computed<CategoryKey>(() => {
-  const c = route.query.category
-  return c === "skills" || c === "slash" || c === "plugins" ? c : "all"
-})
-const searchPlaceholder = computed(() =>
-  t(`extensions.category.${categoryKey.value}.searchPlaceholder`),
-)
-const categoryLabel = computed(() => t(`extensions.category.${categoryKey.value}.label`))
+const searchPlaceholder = computed(() => t("extensions.category.mcp.searchPlaceholder"))
+const categoryLabel = computed(() => t("extensions.category.mcp.label"))
 
 const q = ref<string>(typeof route.query.q === "string" ? route.query.q : "")
 let pushTimer: ReturnType<typeof setTimeout> | null = null
@@ -64,8 +53,6 @@ watch(q, () => {
   pushTimer = setTimeout(pushQuery, 250)
 })
 
-// Keep the local input in sync when the URL changes from outside the input
-// (back button, chip dismissal, "Clear all").
 watch(
   () => route.query.q,
   (next) => {
@@ -81,19 +68,29 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="px-6 py-8 max-w-7xl mx-auto">
+    <div class="mb-3 flex justify-end md:hidden">
+      <NuxtLink
+        :to="localePath('/mcp-panorama')"
+        class="inline-flex items-center gap-1.5 text-[13px] font-medium text-(--color-ink-muted) transition-colors hover:gap-2 hover:text-(--color-ink) transition-[gap]"
+      >
+        {{ t("extensions.mcpPanoramaLink") }}
+        <ArrowUpRight :size="14" aria-hidden="true" />
+      </NuxtLink>
+    </div>
+
     <form
       role="search"
       class="relative mb-4"
       @submit.prevent="flushSearch"
     >
-      <label class="sr-only" for="extensions-search">{{ t("nav.searchLabel") }}</label>
+      <label class="sr-only" for="mcp-search">{{ t("nav.searchLabel") }}</label>
       <Search
         :size="16"
         class="absolute left-3 top-1/2 -translate-y-1/2 text-(--color-ink-muted) pointer-events-none"
         aria-hidden="true"
       />
       <input
-        id="extensions-search"
+        id="mcp-search"
         v-model="q"
         type="search"
         :placeholder="searchPlaceholder"
@@ -120,7 +117,7 @@ onBeforeUnmount(() => {
       :items="items"
       :query="query"
       :category-label="categoryLabel"
-      :clear-filters-href="filtersActive ? localePath('/extensions') : undefined"
+      :clear-filters-href="filtersActive ? localePath('/mcp') : undefined"
     />
   </div>
 </template>
