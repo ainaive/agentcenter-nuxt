@@ -1,0 +1,5 @@
+push and open a PR
+
+---
+
+let' make some improvements on it: 1. make the tool card more compact, like put the mcp status after the name of tools 2. the whole structure can be restructure: wecan put all into 3 layers, first layer is AI R&D, sencond layer is Product and Software. third layer is other domains. 3. remove the status line bar on domain card. what do you think?
