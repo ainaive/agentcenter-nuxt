@@ -175,7 +175,7 @@ function bucketGridCols(bucket: OverviewBucket): string {
                         v-for="mcp in tool.mcps"
                         :key="mcp.id"
                         type="button"
-                        class="w-[8px] h-[3px] rounded-full cursor-pointer transition-transform hover:scale-[1.7]"
+                        class="w-[12px] h-[5px] rounded-full cursor-pointer transition-transform hover:scale-[1.7]"
                         :class="[
                           dotClass(mcp.status),
                           mcp.isPlaceholder && 'opacity-40',
@@ -245,7 +245,7 @@ function bucketGridCols(bucket: OverviewBucket): string {
                 v-for="mcp in tool.mcps"
                 :key="mcp.id"
                 type="button"
-                class="w-[10px] h-[4px] rounded-full cursor-pointer transition-transform hover:scale-[1.6]"
+                class="w-[16px] h-[6px] rounded-full cursor-pointer transition-transform hover:scale-[1.6]"
                 :class="[
                   dotClass(mcp.status),
                   mcp.isPlaceholder && 'opacity-40',
