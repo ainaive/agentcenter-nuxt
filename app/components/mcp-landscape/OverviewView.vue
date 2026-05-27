@@ -144,14 +144,14 @@ function bucketGridCols(bucket: OverviewBucket): string {
 
             <div
               class="grid gap-2 min-h-0 overflow-hidden flex-1"
-              style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));"
+              style="grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));"
             >
               <section
                 v-for="pdt in g.pdts"
                 :key="pdt.key"
-                class="bg-(--color-bg) rounded-md px-2 py-1.5 flex flex-col gap-1 min-w-0 min-h-0 overflow-hidden"
+                class="bg-(--color-bg) rounded-md px-1.5 py-1 flex flex-col gap-1 min-w-0 min-h-0 overflow-hidden"
               >
-                <header class="flex items-baseline justify-between gap-1.5 px-0.5">
+                <header class="flex items-baseline justify-between gap-1 px-0.5">
                   <span
                     class="font-serif text-[12px] font-medium text-(--color-ink) tracking-tight truncate"
                     :title="pdtDisplayTitle(pdt, locale)"
@@ -175,7 +175,7 @@ function bucketGridCols(bucket: OverviewBucket): string {
                         v-for="mcp in tool.mcps"
                         :key="mcp.id"
                         type="button"
-                        class="size-[6px] rounded-full cursor-pointer transition-transform hover:scale-[1.7]"
+                        class="w-[8px] h-[3px] rounded-full cursor-pointer transition-transform hover:scale-[1.7]"
                         :class="[
                           dotClass(mcp.status),
                           mcp.isPlaceholder && 'opacity-40',
@@ -245,7 +245,7 @@ function bucketGridCols(bucket: OverviewBucket): string {
                 v-for="mcp in tool.mcps"
                 :key="mcp.id"
                 type="button"
-                class="size-[7px] rounded-full cursor-pointer transition-transform hover:scale-[1.6]"
+                class="w-[10px] h-[4px] rounded-full cursor-pointer transition-transform hover:scale-[1.6]"
                 :class="[
                   dotClass(mcp.status),
                   mcp.isPlaceholder && 'opacity-40',
