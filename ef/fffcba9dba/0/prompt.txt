@@ -1,0 +1,17 @@
+push it
+
+---
+
+do we add the seed to vercel build?
+
+---
+
+let's add more improvements to this branch: 1. make the mcp pill bigger, with "MCP" word inside of it; if it is a developing MCP, "Dev" or some word inside it; if it has no mcp, do not show. 2. add a toggle button or something to hide or show the tools without MCP
+
+---
+
+check about the code reviews on the PR
+
+---
+
+go ahead
