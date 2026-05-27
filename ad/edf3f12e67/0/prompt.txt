@@ -1,0 +1,282 @@
+push and open a PR
+
+---
+
+let' make some improvements on it: 1. make the tool card more compact, like put the mcp status after the name of tools 2. the whole structure can be restructure: wecan put all into 3 layers, first layer is AI R&D, sencond layer is Product and Software. third layer is other domains. 3. remove the status line bar on domain card. what do you think?
+
+---
+
+push it
+
+---
+
+let's add more improvements on this branch: 1. make the the PDT card more thin, then make AI R&D to be oneline (now it's two lines of PDT) 2. make the icon of MCP more wider, like a 药丸 . what do you think?
+
+---
+
+make the pill bigger, so it can be easy to click.
+
+---
+
+Below, I will re-import the data for the MCP Panorama (Public Tools) according to the following format. Please note:
+
+1. A single tool may correspond to **0, 1, or multiple MCPs**.
+2. `mcp_开发中` indicates that this MCP is currently under development and **does not have a name yet**.
+3. If a tool has **no child items**, it means there is **no MCP available** for it.
+
+- 领域
+    - PDT
+        - 目标系统工具
+            - mcp
+            - mcp_开发中
+
+---
+
+Please also note: For tools **without any MCPs**, please **rename the tool** during the import process to something similar but not identical. For example, change "IPD 质量管理服务" to "R&D 质量管理".
+
+---
+
+now I will paste the data tree:
+
+---
+
+- AI 研发
+    - 系统设计
+        - 集成设计环境
+            - mcp_开发中
+            - dbdesigner_mcp
+            - apidesigner_mcp
+    - 开发服务
+        - 代码检查服务
+            - codecheckreport_mcp
+        - 开发者测试服务
+            - codecovservice_mcp
+        - 智能化研发
+        - IDE 服务
+    - 测试服务
+        - CIDA
+            - ticc_mcp
+            - cloudtmss_mcp
+            - ai4tra_mcp
+            - cida_mcp
+        - 缺陷跟踪服务
+            - dts-mcp
+        - CloudTest
+    - 研发工具生产线
+        - 研发统一桌面框架
+            - ipd-rag
+        - 云龙基础服务
+            - mcp_开发中
+        - 管理业务流程 IT 一体化服务
+            - edevops-mcp
+        - 软件开发系统管理服务
+    - 开源与漏洞
+        - 开源与第三方软件管理服务
+            - ostms-mcp
+        - 漏洞管理服务
+        - 软件成分分析服务
+        
+- 产品与软件工程数字化
+    - 构建服务
+        - 代码仓服务
+            - codehub_mcp
+        - 构建服务
+            - build_project_mcp
+        - 流水线服务
+            - cloudpipelien2_mcp
+            - cloudpipeline_mcp
+        - 软件包仓库服务
+            - cloudaritifact_mcp
+        - 代码仓管理信息服务
+        - 软件信息树服务
+            - swbom_mcp
+    - 体验式内容与资料开发
+        - 研发知识库服务
+            - wiki-mcp
+        - 研发文档开发
+            - dbox-mcp
+        - 文档开发与管理服务
+        - 体验式内容开发服务
+    - 产品包发布与研发维护
+        - 产品包发布管理服务
+            - mcp_开发中
+        - 研发维护服务
+    
+- 硬件工程数字化
+    - 硬件设计与仿真服务
+        - 原理图设计服务
+            - mcp_开发中
+        - 硬件仿真服务
+    - PCB 开发工具
+        - PCB 设计服务
+        - 研发工艺设计服务
+    - 硬件工具链
+        - 结构设计服务
+        - 研发试制服务
+        - 硬件测试服务
+        - 硬件开发者桌面
+        - 硬件设计资产库
+        - 逻辑设计服务
+
+- 产品数字化
+    - MetaPDM
+        - BOM 服务
+            - mcp_开发中
+                
+- 研发设施与环境管理：
+    - 研发实验室基础设施服务
+        - 研发实验室环境服务
+            - mcp_开发中
+    - 研发 IT 基础设施服务
+        - 研发 IT 基础设施服务
+- IPD 管理与治理
+    - IPD管理与治理
+        - IPD 运营分析服务
+            - mcp_开发中
+        - IPD 研发项目管理服务
+            - mcp_开发中
+        - 重量级团队管理服务
+        - IPD 质量管理服务
+    - 研究与创新
+        - 研究创新服务
+            - mcp_开发中
+    - 知识服务
+        - Athena 知识服务
+- 产品配置
+    - 产品配置服务
+        - 产品中心
+        - 产品配置中心
+        - 产品配置开发
+        - 产品上架及展示
+        - 产品配置服务
+    - License 配置服务
+        - License 算法中心
+        - 软件订单履行服务
+        - License 激活中心
+-
+
+---
+
+- AI 研发
+    - 系统设计
+        - 集成设计环境
+            - mcp_开发中
+            - dbdesigner_mcp
+            - apidesigner_mcp
+    - 开发服务
+        - 代码检查服务
+            - codecheckreport_mcp
+        - 开发者测试服务
+            - codecovservice_mcp
+        - 智能化研发
+        - IDE 服务
+    - 测试服务
+        - CIDA
+            - ticc_mcp
+            - cloudtmss_mcp
+            - ai4tra_mcp
+            - cida_mcp
+        - 缺陷跟踪服务
+            - dts-mcp
+        - CloudTest
+    - 研发工具生产线
+        - 研发统一桌面框架
+            - ipd-rag
+        - 云龙基础服务
+            - mcp_开发中
+        - 管理业务流程 IT 一体化服务
+            - edevops-mcp
+        - 软件开发系统管理服务
+    - 
+    - 知识服务
+        - Athena 知识服务
+        
+- 产品与软件工程数字化
+    - 构建服务
+        - 代码仓服务
+            - codehub_mcp
+        - 构建服务
+            - build_project_mcp
+        - 流水线服务
+            - cloudpipelien2_mcp
+            - cloudpipeline_mcp
+        - 软件包仓库服务
+            - cloudaritifact_mcp
+        - 代码仓管理信息服务
+        - 软件信息树服务
+            - swbom_mcp
+    - 体验式内容与资料开发
+        - 研发知识库服务
+            - wiki-mcp
+        - 研发文档开发
+            - dbox-mcp
+        - 文档开发与管理服务
+        - 体验式内容开发服务
+    - 开源与漏洞
+        - 开源与第三方软件管理服务
+            - ostms-mcp
+        - 漏洞管理服务
+        - 软件成分分析服务
+    - 产品包发布与研发维护
+        - 产品包发布管理服务
+            - mcp_开发中
+        - 研发维护服务
+    - IPD管理与治理
+        - IPD 运营分析服务
+            - mcp_开发中
+        - IPD 研发项目管理服务
+            - mcp_开发中
+        - 重量级团队管理服务
+        - IPD 质量管理服务
+    - 研究与创新
+        - 研究创新服务
+            - mcp_开发中
+    
+- 硬件工程数字化
+    - 硬件设计与仿真服务
+        - 原理图设计服务
+            - mcp_开发中
+        - 硬件仿真服务
+    - PCB 开发工具
+        - PCB 设计服务
+        - 研发工艺设计服务
+    - 硬件工具链
+        - 结构设计服务
+        - 研发试制服务
+        - 硬件测试服务
+        - 硬件开发者桌面
+        - 硬件设计资产库
+        - 逻辑设计服务
+
+- 产品数字化
+    - MetaPDM
+        - BOM 服务
+            - mcp_开发中
+                
+- 研发设施与环境管理：
+    - 研发实验室基础设施服务
+        - 研发实验室环境服务
+            - mcp_开发中
+    - 研发 IT 基础设施服务
+        - 研发 IT 基础设施服务
+
+- 产品配置
+    - 产品配置服务
+        - 产品中心
+        - 产品配置中心
+        - 产品配置开发
+        - 产品上架及展示
+        - 产品配置服务
+    - License 配置服务
+        - License 算法中心
+        - 软件订单履行服务
+        - License 激活中心
+-
+
+---
+
+contine
+
+---
+
+the old data seems not removed, I need clean the old domain and PDT data, only import the new data
