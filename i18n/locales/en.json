@@ -594,7 +594,8 @@
     },
     "filter": {
       "all": "All",
-      "clear": "Clear drill-down"
+      "clear": "Clear drill-down",
+      "hideEmpty": "Hide empty"
     },
     "detail": {
       "mcpStatus": "MCP Status",

@@ -30,6 +30,7 @@ export function usePanoramaState() {
   const secondary = computed<string | null>(() => parseString(route.query.secondary))
   const status = computed<StatusFilter>(() => parseEnum(route.query.status, STATUSES, "all"))
   const viewMode = computed<ViewMode>(() => parseEnum(route.query.view, VIEWS, "overview"))
+  const hideEmpty = computed<boolean>(() => route.query.hideEmpty === "1")
 
   function push(partial: Record<string, string | null>) {
     const merged: Record<string, string | null> = {}
@@ -68,17 +69,23 @@ export function usePanoramaState() {
     push({ view: value === "overview" ? null : value })
   }
 
+  function setHideEmpty(value: boolean) {
+    push({ hideEmpty: value ? "1" : null })
+  }
+
   return {
     layer,
     primary,
     secondary,
     status,
     viewMode,
+    hideEmpty,
     setLayer,
     setDrill,
     clearDrill,
     setStatus,
     toggleStatus,
     setView,
+    setHideEmpty,
   }
 }

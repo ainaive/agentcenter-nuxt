@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Factory, Globe2, LayoutDashboard, LayoutGrid, List, X } from "lucide-vue-next"
+import { EyeOff, Factory, Globe2, LayoutDashboard, LayoutGrid, List, X } from "lucide-vue-next"
 import type { McpStatus } from "~~/shared/data/mcp-landscape"
 import {
   groupDisplayTitle,
@@ -19,6 +19,7 @@ const props = defineProps<{
   totals: { total: number }
   statusFilter: "all" | McpStatus
   viewMode: "overview" | "panorama" | "list"
+  hideEmpty: boolean
   groups: Group[]
 }>()
 
@@ -26,6 +27,7 @@ const emit = defineEmits<{
   "update:statusFilter": ["all" | McpStatus]
   "update:viewMode": ["overview" | "panorama" | "list"]
   "update:layer": [Layer]
+  "update:hideEmpty": [boolean]
   clearDrill: []
 }>()
 
@@ -163,6 +165,19 @@ function statusLabel(s: McpStatus): string {
       </div>
 
       <div class="ml-auto flex items-center gap-3 flex-wrap">
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md border cursor-pointer transition text-[12px] font-medium shrink-0"
+          :class="hideEmpty
+            ? 'bg-(--color-card) text-(--color-ink) border-(--color-border) shadow-[0_1px_2px_rgba(60,40,20,0.06)]'
+            : 'bg-(--color-bg) text-(--color-ink-muted) border-(--color-border) hover:text-(--color-ink)'"
+          :aria-pressed="hideEmpty"
+          @click="emit('update:hideEmpty', !hideEmpty)"
+        >
+          <EyeOff :size="12" aria-hidden="true" />
+          <span>{{ t("mcpPanorama.filter.hideEmpty") }}</span>
+        </button>
+
         <div class="flex p-[3px] rounded-lg bg-(--color-bg) border border-(--color-border) shrink-0">
           <button
             type="button"

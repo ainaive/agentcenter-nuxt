@@ -67,15 +67,21 @@ const buckets = computed<OverviewBucket[]>(() => {
   }))
 })
 
-function dotClass(status: McpDto["status"]): string {
+// Pill background + foreground pair (mirrors McpTile chip styling) so the
+// pill reads as a clean tag at the small sizes used here.
+function pillClass(status: McpDto["status"]): string {
   switch (status) {
     case "released":
-      return "bg-(--color-status-released)"
+      return "bg-(--color-status-released-bg) text-(--color-status-released)"
     case "dev":
-      return "bg-(--color-status-dev)"
+      return "bg-(--color-status-dev-bg) text-(--color-status-dev)"
     default:
-      return "bg-(--color-status-none)"
+      return "bg-(--color-status-none-bg) text-(--color-status-none)"
   }
+}
+
+function pillLabel(status: McpDto["status"]): string {
+  return status === "dev" ? "Dev" : "MCP"
 }
 
 function mcpTitle(tool: ToolDto, mcp: McpDto): string {
@@ -171,21 +177,23 @@ function bucketGridCols(bucket: OverviewBucket): string {
                       class="font-serif text-[11px] text-(--color-ink) truncate shrink"
                       :title="toolDisplayName(tool, locale)"
                     >{{ toolDisplayName(tool, locale) }}</span>
-                    <div class="flex items-center gap-[2px] flex-wrap">
-                      <button
-                        v-for="mcp in tool.mcps"
-                        :key="mcp.id"
-                        type="button"
-                        class="w-[12px] h-[5px] rounded-full cursor-pointer transition-transform hover:scale-[1.7]"
-                        :class="[
-                          dotClass(mcp.status),
-                          mcp.isPlaceholder && 'opacity-40',
-                          activeMcpId === mcp.id && 'ring-2 ring-(--color-ink)/40 ring-offset-1 ring-offset-(--color-bg) scale-[1.4]',
-                        ]"
-                        :title="mcpTitle(tool, mcp)"
-                        :aria-label="mcpTitle(tool, mcp)"
-                        @click="emit('pick', { tool, mcp })"
-                      />
+                    <div class="flex items-center gap-1 flex-wrap">
+                      <template v-for="mcp in tool.mcps" :key="mcp.id">
+                        <button
+                          v-if="!mcp.isPlaceholder"
+                          type="button"
+                          class="inline-flex items-center justify-center w-[24px] h-[12px] rounded-full text-[8px] font-mono font-medium cursor-pointer transition-transform hover:scale-[1.15]"
+                          :class="[
+                            pillClass(mcp.status),
+                            activeMcpId === mcp.id && 'ring-2 ring-(--color-ink)/40 ring-offset-1 ring-offset-(--color-bg)',
+                          ]"
+                          :title="mcpTitle(tool, mcp)"
+                          :aria-label="mcpTitle(tool, mcp)"
+                          @click="emit('pick', { tool, mcp })"
+                        >
+                          {{ pillLabel(mcp.status) }}
+                        </button>
+                      </template>
                     </div>
                   </li>
                 </ul>
@@ -241,21 +249,23 @@ function bucketGridCols(bucket: OverviewBucket): string {
               class="font-serif text-[12px] text-(--color-ink) truncate shrink"
               :title="toolDisplayName(tool, locale)"
             >{{ toolDisplayName(tool, locale) }}</span>
-            <div class="flex items-center gap-[3px] flex-wrap">
-              <button
-                v-for="mcp in tool.mcps"
-                :key="mcp.id"
-                type="button"
-                class="w-[16px] h-[6px] rounded-full cursor-pointer transition-transform hover:scale-[1.6]"
-                :class="[
-                  dotClass(mcp.status),
-                  mcp.isPlaceholder && 'opacity-40',
-                  activeMcpId === mcp.id && 'ring-2 ring-(--color-ink)/40 ring-offset-1 ring-offset-(--color-card) scale-[1.4]',
-                ]"
-                :title="mcpTitle(tool, mcp)"
-                :aria-label="mcpTitle(tool, mcp)"
-                @click="emit('pick', { tool, mcp })"
-              />
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <template v-for="mcp in tool.mcps" :key="mcp.id">
+                <button
+                  v-if="!mcp.isPlaceholder"
+                  type="button"
+                  class="inline-flex items-center justify-center w-[28px] h-[14px] rounded-full text-[9px] font-mono font-medium cursor-pointer transition-transform hover:scale-[1.15]"
+                  :class="[
+                    pillClass(mcp.status),
+                    activeMcpId === mcp.id && 'ring-2 ring-(--color-ink)/40 ring-offset-1 ring-offset-(--color-card)',
+                  ]"
+                  :title="mcpTitle(tool, mcp)"
+                  :aria-label="mcpTitle(tool, mcp)"
+                  @click="emit('pick', { tool, mcp })"
+                >
+                  {{ pillLabel(mcp.status) }}
+                </button>
+              </template>
             </div>
           </li>
         </ul>
