@@ -587,6 +587,11 @@
       "panorama": "Panorama",
       "list": "List"
     },
+    "bucket": {
+      "rnd": "AI R&D",
+      "product": "Product & Software",
+      "other": "Hardware, Digitization & Infra"
+    },
     "filter": {
       "all": "All",
       "clear": "Clear drill-down"

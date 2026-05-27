@@ -587,6 +587,11 @@
       "panorama": "全景图",
       "list": "列表"
     },
+    "bucket": {
+      "rnd": "AI 研发",
+      "product": "产品与软件",
+      "other": "硬件、数字化与基础设施"
+    },
     "filter": {
       "all": "全部",
       "clear": "清除下钻"
