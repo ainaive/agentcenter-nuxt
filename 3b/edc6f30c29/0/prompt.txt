@@ -1,0 +1,17 @@
+push and open a PR
+
+---
+
+let' make some improvements on it: 1. make the tool card more compact, like put the mcp status after the name of tools 2. the whole structure can be restructure: wecan put all into 3 layers, first layer is AI R&D, sencond layer is Product and Software. third layer is other domains. 3. remove the status line bar on domain card. what do you think?
+
+---
+
+push it
+
+---
+
+let's add more improvements on this branch: 1. make the the PDT card more thin, then make AI R&D to be oneline (now it's two lines of PDT) 2. make the icon of MCP more wider, like a 药丸 . what do you think?
+
+---
+
+make the pill bigger, so it can be easy to click.
