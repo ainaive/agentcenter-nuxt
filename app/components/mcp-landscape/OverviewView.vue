@@ -31,11 +31,12 @@ const BUCKET_ORDER: BucketKey[] = ["rnd", "product", "other"]
 // Unknown keys fall through to "other" so a new domain added to the seed
 // shows up rather than silently disappearing.
 const BUCKET_FOR: Record<string, BucketKey> = {
-  airnd: "rnd",
-  prodsw: "product",
-  hardware: "other",
-  proddigi: "other",
-  infra: "other",
+  "ai-rd": "rnd",
+  "prod-sw-eng": "product",
+  "hw-eng": "other",
+  "prod-digi": "other",
+  "rnd-facilities": "other",
+  "prod-config": "other",
 }
 
 interface OverviewBucket {

@@ -42,10 +42,10 @@ describe("ownerToParts", () => {
   })
 
   it("treats a dotted key as a public domain.pdt", () => {
-    expect(ownerToParts("airnd.devsvcs")).toEqual({
+    expect(ownerToParts("ai-rd.dev-services")).toEqual({
       layer: "public",
-      primary: "airnd",
-      secondary: "devsvcs",
+      primary: "ai-rd",
+      secondary: "dev-services",
     })
   })
 })
