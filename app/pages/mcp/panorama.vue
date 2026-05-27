@@ -22,12 +22,14 @@ const {
   secondary: activeSecondary,
   status: statusFilter,
   viewMode,
+  hideEmpty,
   setLayer,
   setDrill,
   clearDrill,
   setStatus,
   toggleStatus,
   setView,
+  setHideEmpty,
 } = usePanoramaState()
 
 const active = ref<{ tool: ToolDto; mcp: McpDto } | null>(null)
@@ -74,6 +76,7 @@ const filteredGroups = computed<Group[]>(() => {
   function filterTools(tools: ToolDto[]): ToolDto[] {
     return tools
       .filter(inDrill)
+      .filter((tool) => !hideEmpty.value || tool.mcps.some((m) => !m.isPlaceholder))
       .map((tool) => ({
         ...tool,
         mcps: tool.mcps.filter(passesStatus),
@@ -157,9 +160,11 @@ function filterTo(status: McpStatus) {
       :totals="totals"
       :status-filter="statusFilter"
       :view-mode="viewMode"
+      :hide-empty="hideEmpty"
       :groups="data.groups"
       @update:status-filter="setStatus"
       @update:view-mode="setView"
+      @update:hide-empty="setHideEmpty"
       @update:layer="setLayer"
       @clear-drill="clearDrill"
     />
@@ -179,8 +184,16 @@ function filterTo(status: McpStatus) {
       </button>
     </div>
 
+    <OverviewView
+      v-if="data && viewMode === 'overview'"
+      :layer="layer"
+      :groups="filteredGroups"
+      :active-mcp-id="active?.mcp.id ?? null"
+      @pick="pickMcp"
+      @drill="drillTo"
+    />
     <PanoramaView
-      v-if="data && viewMode === 'panorama'"
+      v-else-if="data && viewMode === 'panorama'"
       :layer="layer"
       :stats="!activePrimary && !activeSecondary && statusFilter === 'all'
         ? data.layerStats

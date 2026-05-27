@@ -583,12 +583,19 @@
       "drillIn": "查看 {name}"
     },
     "view": {
+      "overview": "总览",
       "panorama": "全景图",
       "list": "列表"
     },
+    "bucket": {
+      "rnd": "AI 研发",
+      "product": "产品与软件",
+      "other": "硬件、数字化与基础设施"
+    },
     "filter": {
       "all": "全部",
-      "clear": "清除下钻"
+      "clear": "清除下钻",
+      "hideEmpty": "隐藏空工具"
     },
     "detail": {
       "mcpStatus": "MCP 状态",

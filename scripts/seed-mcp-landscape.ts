@@ -12,7 +12,7 @@
 // Also imported by scripts/seed.ts so the demo seed and the standalone
 // seed share one source of truth.
 
-import { and, notInArray, sql } from "drizzle-orm"
+import { and, eq, notInArray, sql } from "drizzle-orm"
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
 
@@ -279,6 +279,60 @@ export async function seedMcpLandscape(db: Db): Promise<void> {
     .returning({ id: extensions.id })
   if (staleExts.length > 0) {
     console.log(`seed-mcp: pruned ${staleExts.length} stale extension stubs (${staleExts.map((s) => s.id).join(", ")})`)
+  }
+
+  // Prune stale public-layer tools — rows whose slug no longer appears in
+  // the canonical inventory. Scoped to layer="public" so industry tools
+  // owned by sectors stay untouched. The stale-MCP prune above already
+  // cleared the cascading FK targets, so this delete is FK-safe. The
+  // ternary on the slug clause mirrors the extension-stub prune above so
+  // an empty canonical inventory still wipes the table rather than
+  // skipping the delete and leaving stale rows behind.
+  const desiredPublicToolSlugs = MCP_TOOLS
+    .filter((t) => t.owner.includes("."))
+    .map((t) => t.slug)
+  const staleTools = await db
+    .delete(mcpLandscapeTools)
+    .where(and(
+      eq(mcpLandscapeTools.layer, "public"),
+      desiredPublicToolSlugs.length > 0
+        ? notInArray(mcpLandscapeTools.slug, desiredPublicToolSlugs)
+        : sql`true`,
+    ))
+    .returning({ slug: mcpLandscapeTools.slug })
+  if (staleTools.length > 0) {
+    console.log(`seed-mcp: pruned ${staleTools.length} stale public tools (${staleTools.map((s) => s.slug).join(", ")})`)
+  }
+
+  // Prune stale PDTs. The tool→PDT FK is `restrict`, so we must run this
+  // AFTER the public-tool prune above so no rows still reference us.
+  const desiredPdtKeys = pdtRows.map((r) => r.key)
+  const stalePdts = await db
+    .delete(mcpPdts)
+    .where(
+      desiredPdtKeys.length > 0
+        ? notInArray(mcpPdts.key, desiredPdtKeys)
+        : sql`true`,
+    )
+    .returning({ key: mcpPdts.key })
+  if (stalePdts.length > 0) {
+    console.log(`seed-mcp: pruned ${stalePdts.length} stale PDTs (${stalePdts.map((s) => s.key).join(", ")})`)
+  }
+
+  // Prune stale domains. The PDT→domain FK is `cascade` (PDT prune above
+  // already handled them); the tool→domain FK is `restrict` and was cleared
+  // by the public-tool prune. Safe to delete here.
+  const desiredDomainKeys = domainRows.map((r) => r.key)
+  const staleDomains = await db
+    .delete(mcpDomains)
+    .where(
+      desiredDomainKeys.length > 0
+        ? notInArray(mcpDomains.key, desiredDomainKeys)
+        : sql`true`,
+    )
+    .returning({ key: mcpDomains.key })
+  if (staleDomains.length > 0) {
+    console.log(`seed-mcp: pruned ${staleDomains.length} stale domains (${staleDomains.map((s) => s.key).join(", ")})`)
   }
 
   console.log(`seed-mcp: upserting ${mcpRows.length} landscape MCPs`)

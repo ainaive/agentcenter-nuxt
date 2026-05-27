@@ -15,7 +15,7 @@ function makeTool(overrides: Partial<ToolDto> = {}): ToolDto {
   return {
     id: 1, slug: "ide", name: "IDE", nameZh: null,
     blurb: "Internal IDE", blurbZh: "内部 IDE",
-    ownerPrimary: "airnd", ownerSecondary: "devsvcs",
+    ownerPrimary: "ai-rd", ownerSecondary: "dev-services",
     mcps: [], rollupStatus: "released",
     ...overrides,
   }
