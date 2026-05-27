@@ -94,8 +94,14 @@ function mcpTitle(tool: ToolDto, mcp: McpDto): string {
   return `${toolName} · ${mcpName} · ${statusLabel}`
 }
 
+// Counts only the MCPs that actually render as pills — placeholders are
+// hidden in this view, so including them would inflate the PDT header
+// count past the visible pill count.
 function pdtMcpCount(items: ToolDto[]): number {
-  return items.reduce((acc, tool) => acc + tool.mcps.length, 0)
+  return items.reduce(
+    (acc, tool) => acc + tool.mcps.filter((m) => !m.isPlaceholder).length,
+    0,
+  )
 }
 
 // Single-domain buckets (rnd, product) get a single full-width card.
