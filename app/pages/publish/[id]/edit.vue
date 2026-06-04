@@ -5,7 +5,6 @@ definePageMeta({ middleware: ["require-auth", "require-onboard"] })
 
 const { t } = useI18n()
 const route = useRoute()
-const localePath = useLocalePath()
 
 interface DraftResponse {
   extensionId: string
@@ -39,19 +38,7 @@ if (!data.value) {
 </script>
 
 <template>
-  <div class="px-6 py-8 max-w-6xl mx-auto">
-    <header class="mb-6 flex items-baseline justify-between">
-      <h1 class="font-serif text-3xl tracking-tight text-(--color-ink)">
-        {{ t("publish.wizard.headerEdit") }}
-      </h1>
-      <NuxtLink
-        :to="localePath('/publish')"
-        class="text-sm text-(--color-ink-muted) underline-offset-4 hover:underline"
-      >
-        {{ t("publish.wizard.success.back") }}
-      </NuxtLink>
-    </header>
-
+  <div class="mx-auto max-w-6xl px-6 py-8">
     <UploadWizard
       v-if="data"
       :init="{

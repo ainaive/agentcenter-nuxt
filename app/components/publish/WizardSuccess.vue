@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CheckCircle } from "lucide-vue-next"
+import { Check } from "lucide-vue-next"
 import type { PublishWizard } from "~/composables/usePublishWizard"
 
 const props = defineProps<{ wizard: PublishWizard }>()
@@ -9,12 +9,14 @@ const localePath = useLocalePath()
 </script>
 
 <template>
-  <div class="rounded-(--radius-card) border border-(--color-border) bg-(--color-card) p-8 text-center">
-    <CheckCircle :size="48" class="mx-auto text-(--color-accent)" aria-hidden="true" />
-    <h2 class="mt-4 font-serif text-2xl text-(--color-ink)">
+  <div class="mx-auto flex max-w-md flex-col items-center gap-4 py-20 text-center">
+    <div class="grid size-20 place-items-center rounded-full bg-(--color-accent)/10">
+      <Check :size="40" class="text-(--color-accent)" aria-hidden="true" />
+    </div>
+    <h2 class="font-serif text-3xl tracking-tight text-(--color-ink)">
       {{ t("publish.wizard.success.title") }}
     </h2>
-    <p class="mt-2 text-sm text-(--color-ink-muted)">
+    <p class="max-w-sm text-[15px] leading-relaxed text-(--color-ink-muted)">
       {{
         props.wizard.form.scope === "personal"
           ? t("publish.wizard.success.personal")
@@ -23,7 +25,7 @@ const localePath = useLocalePath()
     </p>
     <NuxtLink
       :to="localePath('/publish')"
-      class="mt-6 inline-flex items-center rounded-md bg-(--color-accent) px-4 py-2 text-sm text-(--color-accent-fg) hover:bg-(--color-accent)/90"
+      class="mt-3 inline-flex items-center rounded-md bg-(--color-accent) px-5 py-2 text-[13px] font-semibold text-(--color-accent-fg) hover:opacity-90"
     >
       {{ t("publish.wizard.success.back") }}
     </NuxtLink>

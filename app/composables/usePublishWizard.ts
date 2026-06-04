@@ -51,6 +51,8 @@ export function usePublishWizard(init: WizardInit = {}) {
   const step = ref<WizardStep>(init.bundleUploaded ? 3 : init.extensionId ? 1 : 0)
   const error = ref<WizardError | null>(null)
   const busy = ref(false)
+  const justSaved = ref(false)
+  let justSavedTimer: ReturnType<typeof setTimeout> | null = null
 
   // Auto-derive slug from name as long as the user hasn't hand-edited slug.
   // We track that by snapshotting the auto-derived value and only re-deriving
@@ -89,6 +91,19 @@ export function usePublishWizard(init: WizardInit = {}) {
   const canSubmit = computed(
     () => basicsValid.value && bundleValid.value && listingValid.value,
   )
+
+  // Per-step validity, indexable by step (0..3) so the rail/footer can reason
+  // about which steps are complete.
+  const stepsValid = computed(() => [
+    basicsValid.value,
+    bundleValid.value,
+    listingValid.value,
+    canSubmit.value,
+  ])
+
+  // Save Draft persists without advancing. It needs valid basics because the
+  // create-draft endpoint requires a usable slug/version/name/summary.
+  const canSaveDraft = computed(() => basicsValid.value)
 
   function setError(msg: string, detail?: string) {
     error.value = { msg, detail }
@@ -170,6 +185,40 @@ export function usePublishWizard(init: WizardInit = {}) {
     }
   }
 
+  async function saveDraft(): Promise<boolean> {
+    if (!canSaveDraft.value || busy.value) return false
+    clearError()
+    busy.value = true
+    try {
+      if (!extensionId.value) {
+        const result = await $fetch<{ ok: true; extensionId: string; versionId: string }>(
+          "/api/internal/publish/create-draft",
+          { method: "POST", body: form },
+        )
+        extensionId.value = result.extensionId
+        versionId.value = result.versionId
+      } else {
+        await $fetch("/api/internal/publish/update-draft", {
+          method: "POST",
+          body: { extensionId: extensionId.value, values: form },
+        })
+      }
+      justSaved.value = true
+      if (justSavedTimer) clearTimeout(justSavedTimer)
+      justSavedTimer = setTimeout(() => {
+        justSaved.value = false
+        justSavedTimer = null
+      }, 2000)
+      return true
+    } catch (err) {
+      const data = (err as { data?: { error?: string; detail?: string } })?.data
+      setError(data?.error ?? "unknown_error", data?.detail)
+      return false
+    } finally {
+      busy.value = false
+    }
+  }
+
   function jumpTo(target: WizardStep) {
     step.value = target
   }
@@ -186,15 +235,19 @@ export function usePublishWizard(init: WizardInit = {}) {
     bundleUploaded,
     error,
     busy,
+    justSaved,
     isLocked,
     basicsValid,
     bundleValid,
     listingValid,
     canSubmit,
+    stepsValid,
+    canSaveDraft,
     advanceFromBasics,
     advanceFromBundle,
     advanceFromListing,
     submit,
+    saveDraft,
     jumpTo,
     markBundleUploaded,
     setError,
