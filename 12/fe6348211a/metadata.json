@@ -1,0 +1,36 @@
+{
+  "cli_version": "0.6.3",
+  "checkpoint_id": "12fe6348211a",
+  "strategy": "manual-commit",
+  "branch": "feat/publish-wizard-polish",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/components/publish/DeptDropdown.vue",
+    "app/components/publish/UploadWizard.vue",
+    "app/components/publish/WizardBasics.vue",
+    "app/components/publish/WizardBundle.vue",
+    "app/components/publish/WizardListing.vue",
+    "app/components/publish/WizardReview.vue",
+    "app/components/publish/WizardSuccess.vue",
+    "app/composables/usePublishWizard.ts",
+    "app/pages/publish/[id]/edit.vue",
+    "app/pages/publish/new.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/12/fe6348211a/0/metadata.json",
+      "transcript": "/12/fe6348211a/0/full.jsonl",
+      "content_hash": "/12/fe6348211a/0/content_hash.txt",
+      "prompt": "/12/fe6348211a/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 15465,
+    "cache_creation_tokens": 447085,
+    "cache_read_tokens": 13076788,
+    "output_tokens": 75719,
+    "api_call_count": 89
+  }
+}

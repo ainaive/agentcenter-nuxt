@@ -1,0 +1,64 @@
+{
+  "cli_version": "0.6.3",
+  "checkpoint_id": "12fe6348211a",
+  "session_id": "2f1631e5-b073-4184-a874-96529f415a7b",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-04T06:59:52.883419Z",
+  "branch": "feat/publish-wizard-polish",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/components/publish/DeptDropdown.vue",
+    "app/components/publish/UploadWizard.vue",
+    "app/components/publish/WizardBasics.vue",
+    "app/components/publish/WizardBundle.vue",
+    "app/components/publish/WizardListing.vue",
+    "app/components/publish/WizardReview.vue",
+    "app/components/publish/WizardSuccess.vue",
+    "app/composables/usePublishWizard.ts",
+    "app/pages/publish/[id]/edit.vue",
+    "app/pages/publish/new.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "ee977fe5700a",
+  "token_usage": {
+    "input_tokens": 15465,
+    "cache_creation_tokens": 447085,
+    "cache_read_tokens": 13076788,
+    "output_tokens": 75719,
+    "api_call_count": 89
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-04T06:59:52.863139Z",
+    "agent_lines": 484,
+    "agent_removed": 191,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 484,
+    "total_lines_changed": 675,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 484,
+      "agent_lines_removed": 191
+    }
+  ]
+}
