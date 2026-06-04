@@ -20,6 +20,7 @@ async function sha256Hex(buf: ArrayBuffer): Promise<string> {
 }
 
 async function onFile(file: File) {
+  if (uploading.value) return
   localError.value = null
   if (!file.name.toLowerCase().endsWith(".zip")) {
     localError.value = t("publish.wizard.bundle.wrongType")
@@ -89,6 +90,7 @@ function onFileChange(event: Event) {
 
 function onDrop(event: DragEvent) {
   event.preventDefault()
+  if (uploading.value) return
   const file = event.dataTransfer?.files?.[0]
   if (file) onFile(file)
 }

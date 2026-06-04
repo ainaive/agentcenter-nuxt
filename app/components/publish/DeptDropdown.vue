@@ -28,9 +28,12 @@ function flatten(list: Department[], depth = 0): FlatDept[] {
 
 const flat = computed(() => flatten(DEPARTMENTS))
 
-const label = computed(() =>
-  value.value ? deptPath(value.value, locale.value as Locale).join(" / ") : "",
-)
+const label = computed(() => {
+  if (!value.value) return t("publish.wizard.listing.deptUnset")
+  const path = deptPath(value.value, locale.value as Locale).join(" / ")
+  // Stale/unknown deptId — the referenced node was removed/renamed.
+  return path || t("publish.wizard.listing.deptUnset")
+})
 
 const open = ref(false)
 
@@ -48,7 +51,7 @@ function select(id: string | undefined) {
       <span class="inline-flex items-center gap-2 truncate">
         <Building2 aria-hidden="true" class="size-3.5 text-(--color-ink-muted)" />
         <span :class="value ? 'text-(--color-ink)' : 'text-(--color-ink-muted)'">
-          {{ value ? label : t("publish.wizard.listing.deptUnset") }}
+          {{ label }}
         </span>
       </span>
       <ChevronDown aria-hidden="true" class="size-3 text-(--color-ink-muted)" />

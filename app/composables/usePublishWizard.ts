@@ -52,6 +52,7 @@ export function usePublishWizard(init: WizardInit = {}) {
   const error = ref<WizardError | null>(null)
   const busy = ref(false)
   const justSaved = ref(false)
+  let justSavedTimer: ReturnType<typeof setTimeout> | null = null
 
   // Auto-derive slug from name as long as the user hasn't hand-edited slug.
   // We track that by snapshotting the auto-derived value and only re-deriving
@@ -203,7 +204,11 @@ export function usePublishWizard(init: WizardInit = {}) {
         })
       }
       justSaved.value = true
-      setTimeout(() => (justSaved.value = false), 2000)
+      if (justSavedTimer) clearTimeout(justSavedTimer)
+      justSavedTimer = setTimeout(() => {
+        justSaved.value = false
+        justSavedTimer = null
+      }, 2000)
       return true
     } catch (err) {
       const data = (err as { data?: { error?: string; detail?: string } })?.data
