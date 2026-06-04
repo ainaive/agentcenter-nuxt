@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.6.3",
+  "checkpoint_id": "98284ecb00ab",
+  "strategy": "manual-commit",
+  "branch": "feat/publish-wizard-polish",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/publish/DeptDropdown.vue",
+    "app/components/publish/WizardBundle.vue",
+    "app/composables/usePublishWizard.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/98/284ecb00ab/0/metadata.json",
+      "transcript": "/98/284ecb00ab/0/full.jsonl",
+      "content_hash": "/98/284ecb00ab/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 13,
+    "cache_creation_tokens": 7479,
+    "cache_read_tokens": 3465238,
+    "output_tokens": 4151,
+    "api_call_count": 13
+  }
+}

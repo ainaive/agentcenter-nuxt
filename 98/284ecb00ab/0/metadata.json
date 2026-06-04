@@ -1,0 +1,41 @@
+{
+  "cli_version": "0.6.3",
+  "checkpoint_id": "98284ecb00ab",
+  "session_id": "2f1631e5-b073-4184-a874-96529f415a7b",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-04T08:38:35.687181Z",
+  "branch": "feat/publish-wizard-polish",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/publish/WizardBundle.vue",
+    "app/composables/usePublishWizard.ts",
+    "app/components/publish/DeptDropdown.vue"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "7a80b3af4e9e",
+  "checkpoint_transcript_start": 658,
+  "transcript_lines_at_start": 658,
+  "token_usage": {
+    "input_tokens": 13,
+    "cache_creation_tokens": 7479,
+    "cache_read_tokens": 3465238,
+    "output_tokens": 4151,
+    "api_call_count": 13
+  },
+  "session_metrics": {
+    "turn_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-04T08:38:35.655671Z",
+    "agent_lines": 15,
+    "agent_removed": 5,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 15,
+    "total_lines_changed": 20,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}
