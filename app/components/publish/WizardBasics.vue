@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Blocks, Bolt, Globe, Plug } from "lucide-vue-next"
 import type { PublishWizard } from "~/composables/usePublishWizard"
 
 const props = defineProps<{ wizard: PublishWizard }>()
@@ -8,6 +9,14 @@ const form = props.wizard.form
 const isLocked = props.wizard.isLocked
 
 const showChinese = ref(Boolean(form.nameZh || form.taglineZh))
+
+type Category = typeof form.category
+const CATEGORIES: Array<{ key: Category; icon: typeof Bolt }> = [
+  { key: "skills", icon: Bolt },
+  { key: "mcp", icon: Globe },
+  { key: "slash", icon: Blocks },
+  { key: "plugins", icon: Plug },
+]
 </script>
 
 <template>
@@ -79,15 +88,27 @@ const showChinese = ref(Boolean(form.nameZh || form.taglineZh))
     </div>
 
     <PubField :label="t('publish.fields.category')" required>
-      <div class="grid gap-2 sm:grid-cols-2 md:grid-cols-4">
-        <PubChoice
-          v-for="cat in (['skills','mcp','slash','plugins'] as const)"
-          :key="cat"
-          :value="cat"
-          :current="form.category"
-          :title="t(`publish.options.category.${cat}`)"
-          @select="(v) => (form.category = v as typeof form.category)"
-        />
+      <div role="radiogroup" :aria-label="t('publish.fields.category')" class="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+        <button
+          v-for="cat in CATEGORIES"
+          :key="cat.key"
+          type="button"
+          role="radio"
+          :aria-checked="form.category === cat.key"
+          class="flex flex-col items-center gap-1.5 rounded-lg border-[1.5px] px-2 py-3.5 text-[12px] font-semibold transition-all"
+          :class="form.category === cat.key
+            ? 'border-(--color-accent) bg-(--color-accent)/5 text-(--color-accent)'
+            : 'border-(--color-border) bg-(--color-card) text-(--color-ink) hover:border-(--color-accent)/40'"
+          @click="form.category = cat.key"
+        >
+          <component
+            :is="cat.icon"
+            aria-hidden="true"
+            class="size-[18px]"
+            :class="form.category === cat.key ? 'text-(--color-accent)' : 'text-(--color-ink-muted)'"
+          />
+          <span>{{ t(`publish.options.category.${cat.key}`) }}</span>
+        </button>
       </div>
     </PubField>
 

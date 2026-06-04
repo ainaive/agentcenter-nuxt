@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Check, X } from "lucide-vue-next"
 import type { PublishWizard } from "~/composables/usePublishWizard"
 import { ICON_COLOR_KEYS, ICON_COLORS, type IconColor } from "~~/shared/data/icon-colors"
 
@@ -64,9 +65,9 @@ function setIconColor(color: IconColor) {
     </header>
 
     <PubField :label="t('publish.wizard.listing.iconLabel')">
-      <div class="flex flex-wrap items-center gap-3">
+      <div class="flex items-center gap-3.5">
         <div
-          class="grid size-10 place-items-center rounded-md font-serif text-base font-semibold"
+          class="grid size-16 place-items-center rounded-2xl font-serif text-3xl font-bold"
           :style="{
             backgroundColor: ICON_COLORS[form.iconColor].bg,
             color: ICON_COLORS[form.iconColor].fg,
@@ -74,17 +75,18 @@ function setIconColor(color: IconColor) {
         >
           {{ (form.name || "?").charAt(0).toUpperCase() }}
         </div>
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-1.5">
           <button
             v-for="key in ICON_COLOR_KEYS"
             :key="key"
             type="button"
-            class="size-7 rounded-full border-2 transition-all"
+            class="size-[22px] rounded-md transition-all"
             :class="form.iconColor === key
-              ? 'border-(--color-ink) scale-110'
-              : 'border-transparent'"
+              ? 'ring-2 ring-(--color-ink) ring-offset-2 ring-offset-(--color-card)'
+              : 'ring-1 ring-(--color-border)'"
             :style="{ backgroundColor: ICON_COLORS[key].bg }"
             :aria-label="key"
+            :aria-pressed="form.iconColor === key"
             @click="setIconColor(key)"
           />
         </div>
@@ -93,25 +95,25 @@ function setIconColor(color: IconColor) {
 
     <PubField
       :label="t('publish.wizard.listing.tagsLabel')"
-      :hint="t('publish.wizard.listing.tagsHint')"
+      :hint="t('publish.wizard.listing.tagsCount', { count: form.tagIds.length, max: TAG_LIMIT })"
       required
     >
       <div
-        class="flex flex-wrap items-center gap-1.5 rounded-md border border-(--color-border) bg-(--color-card) p-2"
+        class="flex min-h-[42px] flex-wrap items-center gap-1.5 rounded-md border border-(--color-border) bg-(--color-card) p-2"
       >
         <span
           v-for="tag in form.tagIds"
           :key="tag"
-          class="inline-flex items-center gap-1 rounded-full bg-(--color-accent)/10 px-2 py-0.5 text-[11px] text-(--color-accent)"
+          class="inline-flex items-center gap-1.5 rounded-md bg-(--color-accent)/10 py-1 pl-2.5 pr-1 font-mono text-[12px] font-semibold text-(--color-accent)"
         >
           {{ tag }}
           <button
             type="button"
-            class="text-[10px] hover:text-(--color-ink)"
+            class="inline-flex p-0.5 hover:opacity-70"
             :aria-label="`remove ${tag}`"
             @click="removeTag(tag)"
           >
-            ✕
+            <X aria-hidden="true" class="size-3" />
           </button>
         </span>
         <input
@@ -121,7 +123,7 @@ function setIconColor(color: IconColor) {
             ? t('publish.wizard.listing.tagsLimit')
             : t('publish.wizard.listing.tagsPlaceholder')"
           :disabled="form.tagIds.length >= TAG_LIMIT"
-          class="flex-1 min-w-[120px] bg-transparent text-sm outline-none placeholder:text-(--color-ink-muted)"
+          class="min-w-[120px] flex-1 bg-transparent px-1.5 py-1 text-[13px] outline-none placeholder:text-(--color-ink-muted)"
           @keydown="onTagKey"
         >
       </div>
@@ -130,12 +132,16 @@ function setIconColor(color: IconColor) {
           v-for="s in remainingSuggestions"
           :key="s"
           type="button"
-          class="rounded-full border border-(--color-border) px-2 py-0.5 text-[11px] text-(--color-ink-muted) hover:text-(--color-ink)"
+          class="rounded border border-dashed border-(--color-border) px-2 py-0.5 font-mono text-[11px] text-(--color-ink-muted) transition-colors hover:border-(--color-accent)/40 hover:text-(--color-ink)"
           @click="addTag(s)"
         >
           + {{ s }}
         </button>
       </div>
+    </PubField>
+
+    <PubField :label="t('publish.wizard.listing.deptLabel')">
+      <DeptDropdown v-model="form.deptId" />
     </PubField>
 
     <PubField
@@ -156,16 +162,22 @@ function setIconColor(color: IconColor) {
           v-for="key in PERMISSION_KEYS"
           :key="key"
           type="button"
-          class="flex items-center justify-between rounded-md border px-3 py-2 text-left text-sm transition-colors"
+          :aria-pressed="Boolean(form.permissions[key])"
+          class="flex items-center gap-2.5 rounded-md border px-3 py-2 text-left text-sm transition-all"
           :class="form.permissions[key]
-            ? 'border-(--color-accent) bg-(--color-accent)/10 text-(--color-accent)'
-            : 'border-(--color-border) bg-(--color-card) text-(--color-ink) hover:border-(--color-accent)/40'"
+            ? 'border-(--color-accent) bg-(--color-accent)/[0.04]'
+            : 'border-(--color-border) bg-(--color-card) hover:border-(--color-accent)/40'"
           @click="togglePerm(key)"
         >
-          <span>{{ t(`publish.wizard.listing.permissions.${key}`) }}</span>
-          <span class="font-mono text-[11px]">
-            {{ form.permissions[key] ? "✓" : "" }}
+          <span
+            class="inline-flex size-4 shrink-0 items-center justify-center rounded border-[1.5px]"
+            :class="form.permissions[key]
+              ? 'border-(--color-accent) bg-(--color-accent)'
+              : 'border-(--color-border) bg-transparent'"
+          >
+            <Check v-if="form.permissions[key]" aria-hidden="true" class="size-2.5 text-(--color-accent-fg)" />
           </span>
+          <span class="text-[12.5px] text-(--color-ink)">{{ t(`publish.wizard.listing.permissions.${key}`) }}</span>
         </button>
       </div>
     </PubField>

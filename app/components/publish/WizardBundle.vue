@@ -108,27 +108,37 @@ function pick() {
     </header>
 
     <div
-      class="rounded-(--radius-card) border-2 border-dashed border-(--color-border) bg-(--color-card) p-8 text-center transition-colors hover:border-(--color-accent)/40"
+      class="flex flex-col items-center justify-center gap-2.5 rounded-xl border-2 border-dashed p-8 text-center transition-all"
+      :class="wizard.bundleUploaded.value && fileName
+        ? 'border-(--color-accent) bg-(--color-accent)/[0.04]'
+        : 'border-(--color-border) bg-(--color-card) hover:border-(--color-accent)/40 cursor-pointer'"
       @dragover.prevent
       @drop="onDrop"
+      @click="!uploading && !(wizard.bundleUploaded.value && fileName) && pick()"
     >
-      <div v-if="wizard.bundleUploaded.value && fileName" class="flex flex-col items-center gap-2">
+      <template v-if="wizard.bundleUploaded.value && fileName">
         <Check class="size-8 text-(--color-accent)" aria-hidden="true" />
-        <p class="text-sm text-(--color-ink)">
-          {{ t("publish.wizard.bundle.uploaded", { name: fileName }) }}
-        </p>
-        <Button variant="outline" size="sm" @click="pick">
+        <p class="text-[14px] font-semibold text-(--color-ink)">{{ fileName }}</p>
+        <button
+          type="button"
+          class="text-[12px] text-(--color-ink-muted) underline underline-offset-4 transition-colors hover:text-(--color-ink)"
+          @click.stop="pick"
+        >
           {{ t("publish.wizard.bundle.replace") }}
-        </Button>
-      </div>
-      <div v-else class="flex flex-col items-center gap-3">
-        <Upload class="size-8 text-(--color-ink-muted)" aria-hidden="true" />
-        <p class="text-sm text-(--color-ink-muted)">{{ t("publish.wizard.bundle.drop") }}</p>
-        <p class="text-[11px] text-(--color-ink-muted)">{{ t("publish.wizard.bundle.max") }}</p>
-        <Button :disabled="uploading" @click="pick">
-          {{ uploading ? t("publish.stages.uploading") : t("publish.fields.bundle") }}
-        </Button>
-      </div>
+        </button>
+      </template>
+      <template v-else-if="uploading">
+        <Upload class="size-7 animate-pulse text-(--color-accent)" aria-hidden="true" />
+        <p class="text-[14px] font-semibold text-(--color-ink)">{{ t("publish.stages.uploading") }}</p>
+      </template>
+      <template v-else>
+        <Upload class="size-7 text-(--color-ink-muted)" aria-hidden="true" />
+        <p class="text-[14px] font-semibold text-(--color-ink)">{{ t("publish.wizard.bundle.dropHere") }}</p>
+        <span class="rounded-md bg-(--color-accent) px-3.5 py-1.5 text-[12.5px] font-semibold text-(--color-accent-fg)">
+          {{ t("publish.wizard.bundle.orBrowse") }}
+        </span>
+        <p class="mt-1 text-[11.5px] text-(--color-ink-muted)">{{ t("publish.wizard.bundle.max") }}</p>
+      </template>
 
       <input
         ref="fileInput"
