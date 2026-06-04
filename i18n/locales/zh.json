@@ -403,6 +403,7 @@
         "tagsCount": "{count} / {max} 个标签",
         "tagsPlaceholder": "添加标签…",
         "tagsLimit": "已达上限",
+        "tagsRemove": "移除标签 {tag}",
         "deptLabel": "部门",
         "deptUnset": "所有部门",
         "readmeLabel": "README",

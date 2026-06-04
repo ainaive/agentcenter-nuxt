@@ -96,6 +96,12 @@ function onDrop(event: DragEvent) {
 function pick() {
   fileInput.value?.click()
 }
+
+function tryPick() {
+  if (uploading.value) return
+  if (props.wizard.bundleUploaded.value && fileName.value) return
+  pick()
+}
 </script>
 
 <template>
@@ -108,13 +114,18 @@ function pick() {
     </header>
 
     <div
-      class="flex flex-col items-center justify-center gap-2.5 rounded-xl border-2 border-dashed p-8 text-center transition-all"
+      role="button"
+      :tabindex="wizard.bundleUploaded.value && fileName ? -1 : 0"
+      :aria-disabled="uploading || (wizard.bundleUploaded.value && Boolean(fileName))"
+      class="flex flex-col items-center justify-center gap-2.5 rounded-xl border-2 border-dashed p-8 text-center transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-accent)/40"
       :class="wizard.bundleUploaded.value && fileName
         ? 'border-(--color-accent) bg-(--color-accent)/[0.04]'
         : 'border-(--color-border) bg-(--color-card) hover:border-(--color-accent)/40 cursor-pointer'"
       @dragover.prevent
       @drop="onDrop"
-      @click="!uploading && !(wizard.bundleUploaded.value && fileName) && pick()"
+      @click="tryPick"
+      @keydown.enter.prevent="tryPick"
+      @keydown.space.prevent="tryPick"
     >
       <template v-if="wizard.bundleUploaded.value && fileName">
         <Check class="size-8 text-(--color-accent)" aria-hidden="true" />

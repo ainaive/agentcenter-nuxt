@@ -110,7 +110,7 @@ function setIconColor(color: IconColor) {
           <button
             type="button"
             class="inline-flex p-0.5 hover:opacity-70"
-            :aria-label="`remove ${tag}`"
+            :aria-label="t('publish.wizard.listing.tagsRemove', { tag })"
             @click="removeTag(tag)"
           >
             <X aria-hidden="true" class="size-3" />

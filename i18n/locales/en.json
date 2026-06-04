@@ -403,6 +403,7 @@
         "tagsCount": "{count} / {max} tags",
         "tagsPlaceholder": "Add a tag…",
         "tagsLimit": "Limit reached",
+        "tagsRemove": "Remove tag {tag}",
         "deptLabel": "Department",
         "deptUnset": "All departments",
         "readmeLabel": "README",
