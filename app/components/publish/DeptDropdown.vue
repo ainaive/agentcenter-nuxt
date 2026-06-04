@@ -64,7 +64,7 @@ function select(id: string | undefined) {
         @click="select(undefined)"
       >
         {{ t("publish.wizard.listing.deptUnset") }}
-        <Check v-if="!value" aria-hidden="true" class="size-3.5 text-(--color-accent)" />
+        <Check v-if="!value" aria-hidden="true" class="size-3.5 text-(--color-ink)" />
       </button>
       <button
         v-for="d in flat"
@@ -76,7 +76,7 @@ function select(id: string | undefined) {
         @click="select(d.id)"
       >
         {{ d.name }}
-        <Check v-if="value === d.id" aria-hidden="true" class="size-3.5 text-(--color-accent)" />
+        <Check v-if="value === d.id" aria-hidden="true" class="size-3.5 text-(--color-ink)" />
       </button>
     </PopoverContent>
   </Popover>

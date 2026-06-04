@@ -118,7 +118,7 @@ function railClick(index: WizardStep) {
             <span
               class="mt-0.5 inline-flex size-[22px] shrink-0 items-center justify-center rounded-full text-[11px] font-bold font-mono"
               :class="i <= wizard.step.value
-                ? 'bg-(--color-accent) text-(--color-accent-fg)'
+                ? 'border-[1.5px] border-(--color-ink) text-(--color-ink)'
                 : 'border-[1.5px] border-(--color-border) text-(--color-ink-muted)'"
             >
               <Check v-if="i < wizard.step.value" aria-hidden="true" class="size-3" />

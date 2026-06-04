@@ -97,15 +97,15 @@ const CATEGORIES: Array<{ key: Category; icon: typeof Bolt }> = [
           :aria-checked="form.category === cat.key"
           class="flex flex-col items-center gap-1.5 rounded-lg border-[1.5px] px-2 py-3.5 text-[12px] font-semibold transition-all"
           :class="form.category === cat.key
-            ? 'border-(--color-accent) bg-(--color-accent)/5 text-(--color-accent)'
-            : 'border-(--color-border) bg-(--color-card) text-(--color-ink) hover:border-(--color-accent)/40'"
+            ? 'border-(--color-ink) bg-(--color-sidebar) text-(--color-ink) font-bold'
+            : 'border-(--color-border) bg-(--color-card) text-(--color-ink) hover:border-(--color-ink)/40'"
           @click="form.category = cat.key"
         >
           <component
             :is="cat.icon"
             aria-hidden="true"
             class="size-[18px]"
-            :class="form.category === cat.key ? 'text-(--color-accent)' : 'text-(--color-ink-muted)'"
+            :class="form.category === cat.key ? 'text-(--color-ink)' : 'text-(--color-ink-muted)'"
           />
           <span>{{ t(`publish.options.category.${cat.key}`) }}</span>
         </button>

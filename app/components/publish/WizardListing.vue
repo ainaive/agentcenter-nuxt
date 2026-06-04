@@ -104,7 +104,7 @@ function setIconColor(color: IconColor) {
         <span
           v-for="tag in form.tagIds"
           :key="tag"
-          class="inline-flex items-center gap-1.5 rounded-md bg-(--color-accent)/10 py-1 pl-2.5 pr-1 font-mono text-[12px] font-semibold text-(--color-accent)"
+          class="inline-flex items-center gap-1.5 rounded-md bg-(--color-sidebar) py-1 pl-2.5 pr-1 font-mono text-[12px] font-semibold text-(--color-ink)"
         >
           {{ tag }}
           <button
@@ -132,7 +132,7 @@ function setIconColor(color: IconColor) {
           v-for="s in remainingSuggestions"
           :key="s"
           type="button"
-          class="rounded border border-dashed border-(--color-border) px-2 py-0.5 font-mono text-[11px] text-(--color-ink-muted) transition-colors hover:border-(--color-accent)/40 hover:text-(--color-ink)"
+          class="rounded border border-dashed border-(--color-border) px-2 py-0.5 font-mono text-[11px] text-(--color-ink-muted) transition-colors hover:border-(--color-ink)/40 hover:text-(--color-ink)"
           @click="addTag(s)"
         >
           + {{ s }}
@@ -165,17 +165,17 @@ function setIconColor(color: IconColor) {
           :aria-pressed="Boolean(form.permissions[key])"
           class="flex items-center gap-2.5 rounded-md border px-3 py-2 text-left text-sm transition-all"
           :class="form.permissions[key]
-            ? 'border-(--color-accent) bg-(--color-accent)/[0.04]'
-            : 'border-(--color-border) bg-(--color-card) hover:border-(--color-accent)/40'"
+            ? 'border-(--color-ink) bg-(--color-sidebar) font-semibold'
+            : 'border-(--color-border) bg-(--color-card) hover:border-(--color-ink)/40'"
           @click="togglePerm(key)"
         >
           <span
             class="inline-flex size-4 shrink-0 items-center justify-center rounded border-[1.5px]"
             :class="form.permissions[key]
-              ? 'border-(--color-accent) bg-(--color-accent)'
+              ? 'border-(--color-ink) bg-(--color-ink)'
               : 'border-(--color-border) bg-transparent'"
           >
-            <Check v-if="form.permissions[key]" aria-hidden="true" class="size-2.5 text-(--color-accent-fg)" />
+            <Check v-if="form.permissions[key]" aria-hidden="true" class="size-2.5 text-(--color-card)" />
           </span>
           <span class="text-[12.5px] text-(--color-ink)">{{ t(`publish.wizard.listing.permissions.${key}`) }}</span>
         </button>

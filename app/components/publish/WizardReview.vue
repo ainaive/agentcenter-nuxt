@@ -80,7 +80,7 @@ const isPersonal = computed(() => form.scope === "personal")
         <span class="text-[13px] text-(--color-ink) truncate">{{ r.value }}</span>
         <button
           type="button"
-          class="text-[11.5px] font-semibold text-(--color-accent) underline-offset-4 hover:underline"
+          class="text-[11.5px] font-semibold text-(--color-ink) underline-offset-4 hover:underline"
           @click="emit('jump', r.step)"
         >
           {{ t("publish.wizard.review.edit") }}
