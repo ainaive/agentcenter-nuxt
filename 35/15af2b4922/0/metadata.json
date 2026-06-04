@@ -1,0 +1,52 @@
+{
+  "cli_version": "0.6.3",
+  "checkpoint_id": "3515af2b4922",
+  "session_id": "2f1631e5-b073-4184-a874-96529f415a7b",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-04T08:35:41.879295Z",
+  "branch": "feat/publish-wizard-polish",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/publish/UploadWizard.vue",
+    "app/components/publish/WizardBasics.vue",
+    "app/components/publish/WizardListing.vue",
+    "app/components/publish/WizardReview.vue",
+    "app/components/publish/DeptDropdown.vue"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "7a80b3af4e9e",
+  "checkpoint_transcript_start": 519,
+  "transcript_lines_at_start": 519,
+  "token_usage": {
+    "input_tokens": 36,
+    "cache_creation_tokens": 51752,
+    "cache_read_tokens": 5024635,
+    "output_tokens": 12537,
+    "api_call_count": 21
+  },
+  "session_metrics": {
+    "turn_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-04T08:35:41.854413Z",
+    "agent_lines": 13,
+    "agent_removed": 13,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 13,
+    "total_lines_changed": 26,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}
