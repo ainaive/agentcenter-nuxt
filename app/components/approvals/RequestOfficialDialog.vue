@@ -16,27 +16,76 @@ const emit = defineEmits<{
   (e: "submitted"): void
 }>()
 
-const { t, te } = useI18n()
+const { t, te, locale } = useI18n()
 
 const open = ref(false)
 const tier = ref<Tier>("productLine")
 const subCat = ref<string>(props.currentSubCat ?? "")
+const productLineId = ref<string>("")
 const reason = ref("")
 const busy = ref(false)
 const error = ref<string | null>(null)
+
+// Product line list is small (4 rows) and seldom changes — fetch once
+// when the dialog opens and reuse the same ref. The endpoint requires a
+// signed-in user, so anonymous trigger taps still work (the dialog gates
+// on its own enclosing auth).
+interface ProductLine {
+  id: string
+  labelEn: string
+  labelZh: string
+  sortOrder: number
+}
+const productLines = ref<ProductLine[]>([])
+const productLinesLoaded = ref(false)
+const productLinesError = ref<string | null>(null)
+
+async function ensureProductLines() {
+  if (productLinesLoaded.value) return
+  try {
+    const res = await $fetch("/api/internal/product-lines")
+    productLines.value = res.productLines
+    productLinesLoaded.value = true
+  } catch (err) {
+    console.error("[approvals] failed to load product lines", err)
+    productLinesError.value = t("approvals.dialog.productLinesError")
+  }
+}
 
 watch(open, (next) => {
   if (next) {
     tier.value = "productLine"
     subCat.value = props.currentSubCat ?? ""
+    productLineId.value = ""
     reason.value = ""
     error.value = null
+    productLinesError.value = null
+    void ensureProductLines()
   }
 })
 
-const canSubmit = computed(
-  () => subCat.value.length > 0 && !busy.value,
+// Clear productLineId on tier change so a stale value can't ride
+// along on a company-tier submit and trip `unexpected_product_line`.
+watch(tier, (next) => {
+  if (next === "company") productLineId.value = ""
+})
+
+const canSubmit = computed(() => {
+  if (busy.value) return false
+  if (subCat.value.length === 0) return false
+  if (tier.value === "productLine" && productLineId.value.length === 0) {
+    return false
+  }
+  return true
+})
+
+const orderedLines = computed(() =>
+  [...productLines.value].sort((a, b) => a.sortOrder - b.sortOrder),
 )
+
+function lineLabel(line: ProductLine): string {
+  return locale.value === "zh" ? line.labelZh : line.labelEn
+}
 
 async function handleSubmit(e: Event) {
   e.preventDefault()
@@ -50,6 +99,8 @@ async function handleSubmit(e: Event) {
         extensionId: props.extensionId,
         requestedTier: tier.value,
         subCat: subCat.value,
+        productLineId:
+          tier.value === "productLine" ? productLineId.value : undefined,
         reason: reason.value.trim() || undefined,
       },
     })
@@ -140,6 +191,34 @@ async function handleSubmit(e: Event) {
             </label>
           </div>
         </fieldset>
+
+        <div v-if="tier === 'productLine'">
+          <Label for="approvals-productLine" class="text-xs font-medium">
+            {{ t("approvals.dialog.productLineLabel") }}
+          </Label>
+          <select
+            id="approvals-productLine"
+            v-model="productLineId"
+            class="mt-1 block w-full rounded-md border border-(--color-border) bg-(--color-card) p-2 text-sm text-(--color-ink) focus:outline-none focus:ring-2 focus:ring-(--color-accent)/40"
+          >
+            <option value="" disabled>
+              {{ t("approvals.dialog.productLinePlaceholder") }}
+            </option>
+            <option
+              v-for="line in orderedLines"
+              :key="line.id"
+              :value="line.id"
+            >
+              {{ lineLabel(line) }}
+            </option>
+          </select>
+          <p
+            v-if="productLinesError"
+            class="mt-1 text-xs text-red-600"
+          >
+            {{ productLinesError }}
+          </p>
+        </div>
 
         <div>
           <Label for="approvals-subCat" class="text-xs font-medium">

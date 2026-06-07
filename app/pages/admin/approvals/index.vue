@@ -5,6 +5,9 @@ definePageMeta({
 
 const { t } = useI18n()
 
+// Load the queue and the product-line list in parallel. The queue itself
+// only carries productLineId; we resolve labels client-side so a single
+// productLines fetch covers any future pages on the same session.
 const { data, refresh, pending } = await useFetch(
   "/api/internal/approvals/list",
   {
@@ -12,8 +15,15 @@ const { data, refresh, pending } = await useFetch(
     default: () => ({ ok: true, requests: [] }),
   },
 )
+const { data: productLinesData } = await useFetch(
+  "/api/internal/product-lines",
+  {
+    default: () => ({ ok: true, productLines: [] }),
+  },
+)
 
 const rows = computed(() => data.value.requests)
+const productLines = computed(() => productLinesData.value.productLines)
 </script>
 
 <template>
@@ -33,6 +43,7 @@ const rows = computed(() => data.value.requests)
     <ReviewerQueueTable
       v-else
       :rows="rows"
+      :product-lines="productLines"
       @refresh="refresh"
     />
   </div>

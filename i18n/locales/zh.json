@@ -599,6 +599,9 @@
       "tierLabel": "目标级别",
       "tierProductLineDesc": "由产品线管理员审核。",
       "tierCompanyDesc": "由公司管理员审核。",
+      "productLineLabel": "产品线",
+      "productLinePlaceholder": "请选择产品线…",
+      "productLinesError": "产品线加载失败，请重试。",
       "subCatLabel": "功能分类",
       "subCatPlaceholder": "请选择分类…",
       "subCatHint": "该扩展尚未设置分类 — 请为审核选择一个。",
@@ -616,7 +619,9 @@
       "extension_not_found": "该扩展已不存在。",
       "not_publisher_owner": "只有发布者本人可以申请提级。",
       "extension_not_published": "请先发布扩展再申请认证。",
-      "duplicate_pending_request": "该扩展已有待审核的申请。"
+      "duplicate_pending_request": "该扩展已有待审核的申请。",
+      "missing_product_line": "请选择产品线后再提交。",
+      "unexpected_product_line": "公司级申请不应携带产品线。"
     }
   },
   "cliAuth": {

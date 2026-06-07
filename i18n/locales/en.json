@@ -599,6 +599,9 @@
       "tierLabel": "Target tier",
       "tierProductLineDesc": "Reviewed at the product line.",
       "tierCompanyDesc": "Reviewed at the company level.",
+      "productLineLabel": "Product line",
+      "productLinePlaceholder": "Pick a product line…",
+      "productLinesError": "Couldn't load product lines. Please try again.",
       "subCatLabel": "Functional category",
       "subCatPlaceholder": "Pick a category…",
       "subCatHint": "This extension has no category set yet — choose one for the reviewer.",
@@ -616,7 +619,9 @@
       "extension_not_found": "That extension no longer exists.",
       "not_publisher_owner": "Only the publisher can request elevation.",
       "extension_not_published": "Publish the extension before requesting elevation.",
-      "duplicate_pending_request": "You already have a pending request for this extension."
+      "duplicate_pending_request": "You already have a pending request for this extension.",
+      "missing_product_line": "Pick a product line before submitting.",
+      "unexpected_product_line": "Company-tier requests must not include a product line."
     }
   },
   "cliAuth": {

@@ -8,16 +8,39 @@ interface QueueRow {
   extensionId: string
   requestedTier: "productLine" | "company"
   subCat: string
+  productLineId: string | null
   requestedByUserId: string
   reason: string | null
   createdAt: string | Date
 }
 
-const props = defineProps<{ rows: QueueRow[] }>()
+interface ProductLine {
+  id: string
+  labelEn: string
+  labelZh: string
+}
+
+const props = defineProps<{
+  rows: QueueRow[]
+  productLines?: ProductLine[]
+}>()
 const emit = defineEmits<{ (e: "refresh"): void }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const localePath = useLocalePath()
+
+const productLineLabelById = computed<Record<string, string>>(() => {
+  const out: Record<string, string> = {}
+  for (const line of props.productLines ?? []) {
+    out[line.id] = locale.value === "zh" ? line.labelZh : line.labelEn
+  }
+  return out
+})
+
+function productLineLabel(id: string | null): string {
+  if (!id) return ""
+  return productLineLabelById.value[id] ?? id
+}
 
 const rejecting = ref<string | null>(null)
 const rejectNote = ref("")
@@ -95,6 +118,12 @@ function cancelReject() {
               </span>
               <span class="rounded-sm border border-(--color-border) px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-(--color-ink-muted)">
                 {{ t(`taxonomy.l1.${row.subCat}`) }}
+              </span>
+              <span
+                v-if="row.productLineId"
+                class="rounded-sm border border-(--color-border) px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-(--color-ink-muted)"
+              >
+                {{ productLineLabel(row.productLineId) }}
               </span>
             </div>
             <div class="mt-1 text-xs text-(--color-ink-muted)">
