@@ -36,6 +36,7 @@ export default defineVitestConfig({
         "app/composables/useTheme.ts",
         "server/utils/extensions-state.ts",
         "server/utils/installs.ts",
+        "server/utils/approvals.ts",
       ],
       exclude: [
         "**/*.test.ts",
@@ -69,6 +70,7 @@ export default defineVitestConfig({
         // through it isn't; pair with a follow-up case.
         "server/utils/extensions-state.ts": { lines: 95, branches: 90, functions: 95, statements: 95 },
         "server/utils/installs.ts":         { lines: 95, branches: 85, functions: 95, statements: 95 },
+        "server/utils/approvals.ts":        { lines: 95, branches: 85, functions: 95, statements: 95 },
         // Tested composables. useFilters has unexercised null-element
         // branches; usePublishWizard's `markBundleUploaded` and a few
         // jumpTo paths skew the function/statement %. These are realistic
