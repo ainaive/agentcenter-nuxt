@@ -2,11 +2,16 @@ import { sql } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
 
+import {
+  APPROVAL_REVIEWERS,
+  DEFAULT_SUPER_ADMIN_EMAIL,
+} from "../shared/data/approval-reviewers"
 import { COLLECTIONS } from "../shared/data/collections"
 import { DEPARTMENTS } from "../shared/data/departments"
 import { EXTENSIONS } from "../shared/data/extensions"
 import * as schema from "../shared/db/schema"
 import {
+  approvalReviewers,
   collectionItems,
   collections,
   departments,
@@ -201,7 +206,7 @@ async function main() {
     id: string
     userId: string
     orgId: string
-    role: "publisher"
+    role: "publisher" | "superAdmin"
   }[] = []
   for (const row of extRows) {
     const key = `${row.publisherUserId}|${row.ownerOrgId}`
@@ -214,8 +219,50 @@ async function main() {
       role: "publisher",
     })
   }
+
+  // Promote one user to super-admin so the /admin/reviewers matrix is
+  // reachable in dev. SEED_SUPER_ADMIN_EMAIL overrides the default.
+  const superAdminEmail =
+    process.env.SEED_SUPER_ADMIN_EMAIL ?? DEFAULT_SUPER_ADMIN_EMAIL
+  const superAdmin = CREATORS.find((u) => u.email === superAdminEmail)
+  if (superAdmin) {
+    membershipRows.push({
+      id: `mem-superadmin-${superAdmin.id}`,
+      userId: superAdmin.id,
+      orgId: ORG_ID,
+      role: "superAdmin",
+    })
+    console.log(`seed: promoting ${superAdmin.email} to superAdmin`)
+  } else {
+    console.warn(
+      `seed: SEED_SUPER_ADMIN_EMAIL=${superAdminEmail} did not match any creator — no super-admin seeded`,
+    )
+  }
   console.log(`seed: inserting ${membershipRows.length} memberships`)
   await db.insert(memberships).values(membershipRows)
+
+  // Reviewer matrix: every (tier, subCat) cell gets at least one
+  // assignment from APPROVAL_REVIEWERS. Emails that don't resolve to a
+  // creator are skipped with a warning so a typo doesn't break the seed.
+  const reviewerRows = APPROVAL_REVIEWERS.flatMap((r, i) => {
+    const reviewer = CREATORS.find((u) => u.email === r.reviewerEmail)
+    if (!reviewer) {
+      console.warn(
+        `seed: approval reviewer email ${r.reviewerEmail} did not match any creator — skipping`,
+      )
+      return []
+    }
+    return [
+      {
+        id: `appr-rev-${i}`,
+        tier: r.tier,
+        subCat: r.subCat,
+        userId: reviewer.id,
+      },
+    ]
+  })
+  console.log(`seed: inserting ${reviewerRows.length} approval reviewers`)
+  await db.insert(approvalReviewers).values(reviewerRows)
 
   const extTagRows = EXTENSIONS.flatMap((e) =>
     e.tags.map((tagKey) => ({
