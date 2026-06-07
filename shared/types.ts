@@ -38,6 +38,11 @@ export interface Extension {
   author: string
   category: ExtensionCategory
   badge: ExtensionBadge | null
+  // Optional seed-side stamp. Lets the dev seed pre-approve a handful of
+  // extensions so the new tier badge / filter rail has visible data on a
+  // fresh DB. Production rows pick this up from the approval workflow,
+  // never from this field.
+  officialTier?: "productLine" | "company" | null
   downloads: number
   stars: number
   color: string
