@@ -335,6 +335,23 @@ async function main() {
       }
     }
     const isDecided = r.status === "approved" || r.status === "rejected"
+    // Defensive: the orchestrator enforces at-most-one-pending-per-extension
+    // at runtime; the seed must boot the marketplace in a state that already
+    // honors it. The current data file picks distinct extensions for the two
+    // pending rows, but a future edit could silently violate the invariant
+    // without this guard — skip with a warning instead.
+    if (
+      r.status === "pending" &&
+      approvalRequestRows.some(
+        (existing) =>
+          existing.extensionId === extensionId && existing.status === "pending",
+      )
+    ) {
+      console.warn(
+        `seed: approval request #${i} would be a second pending row for "${r.extensionSlug}" — skipping to preserve the at-most-one-pending invariant`,
+      )
+      continue
+    }
     approvalRequestRows.push({
       id: `appr-req-${i}`,
       extensionId,
