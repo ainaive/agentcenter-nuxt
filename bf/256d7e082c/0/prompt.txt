@@ -1,0 +1,63 @@
+Currently, I need to design a management and approval mechanism. Extensions are categorized into Official and Unofficial. When a user uploads an extension, it is designated as Unofficial by default. Elevating an extension to "Official" status requires an approval process.
+
+There are two tiers of official status: Product-Line Level and Company Level. Approval administrators are designated based on the functional category for each tier. Users will select their target tier (Product-Line Level or Company Level) and category for their application, which will then be reviewed by the specific administrator assigned to that combination. The administrator matrix must be fully configurable.
+
+---
+
+proceed to commit 5, then no need to pause for human review, just go ahead and open the pr
+
+---
+
+check about the code reviews on the pr
+
+---
+
+ok, go ahead
+
+---
+
+is it better to seed some data to test this feature, such as official extensions, admins, etc.  what do you think?
+
+---
+
+on dev mode, why I only found 2 skills, it is too few. what do you think?
+
+---
+
+please seed some PL official and company official extensions, especially skills.
+
+---
+
+check about the code reviews on the pr
+
+---
+
+what about this review: https://github.com/ainaive/agentcenter-nuxt/pull/41#pullrequestreview-4445194773
+
+---
+
+ok, go ahead
+
+---
+
+check the pr
+
+---
+
+let's merge it
+
+---
+
+what's next?
+
+---
+
+do we need to add or update some tests and docs for this feature?
+
+---
+
+check the pr
+
+---
+
+let's merge it
