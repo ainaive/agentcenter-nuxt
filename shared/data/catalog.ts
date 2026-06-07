@@ -29,6 +29,11 @@ export interface CatalogEntry {
   iconColor: IconColor
   tags: string[]
   badge?: "official" | "popular" | "new"
+  // Optional seed-side stamp. Lets the catalog ship a curated handful of
+  // already-elevated extensions so the tier badges and OfficialTierPill
+  // light up on a fresh DB. Production rows get this through the approval
+  // workflow; this field is the dev/demo lever only.
+  officialTier?: "productLine" | "company"
   downloadsCount: number
   starsAvg: string
 }
@@ -41,6 +46,7 @@ const SKILLS: CatalogEntry[] = [
   {
     slug: "user-story-writer",
     category: "skills",
+    officialTier: "productLine",
     scope: "personal",
     funcCat: "workTask",
     subCat: "systemDesign",
@@ -79,6 +85,7 @@ const SKILLS: CatalogEntry[] = [
   {
     slug: "c4-diagrammer",
     category: "skills",
+    officialTier: "productLine",
     scope: "personal",
     funcCat: "workTask",
     subCat: "systemDesign",
@@ -99,6 +106,7 @@ const SKILLS: CatalogEntry[] = [
   {
     slug: "system-design-reviewer",
     category: "skills",
+    officialTier: "company",
     scope: "org",
     funcCat: "workTask",
     subCat: "systemDesign",
@@ -179,6 +187,7 @@ const SKILLS: CatalogEntry[] = [
   {
     slug: "react-hook-genie",
     category: "skills",
+    officialTier: "productLine",
     scope: "personal",
     funcCat: "workTask",
     subCat: "softDev",
@@ -218,6 +227,7 @@ const SKILLS: CatalogEntry[] = [
   {
     slug: "sql-tuner",
     category: "skills",
+    officialTier: "company",
     scope: "personal",
     funcCat: "workTask",
     subCat: "softDev",
@@ -279,6 +289,7 @@ const SKILLS: CatalogEntry[] = [
   {
     slug: "vitest-case-writer",
     category: "skills",
+    officialTier: "productLine",
     scope: "personal",
     funcCat: "workTask",
     subCat: "testing",
@@ -337,6 +348,7 @@ const SKILLS: CatalogEntry[] = [
   {
     slug: "contract-test-helper",
     category: "skills",
+    officialTier: "productLine",
     scope: "org",
     funcCat: "workTask",
     subCat: "testing",
@@ -435,6 +447,7 @@ const SKILLS: CatalogEntry[] = [
   {
     slug: "mqtt-debugger",
     category: "skills",
+    officialTier: "productLine",
     scope: "personal",
     funcCat: "business",
     subCat: "network",
@@ -629,6 +642,7 @@ const SKILLS: CatalogEntry[] = [
   {
     slug: "aws-iam-policy-helper",
     category: "skills",
+    officialTier: "productLine",
     scope: "org",
     funcCat: "business",
     subCat: "cloud",
@@ -649,6 +663,7 @@ const SKILLS: CatalogEntry[] = [
   {
     slug: "k8s-manifest-gen",
     category: "skills",
+    officialTier: "company",
     scope: "org",
     funcCat: "business",
     subCat: "cloud",
@@ -747,6 +762,7 @@ const SKILLS: CatalogEntry[] = [
   {
     slug: "markdown-linter",
     category: "skills",
+    officialTier: "productLine",
     scope: "personal",
     funcCat: "tools",
     subCat: "docs",
@@ -824,6 +840,7 @@ const SKILLS: CatalogEntry[] = [
   {
     slug: "readme-generator",
     category: "skills",
+    officialTier: "company",
     scope: "personal",
     funcCat: "tools",
     subCat: "docs",
@@ -884,6 +901,7 @@ const SKILLS: CatalogEntry[] = [
   {
     slug: "query-explainer",
     category: "skills",
+    officialTier: "company",
     scope: "personal",
     funcCat: "tools",
     subCat: "data",
@@ -1021,6 +1039,7 @@ const SKILLS: CatalogEntry[] = [
   {
     slug: "conventional-commit-helper",
     category: "skills",
+    officialTier: "productLine",
     scope: "personal",
     funcCat: "tools",
     subCat: "vcs",
@@ -1102,6 +1121,7 @@ const SLASH_COMMANDS: CatalogEntry[] = [
   {
     slug: "summarize-pr",
     category: "slash",
+    officialTier: "company",
     scope: "personal",
     funcCat: "tools",
     subCat: "docs",
@@ -1121,6 +1141,7 @@ const SLASH_COMMANDS: CatalogEntry[] = [
   {
     slug: "explain-error",
     category: "slash",
+    officialTier: "productLine",
     scope: "personal",
     funcCat: "workTask",
     subCat: "softDev",
@@ -1197,6 +1218,7 @@ const SLASH_COMMANDS: CatalogEntry[] = [
   {
     slug: "commit-message",
     category: "slash",
+    officialTier: "company",
     scope: "personal",
     funcCat: "tools",
     subCat: "vcs",
@@ -1219,6 +1241,7 @@ const PLUGINS: CatalogEntry[] = [
   {
     slug: "linear-bridge",
     category: "plugins",
+    officialTier: "productLine",
     scope: "org",
     funcCat: "tools",
     subCat: "vcs",
@@ -1238,6 +1261,7 @@ const PLUGINS: CatalogEntry[] = [
   {
     slug: "sentry-bridge",
     category: "plugins",
+    officialTier: "company",
     scope: "org",
     funcCat: "workTask",
     subCat: "softDev",
