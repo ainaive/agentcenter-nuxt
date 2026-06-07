@@ -552,20 +552,26 @@
     },
     "reviewers": {
       "title": "审核员矩阵",
-      "subtitle": "为每个（级别 × 功能分类）单元分配审核员。",
+      "subtitle": "为每个（级别 × 功能分类）单元分配审核员。产品线级别还会按产品线进一步细分。",
       "loading": "加载矩阵…",
       "matrix": {
         "subCatColumn": "分类",
         "add": "添加",
         "addTitle": "添加审核员",
         "addSubtitle": "为「{subCat}」类别的「{tier}」申请指派审核员。",
+        "addSubtitleProductLine": "为「{line} / {subCat}」的产品线官方申请指派审核员。",
         "emailLabel": "用户邮箱",
         "emailPlaceholder": "邮箱地址",
         "noSuchUser": "找不到该邮箱对应的用户 — 请让对方先登录一次再分配。",
         "genericError": "添加失败，请重试。",
         "removeAria": "移除 {user}",
         "cancel": "取消",
-        "confirmAdd": "添加审核员"
+        "confirmAdd": "添加审核员",
+        "tabs": {
+          "company": "公司级",
+          "productLine": "产品线级"
+        },
+        "delegationNote": "您正以公司级审核员身份查看矩阵。可以编辑自己分类下的产品线单元；其他单元为只读。"
       }
     }
   },

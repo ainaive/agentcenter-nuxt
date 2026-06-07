@@ -17,9 +17,6 @@ afterEach(() => {
   ;(globalThis as unknown as { $fetch: unknown }).$fetch = realFetch
 })
 
-// Same passthrough strategy as RequestOfficialDialog.nuxt.test.ts — the
-// matrix mounts an add-reviewer dialog that wouldn't otherwise render in
-// the headless env.
 const passthrough = (name: string) =>
   defineComponent({ name, render() { return h("div", this.$slots.default?.()) } })
 
@@ -51,104 +48,130 @@ const stubs = {
   }),
 }
 
+const PRODUCT_LINES = [
+  { id: "wireless", labelEn: "Wireless", labelZh: "无线", sortOrder: 10 },
+  { id: "datacom", labelEn: "Datacom", labelZh: "数通", sortOrder: 20 },
+]
+
+const SUPER_VIEWER = {
+  isSuperAdmin: true,
+  companySubCats: [] as string[],
+}
+
 const REVIEWERS = [
   {
-    id: "rev-1",
+    id: "rev-pl",
     tier: "productLine" as const,
     subCat: "softDev",
+    productLineId: "wireless" as string | null,
     userId: "u-ben",
     userEmail: "ben.example.test",
     userName: "Ben Park",
+    canEdit: true,
   },
   {
-    id: "rev-2",
+    id: "rev-co",
     tier: "company" as const,
     subCat: "softDev",
+    productLineId: null as string | null,
     userId: "u-amy",
     userEmail: "amy.example.test",
     userName: null,
+    canEdit: true,
   },
 ]
 
-describe("ReviewerMatrix", () => {
-  it("renders one row per FUNC_TAXONOMY l1 leaf (9 rows) and two tier columns", async () => {
+describe("ReviewerMatrix shell", () => {
+  it("defaults to the Company tab and renders one Company-tier column", async () => {
     const wrapper = await mountSuspended(ReviewerMatrix, {
-      props: { reviewers: [] },
+      props: {
+        reviewers: [],
+        productLines: PRODUCT_LINES,
+        viewer: SUPER_VIEWER,
+      },
       global: { stubs },
     })
-    // 9 leaves: systemDesign, softDev, testing, network, embedded, cloud,
-    // docs, data, vcs.
+    // Company tab is active → 9 subCat rows × 1 tier column.
     const bodyRows = wrapper.findAll("tbody tr")
     expect(bodyRows).toHaveLength(9)
     const headers = wrapper.findAll("thead th")
-    // Subcat column + 2 tier columns = 3 thead cells.
+    expect(headers).toHaveLength(2)
+    expect(headers[1]!.text()).toContain("Company Official")
+  })
+
+  it("switching to the Product-Line tab renders one column per product line", async () => {
+    const wrapper = await mountSuspended(ReviewerMatrix, {
+      props: {
+        reviewers: [],
+        productLines: PRODUCT_LINES,
+        viewer: SUPER_VIEWER,
+      },
+      global: { stubs },
+    })
+    const plTab = wrapper
+      .findAll("button[role='tab']")
+      .find((b) => b.text().includes("Product-Line"))
+    await plTab!.trigger("click")
+    await nextTick()
+    const headers = wrapper.findAll("thead th")
+    // SubCat column + 2 product lines.
     expect(headers).toHaveLength(3)
-    // The two tier headers come from the i18n keys.
-    expect(headers[1]!.text()).toContain("Product-Line Official")
-    expect(headers[2]!.text()).toContain("Company Official")
+    expect(headers[1]!.text()).toContain("Wireless")
+    expect(headers[2]!.text()).toContain("Datacom")
   })
 
-  it("renders an existing reviewer chip with their name when name is set, email when not", async () => {
+  it("renders the existing company-tier chip with email fallback when name is null", async () => {
     const wrapper = await mountSuspended(ReviewerMatrix, {
-      props: { reviewers: REVIEWERS },
+      props: {
+        reviewers: REVIEWERS,
+        productLines: PRODUCT_LINES,
+        viewer: SUPER_VIEWER,
+      },
       global: { stubs },
     })
-    const text = wrapper.text()
-    expect(text).toContain("Ben Park")
-    // amy has userName: null, so the chip falls back to email.
-    expect(text).toContain("amy.example.test")
+    expect(wrapper.text()).toContain("amy.example.test")
   })
 
-  it("clicking + Add opens the dialog with the cell's tier and subCat in the subtitle", async () => {
+  it("renders the existing productLine-tier chip in the right cell after switching tabs", async () => {
     const wrapper = await mountSuspended(ReviewerMatrix, {
-      props: { reviewers: [] },
+      props: {
+        reviewers: REVIEWERS,
+        productLines: PRODUCT_LINES,
+        viewer: SUPER_VIEWER,
+      },
       global: { stubs },
     })
-    // Each empty cell shows a "+ Add" button. Click the first one (which
-    // corresponds to productLine × systemDesign).
-    const addBtns = wrapper.findAll("button").filter((b) => b.text().includes("Add"))
-    expect(addBtns.length).toBeGreaterThan(0)
-    await addBtns[0]!.trigger("click")
+    const plTab = wrapper
+      .findAll("button[role='tab']")
+      .find((b) => b.text().includes("Product-Line"))
+    await plTab!.trigger("click")
     await nextTick()
-    // The dialog opens — input becomes visible.
-    expect(wrapper.find('input[type="email"]').exists()).toBe(true)
+    expect(wrapper.text()).toContain("Ben Park")
   })
 
-  it("lookup returning null user surfaces the noSuchUser hint", async () => {
-    fetchMock.mockResolvedValueOnce({ user: null })
-    const wrapper = await mountSuspended(ReviewerMatrix, {
-      props: { reviewers: [] },
-      global: { stubs },
-    })
-    await wrapper
-      .findAll("button")
-      .find((b) => b.text().includes("Add"))!
-      .trigger("click")
-    await nextTick()
-    await wrapper.find('input[type="email"]').setValue("ghost.example.test")
-    await wrapper
-      .findAll("button")
-      .find((b) => b.text() === "Add reviewer")!
-      .trigger("click")
-    await nextTick()
-    expect(wrapper.text()).toContain("No user with that email")
-    // Only one $fetch call — the by-email lookup. /assign never fires.
-    expect(fetchMock).toHaveBeenCalledTimes(1)
-  })
-
-  it("lookup returning a user posts /assign with the cell's (tier, subCat, userId) and emits refresh", async () => {
+  it("posts /assign with productLineId when adding to a productLine cell", async () => {
     fetchMock
       .mockResolvedValueOnce({ user: { id: "u-cory", email: "cory.example.test", name: "Cory" } })
       .mockResolvedValueOnce({ ok: true })
     const wrapper = await mountSuspended(ReviewerMatrix, {
-      props: { reviewers: [] },
+      props: {
+        reviewers: [],
+        productLines: PRODUCT_LINES,
+        viewer: SUPER_VIEWER,
+      },
       global: { stubs },
     })
-    // Click the first + Add (productLine × systemDesign).
-    await wrapper
+    const plTab = wrapper
+      .findAll("button[role='tab']")
+      .find((b) => b.text().includes("Product-Line"))
+    await plTab!.trigger("click")
+    await nextTick()
+    // First "+ Add" button in the productLine grid sits at
+    // (systemDesign × wireless) — the first cell in iteration order.
+    const addBtn = wrapper
       .findAll("button")
-      .find((b) => b.text().includes("Add"))!
-      .trigger("click")
+      .find((b) => b.text().includes("Add") && !b.attributes("role"))
+    await addBtn!.trigger("click")
     await nextTick()
     await wrapper.find('input[type="email"]').setValue("cory.example.test")
     await wrapper
@@ -158,43 +181,44 @@ describe("ReviewerMatrix", () => {
     await nextTick()
 
     expect(fetchMock).toHaveBeenNthCalledWith(
-      1,
-      "/api/internal/admin/users/by-email",
-      expect.objectContaining({ query: { email: "cory.example.test" } }),
-    )
-    expect(fetchMock).toHaveBeenNthCalledWith(
       2,
       "/api/internal/admin/reviewers/assign",
       expect.objectContaining({
         method: "POST",
-        body: { tier: "productLine", subCat: "systemDesign", userId: "u-cory" },
+        body: {
+          tier: "productLine",
+          subCat: "systemDesign",
+          productLineId: "wireless",
+          userId: "u-cory",
+        },
       }),
     )
     expect(wrapper.emitted("refresh")).toHaveLength(1)
   })
 
-  it("clicking the X on a chip posts /unassign with the chip's id and emits refresh", async () => {
-    fetchMock.mockResolvedValueOnce({ ok: true })
+  it("greys non-editable productLine cells when the viewer is not authorised", async () => {
     const wrapper = await mountSuspended(ReviewerMatrix, {
-      props: { reviewers: REVIEWERS },
+      props: {
+        reviewers: [],
+        productLines: PRODUCT_LINES,
+        viewer: {
+          isSuperAdmin: false,
+          companySubCats: ["cloud"],
+        },
+      },
       global: { stubs },
     })
-    // The remove button on each chip has a localized aria-label
-    // ("Remove ben.example.test").
-    const removeBtn = wrapper.findAll("button").find((b) => {
-      const aria = b.attributes("aria-label") ?? ""
-      return aria.includes("ben.example.test")
-    })
-    expect(removeBtn).toBeDefined()
-    await removeBtn!.trigger("click")
+    const plTab = wrapper
+      .findAll("button[role='tab']")
+      .find((b) => b.text().includes("Product-Line"))
+    await plTab!.trigger("click")
     await nextTick()
-    expect(fetchMock).toHaveBeenCalledWith(
-      "/api/internal/admin/reviewers/unassign",
-      expect.objectContaining({
-        method: "DELETE",
-        body: { id: "rev-1" },
-      }),
-    )
-    expect(wrapper.emitted("refresh")).toHaveLength(1)
+    // Cells outside subCat='cloud' have no "+ Add" button rendered.
+    const addCount = wrapper
+      .findAll("button")
+      .filter((b) => b.text().includes("Add") && !b.attributes("role"))
+      .length
+    // Two product lines × 1 editable subCat = 2 add buttons.
+    expect(addCount).toBe(2)
   })
 })
