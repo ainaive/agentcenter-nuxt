@@ -112,3 +112,82 @@ Open follow-ups (not blocking):
   and `server/api/v1/extensions/[slug]/index.get.ts:24`
 - CLAUDE.md decision #12 (summary entry pointing here)
 - `docs/plan.md` §3 (schema additions) and `P21` status entry
+
+## Update 2026-06-08 — product-line dimension
+
+PR #41's matrix routed exclusively on `(tier × subCat)`. Reality at
+Naive is that the company is organised in **multiple product lines**
+(Wireless, Datacom, Terminals, Cloud), and each functional category
+inside each product line wants its own admin. The original matrix
+collapses all four lines onto one cell per subCat, which is the wrong
+unit of trust — a Wireless network specialist isn't the right reviewer
+for a Cloud network skill. The Product-Line tier therefore needs a
+third axis. The Company tier stays one admin per subCat — that level
+is intentionally cross-line.
+
+A second constraint surfaced at the same time: the company-tier admin
+of a given subCat is the right person to **pick the product-line
+admins** for that same subCat. The original `superAdmin`-only gate
+makes them ask a super-admin every time, which doesn't scale and
+doesn't reflect the org chart.
+
+Refinements (do not revoke the original four locked decisions; they
+remain accurate):
+
+- **Decision #1 refines**: routing key is `(tier × subCat × productLine?)`,
+  where `productLine` is required iff `tier='productLine'` and absent
+  otherwise. The reviewer matrix table widens to
+  `9 subCats × 1 Company + 9 subCats × 4 ProductLines = 45` cells.
+  `productLines` is a seeded lookup table (id, label_en, label_zh,
+  sort_order), kept as data rather than a code enum so adding a line
+  is a content migration. CHECK constraints on
+  `approval_reviewers`, `approval_requests`, and `extensions` enforce
+  the iff-rule at the boundary — repository and orchestrator code can
+  rely on it as a hard backstop.
+- **Decision #4 widens**: matrix edits remain super-admin-able anywhere,
+  but a **company-tier admin of subCat X may now manage productLine
+  cells of subCat X (any productLine)**. Company-tier cells stay
+  super-admin-only. The new `requireCellAdmin(event, cell)` helper
+  encodes the rule; `unassign.delete.ts` loads the target row first so
+  the gate authorises against the row's own coordinates rather than
+  the caller's request body.
+
+Implementation notes:
+
+- **Partial unique indexes over `NULLS NOT DISTINCT`** on
+  `approval_reviewers`: two indexes, one per tier, each carrying
+  exactly the columns that participate. This is clearer than one
+  unique index with quirky NULL semantics and lets each tier's arity
+  stand on its own in `\d`.
+- **`/api/v1` contract is unchanged.** `badge: ext.officialTier
+  ? "official" : ext.badge` already collapses tier away; productLineId
+  is intentionally suppressed at the same boundary. A future v2 break
+  could expose the tier + line; until then the CLI sees nothing new.
+- **`listReviewerQueue` dedup key** picks `productLineId ?? '∅'` for
+  the super-admin fan-out so a `(company, cloud, null)` cell can't
+  collide with `(productLine, cloud, '')` in the Set.
+
+What this gives up:
+
+- Single product line per extension. Multi-line endorsement would
+  require a `extension_official_product_lines` join table and is
+  rejected for v1 as additional surface area for a use case nobody has
+  asked for. A publisher who wants two endorsements submits two
+  separate requests; the latest approved one stamps the extension.
+- A non-super company admin can still grow the productLine reviewer
+  pool unbounded inside their subCat. We accept this — the trust
+  circle for "your own subCat" is small by construction.
+
+Cross-references for this update:
+
+- Migration: `drizzle/0009_last_naoko.sql`
+- New helpers: `server/utils/auth.ts` (`requireCellAdmin`),
+  `server/repositories/reviewers.ts` (`isCompanyAdminForSubCat`,
+  `listCompanySubCatsForUser`, `findReviewerById`).
+- New repo: `server/repositories/productLines.ts`
+- New endpoint: `server/api/internal/product-lines/index.get.ts`
+- UI: `app/components/approvals/ReviewerMatrix{,Company,ProductLine}.vue`,
+  `app/components/approvals/RequestOfficialDialog.vue`,
+  `app/components/filters/ProductLinePill.vue`, and the
+  `extensions.officialTier.productLineWith` i18n key consumed by
+  `app/components/extension/ExtHero.vue`.

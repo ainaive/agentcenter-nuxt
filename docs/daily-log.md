@@ -12,6 +12,22 @@ What changed each day. For the current capability list, see [features.md](./feat
 
 ## English
 
+### 2026-06-08
+
+**Briefing.** The official-tier approval workflow gains a product-line dimension. Product-Line Official is now per-line — Wireless / Datacom / Terminals / Cloud each get their own reviewer pool inside every functional category — and Company-tier admins of a given subCat can pick the Product-Line reviewers for that same subCat without a super-admin in the loop.
+
+<details>
+<summary>Details</summary>
+
+- **Per-product-line endorsements** — Applying for Product-Line Official now requires picking a product line. The reviewer matrix at `/admin/reviewers` splits into two tabs: Company stays a single column per subCat, Product-Line becomes a 9 × 4 grid (subCats × product lines). Detail-page badges read "Wireless Official" / "无线官方" instead of the generic Product-Line label. (#43)
+- **Delegated matrix edits** — Company-tier admins of subCat X can now manage the Product-Line reviewers for subCat X across every line, without escalating to a super-admin. Cells outside their subCat render greyed and read-only. Company-tier cells stay super-admin-only. (#43)
+- **Product-line filter on the browse rail** — When the tier filter is set to Product-Line, a compact product-line pill rail appears next to it on the same row, honouring the single-row quiet pill style. `?tier=productLine&productLineId=wireless` round-trips through SSR. (#43)
+- **`/api/v1` contract preserved** — Tier and product line are intentionally suppressed at the public-CLI boundary; `badge: "official"` still derives from `officialTier != null`. ADR-0001 picks up a dated addendum capturing the rationale for partial-unique indexes and the delegation rule. (#43)
+
+</details>
+
+---
+
 ### 2026-05-21
 
 **Briefing.** Today's release brings an editorial pass to the extension list and detail pages — cards simplify into preview rectangles with a single meta line, the filter rail collapses to a quiet single row with dismissible state chips, the detail-page hero gains a stronger anchor and a confident primary CTA, and every tab body now sits inside its own framed card.
@@ -132,6 +148,22 @@ What changed each day. For the current capability list, see [features.md](./feat
 ---
 
 ## 中文
+
+### 2026-06-08
+
+**简报。** 官方认证流程引入产品线维度。产品线官方现在按线划分（无线 / 数通 / 终端 / 云），每个产品线在每个功能分类下都有独立审核员；同一 subCat 下的公司级管理员可直接配置该 subCat 各产品线的审核员，无需找超级管理员。
+
+<details>
+<summary>详情</summary>
+
+- **按产品线认证** —— 申请产品线官方时必须选择产品线。`/admin/reviewers` 审核员矩阵拆为两个标签页：公司级仍是 subCat 单列，产品线级变为 9×4 网格（subCat × 产品线）。详情页徽章显示具体产品线，如"无线官方" / "Wireless Official"，不再是泛指的"产品线官方"。 (#43)
+- **代理矩阵编辑** —— subCat X 的公司级管理员现在可直接管理该 subCat 下所有产品线的审核员，无需超级管理员介入。其他 subCat 的单元呈灰色只读。公司级单元仍仅超级管理员可改。 (#43)
+- **浏览页加入产品线筛选** —— 当级别筛选选中"产品线"时，紧贴其右出现紧凑的产品线选择条，保持单行安静风格。`?tier=productLine&productLineId=wireless` 可在 SSR 中完整往返。 (#43)
+- **`/api/v1` 契约不变** —— 级别和产品线在公共 CLI 边界仍被刻意屏蔽，`badge: "official"` 仍由 `officialTier != null` 派生。ADR-0001 新增一则补遗，记录使用分区唯一索引（而非 `NULLS NOT DISTINCT`）以及代理授权规则的取舍。 (#43)
+
+</details>
+
+---
 
 ### 2026-05-21
 
