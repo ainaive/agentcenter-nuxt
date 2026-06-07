@@ -4,6 +4,7 @@ const CATEGORIES = ["skills", "mcp", "slash", "plugins"] as const;
 const SCOPES = ["personal", "org", "enterprise"] as const;
 const FUNC_CATS = ["workTask", "business", "tools"] as const;
 const FILTER_CHIPS = ["all", "trending", "new", "official", "free"] as const;
+const TIERS = ["unofficial", "productLine", "company"] as const;
 const SORTS = ["downloads", "stars", "recent"] as const;
 const TAG_MATCHES = ["any", "all"] as const;
 
@@ -26,6 +27,10 @@ export const filtersSchema = z.object({
   tags: z.array(z.string().trim().min(1).max(40)).max(16).optional(),
   tagMatch: z.enum(TAG_MATCHES).optional(),
   filter: z.enum(FILTER_CHIPS).optional(),
+  // Three-state official-tier filter: 'unofficial' | 'productLine' | 'company'.
+  // Separate from the legacy `filter=official` chip (which now means "any
+  // official tier"); `tier=` picks a specific cell.
+  tier: z.enum(TIERS).optional(),
   sort: z.enum(SORTS).optional(),
   page: z.coerce.number().int().min(1).max(1000).optional(),
 });

@@ -1,4 +1,4 @@
-import { and, desc, eq, ilike, inArray, like, or, sql, type SQL, type ExtractTablesWithRelations } from "drizzle-orm"
+import { and, desc, eq, ilike, inArray, isNotNull, isNull, like, or, sql, type SQL, type ExtractTablesWithRelations } from "drizzle-orm"
 import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core"
 
 import { MY_DEPT_ID } from "~~/shared/data/departments"
@@ -55,11 +55,21 @@ export function buildExtensionWhere(
       ? sql`${extensions.downloadsCount} > 50000`
       : undefined,
     filters.filter === "new" ? eq(extensions.badge, "new") : undefined,
+    // Legacy "official" chip = any official tier (productLine OR company).
+    // The new finer-grained `tier` filter clause runs alongside this one.
     filters.filter === "official"
-      ? eq(extensions.badge, "official")
+      ? isNotNull(extensions.officialTier)
       : undefined,
     filters.filter === "free"
       ? sql`${extensions.licenseSpdx} IS NOT NULL`
+      : undefined,
+
+    filters.tier === "unofficial" ? isNull(extensions.officialTier) : undefined,
+    filters.tier === "productLine"
+      ? eq(extensions.officialTier, "productLine")
+      : undefined,
+    filters.tier === "company"
+      ? eq(extensions.officialTier, "company")
       : undefined,
 
     filters.q

@@ -169,6 +169,13 @@
       "org": "Organization",
       "enterprise": "Enterprise"
     },
+    "tierLabel": "Official tier",
+    "tier": {
+      "all": "All tiers",
+      "unofficial": "Unofficial",
+      "productLine": "Product-Line",
+      "company": "Company"
+    },
     "chips": {
       "all": "All",
       "trending": "Trending",

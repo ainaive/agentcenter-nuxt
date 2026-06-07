@@ -11,7 +11,7 @@ interface RelatedRow {
   iconEmoji: string | null
   iconColor: string | null
   downloadsCount?: number
-  badge?: "official" | "popular" | "new" | null
+  officialTier?: "productLine" | "company" | null
   deptId?: string | null
   starsAvg?: string | null
 }
@@ -21,10 +21,9 @@ const props = defineProps<{ related: RelatedRow[] }>()
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
-const BADGE_CLASS = {
-  official: "badge-official",
-  popular: "badge-popular",
-  new: "badge-new",
+const TIER_CLASS = {
+  productLine: "badge-product-line",
+  company: "badge-company",
 } as const
 
 function labelFor(r: RelatedRow): string {
@@ -67,11 +66,11 @@ function ratingFor(r: RelatedRow): string | null {
                 {{ labelFor(r) }}
               </span>
               <span
-                v-if="r.badge"
+                v-if="r.officialTier"
                 class="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold"
-                :class="BADGE_CLASS[r.badge]"
+                :class="TIER_CLASS[r.officialTier]"
               >
-                {{ t(`extensions.badges.${r.badge}`) }}
+                {{ t(`extensions.officialTier.${r.officialTier}`) }}
               </span>
             </div>
             <div

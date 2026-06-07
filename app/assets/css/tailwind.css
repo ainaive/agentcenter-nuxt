@@ -87,4 +87,18 @@
   .mono .badge-official { background: oklch(20% 0 0); color: #ffffff; }
   .mono .badge-popular  { background: oklch(88% 0 0); color: oklch(22% 0 0); }
   .mono .badge-new      { background: oklch(92% 0 0); color: oklch(30% 0 0); }
+
+  /* Official-tier badges — per decision #11 these are neutral chips with
+     a left rule and bold weight, NOT accent fills. Product-Line carries a
+     soft outline; Company is solid ink to read as more authoritative. */
+  .badge-product-line {
+    background: transparent;
+    color: var(--color-ink);
+    border: 1px solid var(--color-ink);
+  }
+  .badge-company {
+    background: var(--color-ink);
+    color: var(--color-bg);
+    border: 1px solid var(--color-ink);
+  }
 }

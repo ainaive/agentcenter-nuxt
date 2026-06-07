@@ -169,6 +169,13 @@
       "org": "组织",
       "enterprise": "企业"
     },
+    "tierLabel": "官方级别",
+    "tier": {
+      "all": "全部级别",
+      "unofficial": "非官方",
+      "productLine": "产品线",
+      "company": "公司"
+    },
     "chips": {
       "all": "全部",
       "trending": "热门",

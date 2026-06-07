@@ -5,11 +5,14 @@ import type {
   FuncCatKey,
 } from "~~/shared/types"
 
+export type OfficialTier = "productLine" | "company"
+
 export interface ExtensionListItem {
   id: string
   slug: string
   category: ExtensionCategory
   badge: ExtensionBadge | null
+  officialTier: OfficialTier | null
   scope: ExtensionScope
   funcCat: FuncCatKey | null
   subCat: string | null

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Download, Star } from "lucide-vue-next"
-import type { ExtensionBadge, Locale } from "~~/shared/types"
+import type { Locale } from "~~/shared/types"
 import { deptPath } from "~~/shared/data/departments"
 
 const props = defineProps<{
@@ -9,7 +9,7 @@ const props = defineProps<{
   description: string | null
   iconEmoji: string | null
   iconColor: string | null
-  badge: ExtensionBadge | null
+  officialTier: "productLine" | "company" | null
   starsAvg: string
   downloadsCount: number
   updatedAt: string | null
@@ -19,10 +19,9 @@ const props = defineProps<{
 
 const { t, locale } = useI18n()
 
-const BADGE_CLASS = {
-  official: "badge-official",
-  popular: "badge-popular",
-  new: "badge-new",
+const TIER_CLASS = {
+  productLine: "badge-product-line",
+  company: "badge-company",
 } as const
 
 const deptTrail = computed(() =>
@@ -72,11 +71,11 @@ const updatedRelative = computed(() => {
         <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
           <h1 class="font-serif text-4xl tracking-tight text-(--color-ink)">{{ name }}</h1>
           <span
-            v-if="badge"
+            v-if="officialTier"
             class="rounded px-1.5 py-0.5 text-[11px] font-semibold"
-            :class="BADGE_CLASS[badge]"
+            :class="TIER_CLASS[officialTier]"
           >
-            {{ t(`extensions.badges.${badge}`) }}
+            {{ t(`extensions.officialTier.${officialTier}`) }}
           </span>
         </div>
         <p
