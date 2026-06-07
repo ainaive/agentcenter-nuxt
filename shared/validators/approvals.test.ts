@@ -94,13 +94,13 @@ describe("SubmitApprovalSchema", () => {
 })
 
 describe("DecideApprovalSchema", () => {
-  it("parses an approve with no note", () => {
+  it("parses an approve (no note key in the output)", () => {
     expect(
       DecideApprovalSchema.parse({
         requestId: "req_1",
         decision: "approve",
       }),
-    ).toEqual({ requestId: "req_1", decision: "approve", note: undefined })
+    ).toEqual({ requestId: "req_1", decision: "approve" })
   })
 
   it("parses a reject with a note", () => {
@@ -109,7 +109,22 @@ describe("DecideApprovalSchema", () => {
       decision: "reject",
       note: "Needs a maintainer.",
     })
-    expect(parsed.note).toBe("Needs a maintainer.")
+    expect(parsed).toMatchObject({
+      requestId: "req_1",
+      decision: "reject",
+      note: "Needs a maintainer.",
+    })
+  })
+
+  it("parses a reject without a note", () => {
+    const parsed = DecideApprovalSchema.parse({
+      requestId: "req_1",
+      decision: "reject",
+    })
+    expect(parsed).toMatchObject({
+      requestId: "req_1",
+      decision: "reject",
+    })
   })
 
   it("rejects an unknown decision value", () => {

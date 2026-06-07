@@ -282,6 +282,39 @@ describe("approvals repository", () => {
       expect(after?.status).toBe("rejected")
       expect(after?.reviewerNote).toBe("Needs a maintainer.")
     })
+
+    it("returns 0 affected rows when the request is no longer pending (race lost)", async () => {
+      await approvalsRepo.insertRequest(db, {
+        id: "req-1",
+        extensionId: "ext-a",
+        requestedTier: "company",
+        subCat: "softDev",
+        requestedByUserId: "u-pub",
+        reason: null,
+      })
+      // First reviewer's UPDATE lands the decision.
+      const first = await approvalsRepo.applyDecision(db, "req-1", {
+        status: "approved",
+        decidedByUserId: "u-rev",
+        decidedAt: new Date(),
+        reviewerNote: null,
+      })
+      expect(first).toBe(1)
+
+      // Second reviewer's UPDATE filters out — the WHERE clause requires
+      // status='pending' and the row is now approved.
+      const second = await approvalsRepo.applyDecision(db, "req-1", {
+        status: "rejected",
+        decidedByUserId: "u-other-rev",
+        decidedAt: new Date(),
+        reviewerNote: null,
+      })
+      expect(second).toBe(0)
+
+      const after = await approvalsRepo.findById(db, "req-1")
+      expect(after?.status).toBe("approved")
+      expect(after?.decidedByUserId).toBe("u-rev")
+    })
   })
 
   describe("applyWithdraw", () => {
@@ -295,11 +328,35 @@ describe("approvals repository", () => {
         reason: null,
       })
       const at = new Date("2026-06-07T12:00:00Z")
-      await approvalsRepo.applyWithdraw(db, "req-1", at)
+      const affected = await approvalsRepo.applyWithdraw(db, "req-1", at)
+      expect(affected).toBe(1)
       const after = await approvalsRepo.findById(db, "req-1")
       expect(after?.status).toBe("withdrawn")
       expect(after?.decidedAt?.toISOString()).toBe(at.toISOString())
       expect(after?.decidedByUserId).toBeNull()
+    })
+
+    it("returns 0 affected rows for a request that's already decided", async () => {
+      await approvalsRepo.insertRequest(db, {
+        id: "req-1",
+        extensionId: "ext-a",
+        requestedTier: "productLine",
+        subCat: "softDev",
+        requestedByUserId: "u-pub",
+        reason: null,
+      })
+      await approvalsRepo.applyDecision(db, "req-1", {
+        status: "approved",
+        decidedByUserId: "u-rev",
+        decidedAt: new Date(),
+        reviewerNote: null,
+      })
+      const affected = await approvalsRepo.applyWithdraw(
+        db,
+        "req-1",
+        new Date(),
+      )
+      expect(affected).toBe(0)
     })
   })
 

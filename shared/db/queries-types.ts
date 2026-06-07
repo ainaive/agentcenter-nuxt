@@ -1,3 +1,4 @@
+import type { OfficialTier } from "~~/shared/approvals/state"
 import type {
   ExtensionBadge,
   ExtensionCategory,
@@ -5,7 +6,7 @@ import type {
   FuncCatKey,
 } from "~~/shared/types"
 
-export type OfficialTier = "productLine" | "company"
+export type { OfficialTier }
 
 export interface ExtensionListItem {
   id: string

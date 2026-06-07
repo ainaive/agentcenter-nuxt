@@ -16,7 +16,7 @@ const emit = defineEmits<{
   (e: "submitted"): void
 }>()
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 
 const open = ref(false)
 const tier = ref<Tier>("productLine")
@@ -60,10 +60,13 @@ async function handleSubmit(e: Event) {
       err && typeof err === "object" && "statusMessage" in err
         ? String((err as { statusMessage: unknown }).statusMessage)
         : null
+    // `t(key, fallback)` doesn't fall back — vue-i18n's second arg is
+    // interpolation values, not a default. Probe with `te()` before
+    // looking up the per-code message, otherwise surface the generic
+    // copy.
+    const key = status ? `approvals.errors.${status}` : null
     error.value =
-      status && status.length > 0
-        ? t(`approvals.errors.${status}`, t("approvals.errors.generic"))
-        : t("approvals.errors.generic")
+      key && te(key) ? t(key) : t("approvals.errors.generic")
   } finally {
     busy.value = false
   }

@@ -5,13 +5,12 @@ import { FUNC_TAXONOMY } from "~~/shared/taxonomy"
 // SubCat = the l1 leaf inside FUNC_TAXONOMY (e.g. "systemDesign",
 // "softDev", "network", "embedded"). Flatten at module load so the
 // validator runs O(1) without re-traversing the constant on each call.
+// `SUB_CAT_KEY_LIST` is derived from the Set so the two stay in sync.
 const SUB_CAT_KEYS = new Set<string>(
   FUNC_TAXONOMY.flatMap((c) => c.l1.map((s) => s.key)),
 )
 
-export const SUB_CAT_KEY_LIST: readonly string[] = [
-  ...FUNC_TAXONOMY.flatMap((c) => c.l1.map((s) => s.key)),
-]
+export const SUB_CAT_KEY_LIST: readonly string[] = [...SUB_CAT_KEYS]
 
 export const OfficialTier = z.enum(["productLine", "company"])
 export type OfficialTier = z.infer<typeof OfficialTier>
@@ -39,11 +38,21 @@ export const SubmitApprovalSchema = z.object({
 })
 export type SubmitApprovalInput = z.infer<typeof SubmitApprovalSchema>
 
-export const DecideApprovalSchema = z.object({
-  requestId: z.string().trim().min(1),
-  decision: z.enum(["approve", "reject"]),
-  note: optionalText(APPROVAL_NOTE_MAX),
-})
+// Discriminated union: a reviewer note only makes sense on a rejection.
+// The orchestrator drops any note sent with an approve action anyway —
+// making that explicit at the API boundary catches the mistake before
+// it crosses the wire instead of silently after.
+export const DecideApprovalSchema = z.discriminatedUnion("decision", [
+  z.object({
+    requestId: z.string().trim().min(1),
+    decision: z.literal("approve"),
+  }),
+  z.object({
+    requestId: z.string().trim().min(1),
+    decision: z.literal("reject"),
+    note: optionalText(APPROVAL_NOTE_MAX),
+  }),
+])
 export type DecideApprovalInput = z.infer<typeof DecideApprovalSchema>
 
 export const WithdrawApprovalSchema = z.object({

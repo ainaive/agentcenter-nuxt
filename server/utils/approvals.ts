@@ -131,8 +131,17 @@ export async function decideRequest(
     now: new Date(),
   })
 
+  // Optimistic locking lives inside the repository's UPDATE — if a second
+  // reviewer decided between the pre-check above and this transaction, the
+  // affected row count comes back zero and we surface the race as
+  // `request_not_pending`.
   await db.transaction(async (tx) => {
-    await approvalsRepo.applyDecision(tx, params.requestId, outcome.request)
+    const updated = await approvalsRepo.applyDecision(
+      tx,
+      params.requestId,
+      outcome.request,
+    )
+    if (updated === 0) throw new ApprovalError("request_not_pending")
     if (outcome.extension) {
       await approvalsRepo.setExtensionOfficialTier(
         tx,
@@ -181,11 +190,12 @@ export async function withdrawRequest(
     current: { status: current.status },
     now: new Date(),
   })
-  await approvalsRepo.applyWithdraw(
-    useDb(),
+  const affected = await approvalsRepo.applyWithdraw(
+    db,
     params.requestId,
     outcome.request.decidedAt,
   )
+  if (affected === 0) throw new ApprovalError("request_not_pending")
 
   const updated = await approvalsRepo.findById(db, params.requestId)
   if (!updated) throw new Error("approval request vanished mid-withdraw")

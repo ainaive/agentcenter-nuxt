@@ -17,12 +17,16 @@ export default defineEventHandler(async (event) => {
   )
 
   try {
+    // The discriminated union narrows `body` to the right branch — the
+    // approve branch carries no `note`, so the orchestrator's action
+    // mirrors the schema shape verbatim.
+    const action =
+      body.decision === "approve"
+        ? { decision: "approve" as const }
+        : { decision: "reject" as const, note: body.note }
     const row = await decideRequest({
       requestId: body.requestId,
-      action:
-        body.decision === "approve"
-          ? { decision: "approve" }
-          : { decision: "reject", note: body.note },
+      action,
       reviewerUserId: user.id,
     })
     return { ok: true, request: row }

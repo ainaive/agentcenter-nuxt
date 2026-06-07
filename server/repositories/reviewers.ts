@@ -1,5 +1,6 @@
 import { and, asc, eq } from "drizzle-orm"
 
+import type { OfficialTier } from "~~/shared/approvals/state"
 import {
   approvalReviewers,
   memberships,
@@ -12,7 +13,7 @@ import type { Transactable } from "./types"
 // (tier × subCat) → list of users assigned to decide on that cell.
 // Also exposes the super-admin lookup used by the admin guards.
 
-export type OfficialTier = "productLine" | "company"
+export type { OfficialTier }
 
 export interface ReviewerRow {
   id: string

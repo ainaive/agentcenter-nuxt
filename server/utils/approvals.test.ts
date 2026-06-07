@@ -212,6 +212,9 @@ describe("decideRequest", () => {
     vi.mocked(approvalsRepo.findById).mockResolvedValue(PENDING_ROW)
     vi.mocked(reviewersRepo.isSuperAdmin).mockResolvedValue(false)
     vi.mocked(approvalsRepo.isReviewerForCell).mockResolvedValue(true)
+    // Default the optimistic-locking return to 1 (success). Tests that
+    // exercise the race-loss path override this to 0.
+    vi.mocked(approvalsRepo.applyDecision).mockResolvedValue(1)
   })
 
   it("approves: stamps the request and the extension tier on the tx", async () => {
@@ -318,9 +321,31 @@ describe("decideRequest", () => {
       }),
     ).rejects.toMatchObject({ code: "request_not_pending" })
   })
+
+  it("throws request_not_pending when the optimistic-lock UPDATE affects zero rows (race lost)", async () => {
+    // Pre-check sees pending; a concurrent reviewer commits between the
+    // pre-check and the orchestrator's transaction; the repo's WHERE
+    // clause filters us out and `applyDecision` returns 0.
+    vi.mocked(approvalsRepo.findById).mockResolvedValue(PENDING_ROW)
+    vi.mocked(approvalsRepo.applyDecision).mockResolvedValue(0)
+
+    await expect(
+      decideRequest({
+        requestId: "req-1",
+        action: { decision: "approve" },
+        reviewerUserId: "u-rev",
+      }),
+    ).rejects.toMatchObject({ code: "request_not_pending" })
+    expect(approvalsRepo.setExtensionOfficialTier).not.toHaveBeenCalled()
+    expect(sendEvent).not.toHaveBeenCalled()
+  })
 })
 
 describe("withdrawRequest", () => {
+  beforeEach(() => {
+    vi.mocked(approvalsRepo.applyWithdraw).mockResolvedValue(1)
+  })
+
   it("flips the request to withdrawn when the publisher owns it and it's pending", async () => {
     vi.mocked(approvalsRepo.findById)
       .mockResolvedValueOnce(PENDING_ROW)
@@ -332,6 +357,15 @@ describe("withdrawRequest", () => {
       "req-1",
       expect.any(Date),
     )
+  })
+
+  it("throws request_not_pending when the optimistic-lock UPDATE affects zero rows", async () => {
+    vi.mocked(approvalsRepo.findById).mockResolvedValue(PENDING_ROW)
+    vi.mocked(approvalsRepo.applyWithdraw).mockResolvedValue(0)
+
+    await expect(
+      withdrawRequest({ requestId: "req-1", userId: "u-pub" }),
+    ).rejects.toMatchObject({ code: "request_not_pending" })
   })
 
   it("throws not_requester when a different user tries to withdraw", async () => {

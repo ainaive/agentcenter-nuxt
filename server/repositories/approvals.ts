@@ -1,5 +1,9 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm"
 
+import type {
+  ApprovalStatus,
+  OfficialTier,
+} from "~~/shared/approvals/state"
 import {
   approvalRequests,
   approvalReviewers,
@@ -10,9 +14,10 @@ import type { Transactable } from "./types"
 
 // `approval_requests` table accessor. Used by the approval orchestrator to
 // drive the publisher submit / reviewer decide / publisher withdraw flow.
+// `ApprovalStatus` and `OfficialTier` are re-exported so callers that
+// already depend on the repository module don't need a second import.
 
-export type ApprovalStatus = "pending" | "approved" | "rejected" | "withdrawn"
-export type OfficialTier = "productLine" | "company"
+export type { ApprovalStatus, OfficialTier }
 
 export interface ApprovalRequestRow {
   id: string
@@ -57,8 +62,10 @@ export async function insertRequest(
   db: Transactable,
   row: InsertApprovalRequest,
 ): Promise<ApprovalRequestRow> {
-  await db.insert(approvalRequests).values(row)
-  const created = await findById(db, row.id)
+  const [created] = await db
+    .insert(approvalRequests)
+    .values(row)
+    .returning(fullSelect)
   if (!created) throw new Error("approval request insert vanished")
   return created
 }
@@ -161,26 +168,47 @@ export interface DecidePatch {
   reviewerNote: string | null
 }
 
+// Optimistic-locking variant: only updates a request that's still pending.
+// Returns the number of affected rows so the orchestrator can detect a
+// race (a second reviewer that committed between the orchestrator's
+// pre-check and this UPDATE) and surface it as `request_not_pending`.
 export async function applyDecision(
   db: Transactable,
   id: string,
   patch: DecidePatch,
-): Promise<void> {
-  await db
+): Promise<number> {
+  const updated = await db
     .update(approvalRequests)
     .set({ ...patch, updatedAt: new Date() })
-    .where(eq(approvalRequests.id, id))
+    .where(
+      and(
+        eq(approvalRequests.id, id),
+        eq(approvalRequests.status, "pending"),
+      ),
+    )
+    .returning({ id: approvalRequests.id })
+  return updated.length
 }
 
+// Same optimistic-locking shape as `applyDecision` — only a pending
+// request can be withdrawn, and the affected row count tells the caller
+// whether the transition actually fired.
 export async function applyWithdraw(
   db: Transactable,
   id: string,
   decidedAt: Date,
-): Promise<void> {
-  await db
+): Promise<number> {
+  const updated = await db
     .update(approvalRequests)
     .set({ status: "withdrawn", decidedAt, updatedAt: new Date() })
-    .where(eq(approvalRequests.id, id))
+    .where(
+      and(
+        eq(approvalRequests.id, id),
+        eq(approvalRequests.status, "pending"),
+      ),
+    )
+    .returning({ id: approvalRequests.id })
+  return updated.length
 }
 
 // Companion mutator for the approve path — stamps `officialTier` on the

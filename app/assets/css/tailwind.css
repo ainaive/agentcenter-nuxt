@@ -88,17 +88,20 @@
   .mono .badge-popular  { background: oklch(88% 0 0); color: oklch(22% 0 0); }
   .mono .badge-new      { background: oklch(92% 0 0); color: oklch(30% 0 0); }
 
-  /* Official-tier badges — per decision #11 these are neutral chips with
-     a left rule and bold weight, NOT accent fills. Product-Line carries a
-     soft outline; Company is solid ink to read as more authoritative. */
+  /* Official-tier badges — per decision #11 these are neutral chips
+     (no accent fill). Product-Line is outlined; Company is filled with
+     ink to read as more authoritative. Weight lives here so the styling
+     is self-contained — callers don't have to remember `font-semibold`. */
   .badge-product-line {
     background: transparent;
     color: var(--color-ink);
     border: 1px solid var(--color-ink);
+    font-weight: 600;
   }
   .badge-company {
     background: var(--color-ink);
     color: var(--color-bg);
     border: 1px solid var(--color-ink);
+    font-weight: 600;
   }
 }
