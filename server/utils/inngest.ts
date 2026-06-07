@@ -12,7 +12,15 @@ let _functions: ReturnType<typeof loadFunctions> | undefined
 async function loadFunctions() {
   const { scanBundle } = await import("./jobs/scan-bundle")
   const { reindexSearch } = await import("./jobs/reindex-search")
-  return [scanBundle, reindexSearch]
+  const { notifyApprovalRequested, notifyApprovalDecided } = await import(
+    "./jobs/notify-approval"
+  )
+  return [
+    scanBundle,
+    reindexSearch,
+    notifyApprovalRequested,
+    notifyApprovalDecided,
+  ]
 }
 
 export async function getInngestFunctions() {

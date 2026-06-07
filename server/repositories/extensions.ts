@@ -26,6 +26,7 @@ const listSelect = {
   slug: extensions.slug,
   category: extensions.category,
   badge: extensions.badge,
+  officialTier: extensions.officialTier,
   scope: extensions.scope,
   funcCat: extensions.funcCat,
   subCat: extensions.subCat,
@@ -49,6 +50,7 @@ const detailSelect = {
   slug: extensions.slug,
   category: extensions.category,
   badge: extensions.badge,
+  officialTier: extensions.officialTier,
   scope: extensions.scope,
   funcCat: extensions.funcCat,
   subCat: extensions.subCat,
@@ -88,6 +90,7 @@ const relatedSelect = {
   iconColor: extensions.iconColor,
   downloadsCount: extensions.downloadsCount,
   badge: extensions.badge,
+  officialTier: extensions.officialTier,
   deptId: extensions.deptId,
   starsAvg: extensions.starsAvg,
 }

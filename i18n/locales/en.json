@@ -130,6 +130,11 @@
       "official": "Official",
       "popular": "Popular",
       "new": "New"
+    },
+    "officialTier": {
+      "unofficial": "Unofficial",
+      "productLine": "Product-Line Official",
+      "company": "Company Official"
     }
   },
   "sidebar": {
@@ -163,6 +168,13 @@
       "personal": "Personal",
       "org": "Organization",
       "enterprise": "Enterprise"
+    },
+    "tierLabel": "Official tier",
+    "tier": {
+      "all": "All tiers",
+      "unofficial": "Unofficial",
+      "productLine": "Product-Line",
+      "company": "Company"
     },
     "chips": {
       "all": "All",
@@ -466,6 +478,7 @@
       "saved": "Saved",
       "collections": "Collections",
       "activity": "Activity",
+      "requests": "Requests",
       "settings": "Settings"
     },
     "settings": {
@@ -522,6 +535,82 @@
       "unauthenticated": "Please sign in again.",
       "invalid_input": "Some fields need attention.",
       "generic": "We couldn't save your profile. Please try again."
+    }
+  },
+  "admin": {
+    "approvals": {
+      "title": "Approval queue",
+      "subtitle": "Pending requests in the cells you review.",
+      "loading": "Loading queue…",
+      "empty": "No pending requests in your assigned cells.",
+      "requestedOn": "Requested {date}",
+      "approve": "Approve",
+      "reject": "Reject",
+      "cancel": "Cancel",
+      "confirmReject": "Confirm reject",
+      "rejectNotePlaceholder": "Reason shown to the publisher (optional)"
+    },
+    "reviewers": {
+      "title": "Reviewer matrix",
+      "subtitle": "Assign reviewers to each (tier × functional category) cell.",
+      "loading": "Loading matrix…",
+      "matrix": {
+        "subCatColumn": "Category",
+        "add": "Add",
+        "addTitle": "Add a reviewer",
+        "addSubtitle": "Assign someone to review {tier} requests for {subCat}.",
+        "emailLabel": "User email",
+        "emailPlaceholder": "Email address",
+        "noSuchUser": "No user with that email — ask them to sign in once before assigning.",
+        "genericError": "Couldn't add the reviewer. Please try again.",
+        "removeAria": "Remove {user}",
+        "cancel": "Cancel",
+        "confirmAdd": "Add reviewer"
+      }
+    }
+  },
+  "approvals": {
+    "applyForOfficial": "Apply for official",
+    "pendingFor": "Awaiting {tier} review",
+    "withdraw": "Withdraw",
+    "requestedOn": "Requested {date}",
+    "decidedOn": "Decided {date}",
+    "reviewerNote": "Reviewer note",
+    "gotoPublish": "Go to publish dashboard",
+    "tier": {
+      "productLine": "Product-Line",
+      "company": "Company"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "withdrawn": "Withdrawn"
+    },
+    "dialog": {
+      "title": "Apply for official status",
+      "subtitle": "Elevate \"{name}\" by sending it for review.",
+      "tierLabel": "Target tier",
+      "tierProductLineDesc": "Reviewed at the product line.",
+      "tierCompanyDesc": "Reviewed at the company level.",
+      "subCatLabel": "Functional category",
+      "subCatPlaceholder": "Pick a category…",
+      "subCatHint": "This extension has no category set yet — choose one for the reviewer.",
+      "reasonLabel": "Reason (optional)",
+      "reasonPlaceholder": "Why is this extension a good candidate?",
+      "cancel": "Cancel",
+      "submit": "Submit request"
+    },
+    "emptyRequests": {
+      "title": "No approval requests yet",
+      "body": "When you apply for official status from the publish dashboard, your requests show up here."
+    },
+    "errors": {
+      "generic": "Couldn't submit. Please try again.",
+      "extension_not_found": "That extension no longer exists.",
+      "not_publisher_owner": "Only the publisher can request elevation.",
+      "extension_not_published": "Publish the extension before requesting elevation.",
+      "duplicate_pending_request": "You already have a pending request for this extension."
     }
   },
   "cliAuth": {

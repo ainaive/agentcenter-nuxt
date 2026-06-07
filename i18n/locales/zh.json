@@ -130,6 +130,11 @@
       "official": "官方",
       "popular": "热门",
       "new": "新"
+    },
+    "officialTier": {
+      "unofficial": "非官方",
+      "productLine": "产品线官方",
+      "company": "公司官方"
     }
   },
   "sidebar": {
@@ -163,6 +168,13 @@
       "personal": "个人",
       "org": "组织",
       "enterprise": "企业"
+    },
+    "tierLabel": "官方级别",
+    "tier": {
+      "all": "全部级别",
+      "unofficial": "非官方",
+      "productLine": "产品线",
+      "company": "公司"
     },
     "chips": {
       "all": "全部",
@@ -466,6 +478,7 @@
       "saved": "收藏",
       "collections": "合集",
       "activity": "动态",
+      "requests": "申请",
       "settings": "设置"
     },
     "settings": {
@@ -522,6 +535,82 @@
       "unauthenticated": "请重新登录。",
       "invalid_input": "部分字段需要修正。",
       "generic": "无法保存资料，请重试。"
+    }
+  },
+  "admin": {
+    "approvals": {
+      "title": "审核队列",
+      "subtitle": "你负责审核的分类中的待处理申请。",
+      "loading": "加载中…",
+      "empty": "你的审核分类暂无待处理申请。",
+      "requestedOn": "提交于 {date}",
+      "approve": "通过",
+      "reject": "驳回",
+      "cancel": "取消",
+      "confirmReject": "确认驳回",
+      "rejectNotePlaceholder": "驳回原因（可选，会展示给申请者）"
+    },
+    "reviewers": {
+      "title": "审核员矩阵",
+      "subtitle": "为每个（级别 × 功能分类）单元分配审核员。",
+      "loading": "加载矩阵…",
+      "matrix": {
+        "subCatColumn": "分类",
+        "add": "添加",
+        "addTitle": "添加审核员",
+        "addSubtitle": "为「{subCat}」类别的「{tier}」申请指派审核员。",
+        "emailLabel": "用户邮箱",
+        "emailPlaceholder": "邮箱地址",
+        "noSuchUser": "找不到该邮箱对应的用户 — 请让对方先登录一次再分配。",
+        "genericError": "添加失败，请重试。",
+        "removeAria": "移除 {user}",
+        "cancel": "取消",
+        "confirmAdd": "添加审核员"
+      }
+    }
+  },
+  "approvals": {
+    "applyForOfficial": "申请官方认证",
+    "pendingFor": "{tier}审核中",
+    "withdraw": "撤回",
+    "requestedOn": "提交于 {date}",
+    "decidedOn": "审核于 {date}",
+    "reviewerNote": "审核意见",
+    "gotoPublish": "前往发布工作台",
+    "tier": {
+      "productLine": "产品线",
+      "company": "公司"
+    },
+    "status": {
+      "pending": "待审核",
+      "approved": "已通过",
+      "rejected": "已驳回",
+      "withdrawn": "已撤回"
+    },
+    "dialog": {
+      "title": "申请官方认证",
+      "subtitle": "为「{name}」提交官方认证审核。",
+      "tierLabel": "目标级别",
+      "tierProductLineDesc": "由产品线管理员审核。",
+      "tierCompanyDesc": "由公司管理员审核。",
+      "subCatLabel": "功能分类",
+      "subCatPlaceholder": "请选择分类…",
+      "subCatHint": "该扩展尚未设置分类 — 请为审核选择一个。",
+      "reasonLabel": "申请理由（可选）",
+      "reasonPlaceholder": "为什么这是合适的官方扩展？",
+      "cancel": "取消",
+      "submit": "提交申请"
+    },
+    "emptyRequests": {
+      "title": "暂无认证申请",
+      "body": "在发布工作台申请官方认证后，记录会显示在这里。"
+    },
+    "errors": {
+      "generic": "提交失败，请重试。",
+      "extension_not_found": "该扩展已不存在。",
+      "not_publisher_owner": "只有发布者本人可以申请提级。",
+      "extension_not_published": "请先发布扩展再申请认证。",
+      "duplicate_pending_request": "该扩展已有待审核的申请。"
     }
   },
   "cliAuth": {

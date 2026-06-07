@@ -9,10 +9,9 @@ const props = defineProps<{ ext: ExtensionListItem }>()
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
-const BADGE_CLASS = {
-  official: "badge-official",
-  popular: "badge-popular",
-  new: "badge-new",
+const TIER_CLASS = {
+  productLine: "badge-product-line",
+  company: "badge-company",
 } as const
 
 const name = computed(() =>
@@ -74,11 +73,11 @@ const ratingLabel = computed(() => {
           {{ name }}
         </NuxtLink>
         <span
-          v-if="ext.badge"
+          v-if="ext.officialTier"
           class="shrink-0 rounded px-1.5 py-0.5 text-[11px] font-semibold"
-          :class="BADGE_CLASS[ext.badge]"
+          :class="TIER_CLASS[ext.officialTier]"
         >
-          {{ t(`extensions.badges.${ext.badge}`) }}
+          {{ t(`extensions.officialTier.${ext.officialTier}`) }}
         </span>
       </div>
     </div>

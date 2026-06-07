@@ -27,6 +27,7 @@ export default defineVitestConfig({
         "shared/search/**",
         "shared/extensions/**",
         "shared/installs/**",
+        "shared/approvals/**",
         "shared/tags.ts",
         "shared/taxonomy.ts",
         "shared/theme.ts",
@@ -35,6 +36,7 @@ export default defineVitestConfig({
         "app/composables/useTheme.ts",
         "server/utils/extensions-state.ts",
         "server/utils/installs.ts",
+        "server/utils/approvals.ts",
       ],
       exclude: [
         "**/*.test.ts",
@@ -58,6 +60,7 @@ export default defineVitestConfig({
         "shared/search/**":       { lines: 95, branches: 87, functions: 95, statements: 95 },
         "shared/extensions/**":   { lines: 95, branches: 90, functions: 95, statements: 95 },
         "shared/installs/**":     { lines: 95, branches: 90, functions: 95, statements: 95 },
+        "shared/approvals/**":    { lines: 95, branches: 90, functions: 95, statements: 95 },
         "shared/tags.ts":         { lines: 95, branches: 90, functions: 95, statements: 95 },
         "shared/taxonomy.ts":     { lines: 95, branches: 90, functions: 95, statements: 95 },
         "shared/theme.ts":        { lines: 95, branches: 90, functions: 95, statements: 95 },
@@ -67,6 +70,7 @@ export default defineVitestConfig({
         // through it isn't; pair with a follow-up case.
         "server/utils/extensions-state.ts": { lines: 95, branches: 90, functions: 95, statements: 95 },
         "server/utils/installs.ts":         { lines: 95, branches: 85, functions: 95, statements: 95 },
+        "server/utils/approvals.ts":        { lines: 95, branches: 85, functions: 95, statements: 95 },
         // Tested composables. useFilters has unexercised null-element
         // branches; usePublishWizard's `markBundleUploaded` and a few
         // jumpTo paths skew the function/statement %. These are realistic

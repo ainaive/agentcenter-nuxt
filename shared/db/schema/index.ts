@@ -4,3 +4,4 @@ export * from "./extension";
 export * from "./collection";
 export * from "./activity";
 export * from "./mcp-landscape";
+export * from "./approval";

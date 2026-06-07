@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import type { H3Event } from "h3"
 
+import { isSuperAdmin } from "~~/server/repositories/reviewers"
 import {
   accounts,
   sessions,
@@ -81,6 +82,19 @@ export async function requireUser(event: H3Event): Promise<SessionUser> {
   const user = await getSessionUser(event)
   if (!user) {
     throw createError({ statusCode: 401, statusMessage: "Unauthenticated" })
+  }
+  return user
+}
+
+// Super-admin gate for the reviewer-matrix admin surface. Returns the
+// session user when they hold any membership with role='superAdmin';
+// throws 401 when unauthenticated and 403 otherwise. The membership
+// lookup goes through the reviewers repo so the policy lives in one
+// place — see `server/repositories/reviewers.ts`.
+export async function requireSuperAdmin(event: H3Event): Promise<SessionUser> {
+  const user = await requireUser(event)
+  if (!(await isSuperAdmin(useDb(), user.id))) {
+    throw createError({ statusCode: 403, statusMessage: "Forbidden" })
   }
   return user
 }

@@ -38,6 +38,11 @@ export interface Extension {
   author: string
   category: ExtensionCategory
   badge: ExtensionBadge | null
+  // Optional seed-side stamp. Lets the dev seed pre-approve a handful of
+  // extensions so the new tier badge / filter rail has visible data on a
+  // fresh DB. Production rows pick this up from the approval workflow,
+  // never from this field.
+  officialTier?: "productLine" | "company" | null
   downloads: number
   stars: number
   color: string
@@ -123,6 +128,22 @@ export type ProfileActivityEvent =
   | { kind: "installed"; at: string; extensionId: string; slug: string; name: string; version: string }
   | { kind: "published"; at: string; extensionId: string; slug: string; name: string; version: string }
   | { kind: "rated"; at: string; extensionId: string; slug: string; name: string; stars: number }
+
+export interface ProfileRequestRow {
+  requestId: string
+  extensionId: string
+  slug: string
+  name: string
+  category: string
+  iconColor: string | null
+  requestedTier: "productLine" | "company"
+  subCat: string
+  status: "pending" | "approved" | "rejected" | "withdrawn"
+  reason: string | null
+  reviewerNote: string | null
+  createdAt: string
+  decidedAt: string | null
+}
 
 export interface ProfileCollectionRow {
   id: string

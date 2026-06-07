@@ -2,11 +2,18 @@ import { sql } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
 
+import { APPROVAL_REQUESTS } from "../shared/data/approval-requests"
+import {
+  APPROVAL_REVIEWERS,
+  DEFAULT_SUPER_ADMIN_EMAIL,
+} from "../shared/data/approval-reviewers"
 import { COLLECTIONS } from "../shared/data/collections"
 import { DEPARTMENTS } from "../shared/data/departments"
 import { EXTENSIONS } from "../shared/data/extensions"
 import * as schema from "../shared/db/schema"
 import {
+  approvalRequests,
+  approvalReviewers,
   collectionItems,
   collections,
   departments,
@@ -118,8 +125,13 @@ async function main() {
 
   console.log("seed: starting")
   console.log("seed: truncating catalog tables")
+  // Orgs + tags CASCADE through extensions and their dependents (versions,
+  // installs, ratings, extension_tags, approval_requests). approval_reviewers
+  // only cascades from `users` (which we don't truncate to preserve dev
+  // identities), so include it explicitly — otherwise a re-run hits the
+  // appr-rev-0 PK collision below.
   await db.execute(
-    sql`TRUNCATE TABLE ${organizations}, ${tags} RESTART IDENTITY CASCADE`,
+    sql`TRUNCATE TABLE ${organizations}, ${tags}, ${approvalReviewers} RESTART IDENTITY CASCADE`,
   )
 
   const authorOrgIdMap = new Map<string, string>()
@@ -173,6 +185,10 @@ async function main() {
       slug: slugify(e.name),
       category: e.category,
       badge: e.badge ?? null,
+      // Demo seed only. Production extensions earn officialTier through
+      // the approval workflow; the seed pre-stamps a handful so the new
+      // badge styling and filter pill have visible coverage on a fresh DB.
+      officialTier: e.officialTier ?? null,
       scope: e.scope,
       funcCat: e.funcCat,
       subCat: e.subCat,
@@ -201,7 +217,7 @@ async function main() {
     id: string
     userId: string
     orgId: string
-    role: "publisher"
+    role: "publisher" | "superAdmin"
   }[] = []
   for (const row of extRows) {
     const key = `${row.publisherUserId}|${row.ownerOrgId}`
@@ -214,8 +230,50 @@ async function main() {
       role: "publisher",
     })
   }
+
+  // Promote one user to super-admin so the /admin/reviewers matrix is
+  // reachable in dev. SEED_SUPER_ADMIN_EMAIL overrides the default.
+  const superAdminEmail =
+    process.env.SEED_SUPER_ADMIN_EMAIL ?? DEFAULT_SUPER_ADMIN_EMAIL
+  const superAdmin = CREATORS.find((u) => u.email === superAdminEmail)
+  if (superAdmin) {
+    membershipRows.push({
+      id: `mem-superadmin-${superAdmin.id}`,
+      userId: superAdmin.id,
+      orgId: ORG_ID,
+      role: "superAdmin",
+    })
+    console.log(`seed: promoting ${superAdmin.email} to superAdmin`)
+  } else {
+    console.warn(
+      `seed: SEED_SUPER_ADMIN_EMAIL=${superAdminEmail} did not match any creator — no super-admin seeded`,
+    )
+  }
   console.log(`seed: inserting ${membershipRows.length} memberships`)
   await db.insert(memberships).values(membershipRows)
+
+  // Reviewer matrix: every (tier, subCat) cell gets at least one
+  // assignment from APPROVAL_REVIEWERS. Emails that don't resolve to a
+  // creator are skipped with a warning so a typo doesn't break the seed.
+  const reviewerRows = APPROVAL_REVIEWERS.flatMap((r, i) => {
+    const reviewer = CREATORS.find((u) => u.email === r.reviewerEmail)
+    if (!reviewer) {
+      console.warn(
+        `seed: approval reviewer email ${r.reviewerEmail} did not match any creator — skipping`,
+      )
+      return []
+    }
+    return [
+      {
+        id: `appr-rev-${i}`,
+        tier: r.tier,
+        subCat: r.subCat,
+        userId: reviewer.id,
+      },
+    ]
+  })
+  console.log(`seed: inserting ${reviewerRows.length} approval reviewers`)
+  await db.insert(approvalReviewers).values(reviewerRows)
 
   const extTagRows = EXTENSIONS.flatMap((e) =>
     e.tags.map((tagKey) => ({
@@ -226,6 +284,106 @@ async function main() {
   console.log(`seed: inserting ${extTagRows.length} extension-tag links`)
   await db.insert(extensionTags).values(extTagRows)
 
+  // Email and slug → id maps shared by the approval-request block below
+  // and the editorial-collections block further down. Hoisted here so
+  // both sections look up against the same table.
+  const userIdByEmail = new Map(CREATORS.map((u) => [u.email, u.id]))
+  const extIdBySlug = new Map(extRows.map((r) => [r.slug, r.id]))
+
+  // Approval requests — a small spread covering every UI state. Pending
+  // rows light up the reviewer queue; the approved row also stamps the
+  // parent extension's officialTier so the publisher's view matches what
+  // the real workflow's transactional approve would have produced. NOTE:
+  // these rows are inserted directly, bypassing `submitRequest`, so no
+  // `extension/approval.requested` Inngest event fires for them — that's
+  // expected on a fresh seed and not a bug in the workflow.
+  const approvalRequestRows: {
+    id: string
+    extensionId: string
+    requestedTier: "productLine" | "company"
+    subCat: string
+    requestedByUserId: string
+    reason: string | null
+    status: "pending" | "approved" | "rejected"
+    decidedByUserId: string | null
+    decidedAt: Date | null
+    reviewerNote: string | null
+  }[] = []
+  const officialTierStamps: { extensionId: string; tier: "productLine" | "company" }[] = []
+  for (const [i, r] of APPROVAL_REQUESTS.entries()) {
+    const extensionId = extIdBySlug.get(r.extensionSlug)
+    if (!extensionId) {
+      console.warn(
+        `seed: approval request #${i} references unknown extension slug "${r.extensionSlug}" — skipping`,
+      )
+      continue
+    }
+    const publisherId = userIdByEmail.get(r.publisherEmail)
+    if (!publisherId) {
+      console.warn(
+        `seed: approval request #${i} references unknown publisher ${r.publisherEmail} — skipping`,
+      )
+      continue
+    }
+    let decidedByUserId: string | null = null
+    if (r.decidedByEmail) {
+      decidedByUserId = userIdByEmail.get(r.decidedByEmail) ?? null
+      if (!decidedByUserId) {
+        console.warn(
+          `seed: approval request #${i} references unknown decider ${r.decidedByEmail} — leaving decidedByUserId null`,
+        )
+      }
+    }
+    const isDecided = r.status === "approved" || r.status === "rejected"
+    // Defensive: the orchestrator enforces at-most-one-pending-per-extension
+    // at runtime; the seed must boot the marketplace in a state that already
+    // honors it. The current data file picks distinct extensions for the two
+    // pending rows, but a future edit could silently violate the invariant
+    // without this guard — skip with a warning instead.
+    if (
+      r.status === "pending" &&
+      approvalRequestRows.some(
+        (existing) =>
+          existing.extensionId === extensionId && existing.status === "pending",
+      )
+    ) {
+      console.warn(
+        `seed: approval request #${i} would be a second pending row for "${r.extensionSlug}" — skipping to preserve the at-most-one-pending invariant`,
+      )
+      continue
+    }
+    approvalRequestRows.push({
+      id: `appr-req-${i}`,
+      extensionId,
+      requestedTier: r.requestedTier,
+      subCat: r.subCat,
+      requestedByUserId: publisherId,
+      reason: r.reason ?? null,
+      status: r.status,
+      decidedByUserId,
+      decidedAt: isDecided ? new Date() : null,
+      reviewerNote: r.reviewerNote ?? null,
+    })
+    if (r.status === "approved") {
+      officialTierStamps.push({ extensionId, tier: r.requestedTier })
+    }
+  }
+  if (approvalRequestRows.length > 0) {
+    console.log(`seed: inserting ${approvalRequestRows.length} approval requests`)
+    await db.insert(approvalRequests).values(approvalRequestRows)
+  }
+  for (const stamp of officialTierStamps) {
+    await db
+      .update(extensions)
+      .set({ officialTier: stamp.tier })
+      .where(sql`${extensions.id} = ${stamp.extensionId}`)
+  }
+  if (officialTierStamps.length > 0) {
+    console.log(
+      `seed: stamped officialTier on ${officialTierStamps.length} extensions to match approved requests`,
+    )
+  }
+
   // Wipe and re-seed editorial public collections so the /collections browse
   // page has realistic material in dev/staging. CASCADE clears
   // collection_items as well. Anything a real signed-in user created
@@ -234,12 +392,8 @@ async function main() {
   console.log(`seed: re-seeding ${COLLECTIONS.length} editorial collections`)
   await db.execute(sql`TRUNCATE TABLE ${collections} CASCADE`)
 
-  // Resolve email → userId and slug → extensionId from the rows just
-  // inserted above, so the local seed shares the same lookup model as
-  // scripts/seed-editorial-collections.ts.
-  const userIdByEmail = new Map(CREATORS.map((u) => [u.email, u.id]))
-  const extIdBySlug = new Map(extRows.map((r) => [r.slug, r.id]))
-
+  // `userIdByEmail` and `extIdBySlug` are hoisted above the approval
+  // requests block so both sections share the same lookup tables.
   const now = new Date()
   const collectionRows = COLLECTIONS.map((c) => {
     const ownerId = userIdByEmail.get(c.ownerEmail)

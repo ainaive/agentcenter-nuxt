@@ -1,3 +1,4 @@
+import type { OfficialTier } from "~~/shared/approvals/state"
 import type {
   ExtensionBadge,
   ExtensionCategory,
@@ -5,11 +6,14 @@ import type {
   FuncCatKey,
 } from "~~/shared/types"
 
+export type { OfficialTier }
+
 export interface ExtensionListItem {
   id: string
   slug: string
   category: ExtensionCategory
   badge: ExtensionBadge | null
+  officialTier: OfficialTier | null
   scope: ExtensionScope
   funcCat: FuncCatKey | null
   subCat: string | null

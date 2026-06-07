@@ -380,6 +380,8 @@ export async function getMyExtensions(userId: string) {
       name: extensions.name,
       category: extensions.category,
       visibility: extensions.visibility,
+      subCat: extensions.subCat,
+      officialTier: extensions.officialTier,
       createdAt: extensions.createdAt,
       latestVersionId: extensionVersions.id,
       latestVersion: extensionVersions.version,

@@ -15,6 +15,9 @@ export const membershipRoleEnum = pgEnum("membership_role", [
   "viewer",
   "publisher",
   "admin",
+  // Super-admins can edit the approval reviewer matrix and decide on any
+  // approval request regardless of cell assignment. Seeded; not granted via UI.
+  "superAdmin",
 ]);
 
 export const organizations = pgTable("organizations", {

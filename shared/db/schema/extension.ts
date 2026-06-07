@@ -44,6 +44,14 @@ export const extensionBadgeEnum = pgEnum("extension_badge", [
   "new",
 ]);
 
+// Official-tier approval outcome. Null = unofficial (the default for any
+// publisher-uploaded extension). Owned by the approval workflow — app code
+// outside server/utils/approvals.ts MUST NOT write this column directly.
+export const officialTierEnum = pgEnum("extension_official_tier", [
+  "productLine",
+  "company",
+]);
+
 export const funcCatEnum = pgEnum("func_cat", [
   "workTask",
   "business",
@@ -77,6 +85,8 @@ export const extensions = pgTable(
     category: extensionCategoryEnum().notNull(),
     badge: extensionBadgeEnum(),
     scope: extensionScopeEnum().notNull(),
+    // Official-tier approval outcome. Null = unofficial. See approval.ts.
+    officialTier: officialTierEnum(),
     // funcCat/subCat are nullable — the redesigned publish wizard does not
     // collect them; admin curation can backfill or system defaults apply.
     funcCat: funcCatEnum(),
@@ -127,6 +137,7 @@ export const extensions = pgTable(
   (t) => [
     index("idx_ext_category").on(t.category),
     index("idx_ext_scope").on(t.scope),
+    index("idx_ext_official_tier").on(t.officialTier),
     index("idx_ext_func_sub_l2").on(t.funcCat, t.subCat, t.l2),
     index("idx_ext_dept_path").using(
       "btree",

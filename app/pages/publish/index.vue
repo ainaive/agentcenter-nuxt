@@ -12,13 +12,34 @@ const { data, refresh, pending } = await useFetch("/api/internal/publish/my-exte
 
 const items = computed(() => data.value.items)
 
-function stageLabel(item: { latestStatus: string | null; latestBundleFileId: string | null; visibility: string }) {
+type Item = (typeof items.value)[number]
+
+function stageLabel(item: {
+  latestStatus: string | null
+  latestBundleFileId: string | null
+  visibility: string
+}) {
   if (item.visibility === "published") return t("publish.stage.published")
   if (item.latestStatus === "rejected") return t("publish.stage.rejected")
   if (item.latestStatus === "ready") return t("publish.stage.ready")
   if (item.latestStatus === "scanning") return t("publish.stage.scanning")
   if (!item.latestBundleFileId) return t("publish.stage.needsBundle")
   return t("publish.stage.readyToSubmit")
+}
+
+function tierLabel(tier: "productLine" | "company" | null): string {
+  if (tier === "productLine") return t("extensions.officialTier.productLine")
+  if (tier === "company") return t("extensions.officialTier.company")
+  return t("extensions.officialTier.unofficial")
+}
+
+function canApply(item: Item): boolean {
+  // Only published, unofficial extensions with no pending request can apply.
+  return (
+    item.visibility === "published" &&
+    item.officialTier === null &&
+    item.pendingRequest === null
+  )
 }
 </script>
 
@@ -55,9 +76,24 @@ function stageLabel(item: { latestStatus: string | null; latestBundleFileId: str
             <span class="text-xs text-(--color-ink-muted) font-mono">
               {{ item.slug }}@{{ item.latestVersion }}
             </span>
+            <span
+              v-if="item.officialTier"
+              class="rounded-sm border border-(--color-ink)/35 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-(--color-ink)"
+            >
+              {{ tierLabel(item.officialTier) }}
+            </span>
           </div>
-          <div class="mt-0.5 text-xs text-(--color-ink-muted)">{{ stageLabel(item) }}</div>
+          <div class="mt-0.5 flex items-center gap-2 text-xs text-(--color-ink-muted)">
+            <span>{{ stageLabel(item) }}</span>
+            <span
+              v-if="item.pendingRequest"
+              class="inline-flex items-center gap-1 rounded-sm border border-(--color-border) px-1.5 py-0.5"
+            >
+              {{ t("approvals.pendingFor", { tier: tierLabel(item.pendingRequest.requestedTier) }) }}
+            </span>
+          </div>
         </div>
+
         <NuxtLink
           v-if="item.visibility === 'draft'"
           :to="localePath(`/publish/${item.id}/edit`)"
@@ -70,6 +106,13 @@ function stageLabel(item: { latestStatus: string | null; latestBundleFileId: str
           :extension-id="item.id"
           :extension-name="item.name"
           @discarded="refresh"
+        />
+        <RequestOfficialDialog
+          v-if="canApply(item)"
+          :extension-id="item.id"
+          :extension-name="item.name"
+          :current-sub-cat="item.subCat"
+          @submitted="refresh"
         />
       </li>
     </ul>

@@ -127,6 +127,7 @@ export async function listItems(
       slug: extensions.slug,
       category: extensions.category,
       badge: extensions.badge,
+      officialTier: extensions.officialTier,
       scope: extensions.scope,
       funcCat: extensions.funcCat,
       subCat: extensions.subCat,
