@@ -1,0 +1,49 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "597067793202",
+  "session_id": "6b34baca-edbf-4aa9-a56f-a5e938ac635d",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-07T20:18:25.203376Z",
+  "branch": "chore/approvals-tests-and-docs",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "server/utils/approvals.test.ts",
+    "server/utils/auth.ts",
+    "tests/e2e/approval.spec.ts",
+    "vitest.config.ts"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "4dd6a906cf1c",
+  "token_usage": {
+    "input_tokens": 1365,
+    "cache_creation_tokens": 2780330,
+    "cache_read_tokens": 154862251,
+    "output_tokens": 320135,
+    "api_call_count": 421
+  },
+  "session_metrics": {
+    "turn_count": 13
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-07T20:18:25.12178Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 1076,
+    "human_modified": 5,
+    "human_removed": 0,
+    "total_committed": 1076,
+    "total_lines_changed": 1081,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "597067793202",
+  "strategy": "manual-commit",
+  "branch": "chore/approvals-tests-and-docs",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "server/utils/approvals.test.ts",
+    "server/utils/auth.ts",
+    "tests/e2e/approval.spec.ts",
+    "vitest.config.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/59/7067793202/0/metadata.json",
+      "transcript": "/59/7067793202/0/full.jsonl",
+      "content_hash": "/59/7067793202/0/content_hash.txt",
+      "prompt": "/59/7067793202/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 1365,
+    "cache_creation_tokens": 2780330,
+    "cache_read_tokens": 154862251,
+    "output_tokens": 320135,
+    "api_call_count": 421
+  }
+}
