@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
-import type { H3Event } from "h3"
+import { createError, getRequestHeaders, type H3Event } from "h3"
 
 import { isSuperAdmin } from "~~/server/repositories/reviewers"
 import {
@@ -9,6 +9,8 @@ import {
   users,
   verifications,
 } from "~~/shared/db/schema/auth"
+
+import { useDb } from "./db"
 
 function makeAuth() {
   const db = useDb()
