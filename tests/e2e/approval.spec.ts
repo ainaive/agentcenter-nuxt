@@ -52,6 +52,38 @@ test.describe("approval workflow", () => {
     const active = page.getByRole("button", { name: "Product-Line", exact: true })
     await expect(active).toHaveAttribute("aria-pressed", "true")
   })
+
+  test("ProductLinePill rail is hidden when tier is not productLine", async ({
+    request,
+  }) => {
+    const response = await request.get("/en/extensions")
+    const html = await response.text()
+    // The rail's `aria-label="Product line"` only emits when tier=productLine
+    // (the rail's `v-if` guard). At default `tier=all` it should not appear.
+    expect(html).not.toContain('aria-label="Product line"')
+  })
+
+  test("?tier=productLine&productLineId=wireless round-trips both pills", async ({
+    page,
+  }) => {
+    await page.goto("/en/extensions?tier=productLine&productLineId=wireless")
+    await expect(page).toHaveURL(/[?&]tier=productLine/)
+    await expect(page).toHaveURL(/[?&]productLineId=wireless/)
+    // Tier pill is aria-pressed on Product-Line.
+    const tierActive = page.getByRole("button", {
+      name: "Product-Line",
+      exact: true,
+    })
+    await expect(tierActive).toHaveAttribute("aria-pressed", "true")
+    // The product-line picker rail is now present, with Wireless aria-pressed.
+    const plRail = page.getByRole("group", { name: "Product line" })
+    await expect(plRail).toBeVisible()
+    const lineActive = plRail.getByRole("button", {
+      name: "Wireless",
+      exact: true,
+    })
+    await expect(lineActive).toHaveAttribute("aria-pressed", "true")
+  })
 })
 
 // ───── Multi-actor golden path ──────────────────────────────────────────
@@ -114,6 +146,11 @@ test.describe("approval workflow — multi-actor golden path", () => {
     })
     await row.getByRole("button", { name: "Apply for official" }).click()
     // Default tier is productLine; subCat defaults to "docs" from the row.
+    // Pick a product line so the iff-rule is satisfied; without this,
+    // canSubmit stays false and the dialog never closes.
+    await publisherPage
+      .locator("#approvals-productLine")
+      .selectOption("wireless")
     await publisherPage
       .getByRole("button", { name: "Submit request" })
       .click()
@@ -134,10 +171,13 @@ test.describe("approval workflow — multi-actor golden path", () => {
     // Queue empties once approved.
     await expect(queueRow).toHaveCount(0)
 
-    // Detail page: anyone can see it; verify the tier badge rendered.
+    // Detail page: anyone can see it; verify the tier badge rendered with
+    // the product-line-specific label ("Wireless Official").
     const detailPage = await browser.newContext().then((c) => c.newPage())
     await detailPage.goto(`/en/extensions/${PUBLISHER_EXT_SLUG}`)
-    await expect(detailPage.locator(".badge-product-line")).toBeVisible()
+    const badge = detailPage.locator(".badge-product-line")
+    await expect(badge).toBeVisible()
+    await expect(badge).toContainText("Wireless")
 
     await publisherCtx.close()
     await reviewerCtx.close()
