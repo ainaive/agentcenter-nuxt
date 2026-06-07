@@ -232,6 +232,42 @@ Critical indexing notes — unchanged from the original:
 - `(funcCat, subCat, l2)` covers drill-down.
 - Sort indexes are separate (`downloadsCount DESC`, `starsAvg DESC`).
 
+### Additions for the approval workflow (shipped in PR #41)
+
+The approval workflow added three load-bearing pieces — see
+`shared/db/schema/extension.ts`, `shared/db/schema/org.ts`, and
+`shared/db/schema/approval.ts` for the canonical definitions, and
+`docs/adr/0001-official-tier-approval-workflow.md` for the rationale.
+
+- **`extensions.officialTier`** — nullable `extension_official_tier` enum
+  (`productLine | company`). Null = "Unofficial" (the default for any
+  publisher-uploaded extension). The existing `badge` column is
+  preserved; the `/api/v1/extensions/*` mappers derive `badge:
+  "official"` from `officialTier != null` so the frozen CLI shape is
+  unchanged. App code only writes `officialTier`. Indexed as
+  `idx_ext_official_tier`.
+- **`memberships.role`** — the `membership_role` enum gains a
+  `superAdmin` value alongside `viewer | publisher | admin`. The
+  migration uses `ALTER TYPE … ADD VALUE`; safe inside the same
+  transaction on PG12+ because the new value is never referenced in
+  the same migration.
+- **`approval_requests`** — one row per submitted elevation request.
+  Columns: id, extensionId (FK CASCADE), requestedTier
+  (`extension_official_tier`), snapshotted subCat (text, validated
+  against `FUNC_TAXONOMY` l1 leaves at the orchestrator), requestedBy
+  user, reason, status (`approval_status` enum: pending | approved |
+  rejected | withdrawn), decidedBy user, decidedAt, reviewerNote,
+  timestamps. Indexes: `(status, subCat, requestedTier)` for the
+  reviewer queue; `(extensionId, status)` for the publisher view and
+  the at-most-one-pending guard the orchestrator enforces inside the
+  insert's transaction.
+- **`approval_reviewers`** — the configurable (tier × subCat) → user
+  matrix. Multiple reviewers per cell; first decision wins. Unique
+  on `(tier, subCat, userId)` to make `onConflictDoNothing` work.
+  Indexed on `(tier, subCat)` for fan-out lookups.
+
+The complete shape sits in `drizzle/0008_large_lizard.sql`.
+
 ---
 
 ## 4. i18n strategy
@@ -458,6 +494,7 @@ Each phase ends with a commit on its branch and a PR back to `main`. CI mirrors 
   - **P18** — `/profile` My Workspace page with 9 components + 3 internal endpoints (#12).
   - **P19** — split the detail page into hero / about / tabs / related + InstallCommand / ShareButton / SaveButton (#12).
   - **P20** — `nuxt-og-image` for social previews + Playwright browse / detail / navigation specs (#12).
+  - **P21** — Official-tier approval workflow: `extensions.officialTier` column, `approval_requests` and `approval_reviewers` tables, `superAdmin` membership role, publisher dialog, reviewer queue, super-admin matrix editor; `badge` derived in `/api/v1` mappers so the CLI contract is preserved. Shipped via PR #41 merged as `a392c16` on 2026-06-07. Rationale lives in `docs/adr/0001-official-tier-approval-workflow.md`; schema details in §3 above.
 
 The "P14" label is reused intentionally — the original P14 (Deploy) never executed before the rewrite-completion track began, so P14a was named to avoid clashing with the unfinished P14 deploy work.
 

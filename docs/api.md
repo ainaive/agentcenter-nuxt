@@ -209,3 +209,115 @@ Every call records an `installs` row and bumps `downloadsCount`. `isFirstInstall
 ## Versioning
 
 The surface above is `/api/v1`. Breaking changes will introduce `/api/v2/...` — the `v1` namespace will not change incompatibly. Additive changes (new optional fields, new endpoints) may land within `v1` without notice.
+
+---
+
+## Internal endpoints
+
+The `/api/internal/*` surface is **not frozen**. These endpoints back
+form submissions and admin actions from the web UI. They authenticate
+through Better Auth cookie sessions (set by `/api/auth/...`) and can
+change shape without a `BREAKING CHANGE` marker — the CLI does not
+consume them.
+
+### Approval workflow
+
+All approval endpoints require an authenticated session; the
+orchestrator layers further guards as noted per endpoint. Errors come
+back as standard `createError` shapes with `statusCode` and a
+`statusMessage` string the UI maps to a localized message (see
+`approvals.errors.*` in `i18n/locales/*.json`). The full rationale for
+the workflow lives in `docs/adr/0001-official-tier-approval-workflow.md`.
+
+#### `POST /api/internal/approvals/submit` (publisher)
+
+```json
+{
+  "extensionId": "ext-1",
+  "requestedTier": "productLine",
+  "subCat": "softDev",
+  "reason": "Used by every team in the org."
+}
+```
+
+`requestedTier` is `productLine | company`. `subCat` is a
+FUNC_TAXONOMY l1 leaf key. `reason` is optional, max 500 chars.
+
+Error codes: `extension_not_found` (404), `not_publisher_owner`
+(403), `extension_not_published` (409), `duplicate_pending_request`
+(409 — orchestrator enforces at-most-one-pending per extension).
+
+Returns `{ ok: true, request: ApprovalRequest }`.
+
+#### `POST /api/internal/approvals/withdraw` (publisher)
+
+```json
+{ "requestId": "req_1" }
+```
+
+Pending-only; the publisher must own the request. Error codes:
+`request_not_found` (404), `not_requester` (403),
+`request_not_pending` (409).
+
+#### `POST /api/internal/approvals/decide` (reviewer)
+
+Discriminated union — `note` only valid with `decision: "reject"`.
+
+```json
+{ "requestId": "req_1", "decision": "approve" }
+```
+
+```json
+{
+  "requestId": "req_1",
+  "decision": "reject",
+  "note": "Needs a maintainer contact in the manifest."
+}
+```
+
+Caller must be a reviewer assigned to the request's `(requestedTier,
+subCat)` cell, or hold a `superAdmin` membership (which bypasses the
+cell check). Optimistic locking on the UPDATE: a row count of 0 (a
+second reviewer raced ahead) surfaces as `request_not_pending`.
+
+Error codes: `request_not_found` (404), `request_not_pending` (409),
+`not_reviewer` (403).
+
+#### `GET /api/internal/approvals/list?view=mine|queue`
+
+Dual-purpose. `mine` (default) returns the caller's submitted
+requests; `queue` returns pending requests in cells the caller
+reviews (or the full pending queue for super-admins).
+
+### Reviewer matrix admin (super-admin only)
+
+All three endpoints gate on `requireSuperAdmin` (any `superAdmin`
+membership). A 403 indicates the caller is authenticated but not a
+super-admin.
+
+#### `GET /api/internal/admin/reviewers`
+
+Returns the flat matrix joined with `users.email/name` so the UI can
+render reviewer chips without a second round-trip.
+
+#### `POST /api/internal/admin/reviewers/assign`
+
+```json
+{ "tier": "productLine", "subCat": "softDev", "userId": "u_42" }
+```
+
+`onConflictDoNothing` on `(tier, subCat, userId)` — re-assigning the
+same user to the same cell is a silent no-op.
+
+#### `DELETE /api/internal/admin/reviewers/unassign`
+
+```json
+{ "id": "rev_1" }
+```
+
+#### `GET /api/internal/admin/users/by-email?email=...`
+
+Returns `{ user: { id, email, name } | null }`. The matrix UI uses
+this to resolve an email-input lookup to a `userId` before calling
+`/assign`. Returns `null` (not 404) for an unknown email so the
+client can show a friendly "no such user" hint.

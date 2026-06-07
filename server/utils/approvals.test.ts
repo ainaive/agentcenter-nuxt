@@ -466,3 +466,12 @@ describe("module exports", () => {
     expect(typeof ApprovalError).toBe("function")
   })
 })
+
+describe("listPublisherRequests", () => {
+  it("delegates to approvalsRepo.listForPublisher with the user db handle and userId", async () => {
+    vi.mocked(approvalsRepo.listForPublisher).mockResolvedValue([])
+    const { listPublisherRequests } = await import("./approvals")
+    await listPublisherRequests("u-pub")
+    expect(approvalsRepo.listForPublisher).toHaveBeenCalledWith(DB, "u-pub")
+  })
+})

@@ -37,6 +37,9 @@ export default defineVitestConfig({
         "server/utils/extensions-state.ts",
         "server/utils/installs.ts",
         "server/utils/approvals.ts",
+        "server/utils/auth.ts",
+        "app/components/approvals/**",
+        "app/components/profile/SectionRequests.vue",
       ],
       exclude: [
         "**/*.test.ts",
@@ -78,6 +81,18 @@ export default defineVitestConfig({
         "app/composables/useFilters.ts":      { lines: 90, branches: 75, functions: 90, statements: 90 },
         "app/composables/usePublishWizard.ts": { lines: 90, branches: 85, functions: 85, statements: 85 },
         "app/composables/useTheme.ts":         { lines: 90, branches: 85, functions: 90, statements: 90 },
+        // Interactive components from the approval workflow. Per
+        // docs/plan.md §12 the threshold for interactive components is
+        // ≥80% lines / functions. Branches stay a bit lower because
+        // template v-if/v-else branches inflate the denominator without
+        // adding meaningful behavior to assert.
+        "app/components/approvals/**":               { lines: 80, branches: 70, functions: 80, statements: 80 },
+        "app/components/profile/SectionRequests.vue": { lines: 80, branches: 70, functions: 80, statements: 80 },
+        // requireSuperAdmin + getSessionUser + requireUser cluster.
+        // Branches at 60: `toFetchHeaders`'s undefined-value and
+        // Array.isArray arms exist for h3-shape header values that the
+        // tests don't synthesize (artificial without a real request).
+        "server/utils/auth.ts":                       { lines: 80, branches: 60, functions: 80, statements: 80 },
       },
     },
   },
