@@ -75,6 +75,26 @@ export async function findById(
   return row ?? null
 }
 
+// Bulk variant of `findPendingByExtension` for the publisher dashboard —
+// the listing already loads many extensions, so we fan in a single query
+// rather than N round-trips and return a Map<extId, pendingRequest>.
+export async function findPendingForExtensions(
+  db: Transactable,
+  extensionIds: string[],
+): Promise<Map<string, ApprovalRequestRow>> {
+  if (extensionIds.length === 0) return new Map()
+  const rows = await db
+    .select(fullSelect)
+    .from(approvalRequests)
+    .where(
+      and(
+        inArray(approvalRequests.extensionId, extensionIds),
+        eq(approvalRequests.status, "pending"),
+      ),
+    )
+  return new Map(rows.map((r) => [r.extensionId, r]))
+}
+
 // Used by the at-most-one-pending guard in the submit orchestrator.
 export async function findPendingByExtension(
   db: Transactable,

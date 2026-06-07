@@ -130,6 +130,11 @@
       "official": "Official",
       "popular": "Popular",
       "new": "New"
+    },
+    "officialTier": {
+      "unofficial": "Unofficial",
+      "productLine": "Product-Line Official",
+      "company": "Company Official"
     }
   },
   "sidebar": {
@@ -466,6 +471,7 @@
       "saved": "Saved",
       "collections": "Collections",
       "activity": "Activity",
+      "requests": "Requests",
       "settings": "Settings"
     },
     "settings": {
@@ -522,6 +528,50 @@
       "unauthenticated": "Please sign in again.",
       "invalid_input": "Some fields need attention.",
       "generic": "We couldn't save your profile. Please try again."
+    }
+  },
+  "approvals": {
+    "applyForOfficial": "Apply for official",
+    "pendingFor": "Awaiting {tier} review",
+    "withdraw": "Withdraw",
+    "requestedOn": "Requested {date}",
+    "decidedOn": "Decided {date}",
+    "reviewerNote": "Reviewer note",
+    "gotoPublish": "Go to publish dashboard",
+    "tier": {
+      "productLine": "Product-Line",
+      "company": "Company"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "withdrawn": "Withdrawn"
+    },
+    "dialog": {
+      "title": "Apply for official status",
+      "subtitle": "Elevate \"{name}\" by sending it for review.",
+      "tierLabel": "Target tier",
+      "tierProductLineDesc": "Reviewed at the product line.",
+      "tierCompanyDesc": "Reviewed at the company level.",
+      "subCatLabel": "Functional category",
+      "subCatPlaceholder": "Pick a category…",
+      "subCatHint": "This extension has no category set yet — choose one for the reviewer.",
+      "reasonLabel": "Reason (optional)",
+      "reasonPlaceholder": "Why is this extension a good candidate?",
+      "cancel": "Cancel",
+      "submit": "Submit request"
+    },
+    "emptyRequests": {
+      "title": "No approval requests yet",
+      "body": "When you apply for official status from the publish dashboard, your requests show up here."
+    },
+    "errors": {
+      "generic": "Couldn't submit. Please try again.",
+      "extension_not_found": "That extension no longer exists.",
+      "not_publisher_owner": "Only the publisher can request elevation.",
+      "extension_not_published": "Publish the extension before requesting elevation.",
+      "duplicate_pending_request": "You already have a pending request for this extension."
     }
   },
   "cliAuth": {

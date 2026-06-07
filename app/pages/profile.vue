@@ -13,6 +13,7 @@ const SECTIONS: ReadonlyArray<ProfileSectionKey> = [
   "saved",
   "collections",
   "activity",
+  "requests",
   "settings",
 ]
 
@@ -34,7 +35,7 @@ const sectionQuery = computed(() =>
   active.value === "settings" ? null : { section: active.value },
 )
 
-const { data: section, error: sectionError } = await useFetch(
+const { data: section, error: sectionError, refresh: refreshSection } = await useFetch(
   "/api/internal/profile/section",
   {
     query: sectionQuery,
@@ -102,6 +103,11 @@ const { data: section, error: sectionError } = await useFetch(
           <SectionActivity
             v-else-if="active === 'activity' && section?.section === 'activity'"
             :rows="section.rows"
+          />
+          <SectionRequests
+            v-else-if="active === 'requests' && section?.section === 'requests'"
+            :rows="section.rows"
+            @refresh="refreshSection"
           />
           <ProfileSettingsForm
             v-else-if="active === 'settings' && me"

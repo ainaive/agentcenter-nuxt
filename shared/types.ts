@@ -124,6 +124,22 @@ export type ProfileActivityEvent =
   | { kind: "published"; at: string; extensionId: string; slug: string; name: string; version: string }
   | { kind: "rated"; at: string; extensionId: string; slug: string; name: string; stars: number }
 
+export interface ProfileRequestRow {
+  requestId: string
+  extensionId: string
+  slug: string
+  name: string
+  category: string
+  iconColor: string | null
+  requestedTier: "productLine" | "company"
+  subCat: string
+  status: "pending" | "approved" | "rejected" | "withdrawn"
+  reason: string | null
+  reviewerNote: string | null
+  createdAt: string
+  decidedAt: string | null
+}
+
 export interface ProfileCollectionRow {
   id: string
   slug: string

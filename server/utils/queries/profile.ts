@@ -2,6 +2,7 @@ import { and, desc, eq, isNull, sql } from "drizzle-orm"
 
 import { useDb } from "~~/server/utils/db"
 import { installs, ratings } from "~~/shared/db/schema/activity"
+import { approvalRequests } from "~~/shared/db/schema/approval"
 import { collectionItems, collections } from "~~/shared/db/schema/collection"
 import { extensionVersions, extensions } from "~~/shared/db/schema/extension"
 
@@ -163,6 +164,48 @@ export async function getPublishedForUser(userId: string): Promise<ProfilePublis
     out.push(r)
   }
   return out
+}
+
+export interface ProfileRequestRow {
+  requestId: string
+  extensionId: string
+  slug: string
+  name: string
+  category: string
+  iconColor: string | null
+  requestedTier: "productLine" | "company"
+  subCat: string
+  status: "pending" | "approved" | "rejected" | "withdrawn"
+  reason: string | null
+  reviewerNote: string | null
+  createdAt: Date
+  decidedAt: Date | null
+}
+
+export async function getRequestsForUser(
+  userId: string,
+): Promise<ProfileRequestRow[]> {
+  const db = useDb()
+  return db
+    .select({
+      requestId: approvalRequests.id,
+      extensionId: approvalRequests.extensionId,
+      slug: extensions.slug,
+      name: extensions.name,
+      category: extensions.category,
+      iconColor: extensions.iconColor,
+      requestedTier: approvalRequests.requestedTier,
+      subCat: approvalRequests.subCat,
+      status: approvalRequests.status,
+      reason: approvalRequests.reason,
+      reviewerNote: approvalRequests.reviewerNote,
+      createdAt: approvalRequests.createdAt,
+      decidedAt: approvalRequests.decidedAt,
+    })
+    .from(approvalRequests)
+    .innerJoin(extensions, eq(extensions.id, approvalRequests.extensionId))
+    .where(eq(approvalRequests.requestedByUserId, userId))
+    .orderBy(desc(approvalRequests.createdAt))
 }
 
 export async function getActivityForUser(userId: string): Promise<ProfileActivityEvent[]> {

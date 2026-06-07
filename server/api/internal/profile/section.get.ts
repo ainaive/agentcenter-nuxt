@@ -5,6 +5,7 @@ import {
   getDraftsForUser,
   getInstalledForUser,
   getPublishedForUser,
+  getRequestsForUser,
   getSavedForUser,
 } from "~~/server/utils/queries/profile"
 import type {
@@ -13,6 +14,7 @@ import type {
   ProfileDraftRow,
   ProfileInstalledRow,
   ProfilePublishedRow,
+  ProfileRequestRow,
   ProfileSavedRow,
 } from "~~/shared/types"
 
@@ -23,6 +25,7 @@ export type SectionKey =
   | "saved"
   | "collections"
   | "activity"
+  | "requests"
 
 const KEYS: ReadonlySet<SectionKey> = new Set([
   "installed",
@@ -31,6 +34,7 @@ const KEYS: ReadonlySet<SectionKey> = new Set([
   "saved",
   "collections",
   "activity",
+  "requests",
 ])
 
 export type SectionResponse =
@@ -40,6 +44,7 @@ export type SectionResponse =
   | { section: "saved"; rows: ProfileSavedRow[] }
   | { section: "collections"; rows: ProfileCollectionRow[] }
   | { section: "activity"; rows: ProfileActivityEvent[] }
+  | { section: "requests"; rows: ProfileRequestRow[] }
 
 // Map Date fields to ISO strings so the endpoint's return type matches what
 // crosses the wire. JSON serialization would convert these anyway, but typing
@@ -92,6 +97,17 @@ export default defineEventHandler(async (event): Promise<SectionResponse> => {
       return {
         section: "activity",
         rows: rows.map((r) => ({ ...r, at: r.at.toISOString() }) as ProfileActivityEvent),
+      }
+    }
+    case "requests": {
+      const rows = await getRequestsForUser(session.id)
+      return {
+        section: "requests",
+        rows: rows.map((r) => ({
+          ...r,
+          createdAt: r.createdAt.toISOString(),
+          decidedAt: r.decidedAt ? r.decidedAt.toISOString() : null,
+        })),
       }
     }
   }
