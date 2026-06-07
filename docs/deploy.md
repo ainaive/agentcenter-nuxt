@@ -26,10 +26,34 @@ Any Postgres works — Supabase, Neon, AWS RDS, self-hosted. Apply migrations:
 bun install
 DATABASE_URL="postgresql://..." bun run db:migrate
 DATABASE_URL="postgresql://..." bun run db:apply-fts
-DATABASE_URL="postgresql://..." bun run db:seed   # optional: 16 sample extensions
+DATABASE_URL="postgresql://..." bun run db:seed   # optional: chains seed.ts + seed-catalog.ts (16 demo + 66 catalog)
 ```
 
 The `db:apply-fts` step requires `psql` on PATH. It runs `drizzle/0002_fts_search_vector.sql` against your DB (FTS column + trgm indexes).
+
+### Seeding super-admins and reviewer matrix
+
+The approval workflow needs at least one super-admin so the
+`/admin/reviewers` matrix is reachable. `bun run db:seed` promotes
+one of the seeded `CREATORS` users to `role = 'superAdmin'`:
+
+```bash
+SEED_SUPER_ADMIN_EMAIL="amy@agentcenter.dev" bun run db:seed
+```
+
+`SEED_SUPER_ADMIN_EMAIL` defaults to `amy@agentcenter.dev` (the first
+creator in `scripts/seed.ts`). Supply any email from `CREATORS` to
+pick a different super-admin; an unknown email logs a warning and
+seeds no super-admin (the matrix UI then 403s for every user — fix
+by re-running with a valid email).
+
+The same seed populates the reviewer matrix from
+`shared/data/approval-reviewers.ts` so every (tier × subCat) cell
+has at least one assigned reviewer on a fresh DB.
+
+`db:seed` is destructive (TRUNCATE … CASCADE on orgs and tags) and
+is the "reset to demo state" command. Production deploys use only
+the idempotent seeds in the `vercel-build` chain.
 
 ## 2. Provision object storage
 

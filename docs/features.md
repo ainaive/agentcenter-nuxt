@@ -65,6 +65,16 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **Resume drafts** — Continue an unfinished publish later; slug and version lock once saved.
 - **Discard drafts** — Owners can delete their own drafts cleanly.
 
+### Official-tier approval workflow
+
+- **Two-tier officialness** — Published extensions default to Unofficial; publishers can apply for **Product-Line Official** or **Company Official** elevation.
+- **Apply-for-official dialog** — From the publisher dashboard, an extension that's published and unofficial gets an "Apply for official" action: pick a tier, pick a functional category (defaults to the extension's existing subCat), optionally explain why.
+- **Reviewer queue** — Each (tier × functional category) cell is owned by an assigned set of reviewers. `/admin/approvals` shows the reviewer their queue. Approve in one click; reject opens an inline note field.
+- **Configurable matrix** — A super-admin curates the (tier × category) → reviewer assignments from `/admin/reviewers`. Add by email lookup, remove with a chip click. Super-admins can decide on any cell, not just their own.
+- **Tier badges & filter** — Approved extensions wear a Product-Line or Company chip on cards, hero, and related-lists. The browse filter rail adds an "Official tier" pill so users can narrow to Unofficial / Product-Line / Company.
+- **Requests tab** — `/profile?section=requests` tracks the publisher's submitted applications and shows the reviewer's note on rejections; pending requests can be withdrawn.
+- **CLI contract preserved** — The `/api/v1` `badge` field is derived from the new tier so existing CLI installs see no change. See [ADR-0001](./adr/0001-official-tier-approval-workflow.md) for the full rationale.
+
 ### Accounts & sign-in
 
 - **Sign up** — Open registration with email and password.
@@ -171,6 +181,16 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **控制台** ——查看草稿、扫描中、被拒（内嵌原因）、已发布。
 - **继续草稿** ——稍后继续未完成的发布；slug 和版本号在保存后锁定。
 - **丢弃草稿** ——作者本人可干净删除自己的草稿。
+
+### 官方认证审核流程
+
+- **两级官方** ——已发布扩展默认为非官方；发布者可申请**产品线官方**或**公司官方**认证。
+- **申请对话框** ——发布工作台中已发布且未认证的扩展会出现"申请官方认证"操作：选择级别、选择功能分类（默认沿用扩展的 subCat）、可填理由。
+- **审核队列** ——每个（级别 × 功能分类）单元由指定的审核员负责。审核员在 `/admin/approvals` 看到属于自己的待审请求；一键通过；驳回时弹出内嵌备注框。
+- **可配置矩阵** ——超级管理员在 `/admin/reviewers` 维护（级别 × 分类）→ 审核员映射。按邮箱搜索添加、点击 chip 删除。超级管理员可在任何单元做出决定，不只是自己负责的。
+- **级别徽章与筛选** ——通过审核的扩展在卡片、详情页、关联列表上展示产品线 / 公司徽章。浏览页过滤条增加"官方级别"筛选，可按非官方 / 产品线 / 公司缩窄。
+- **申请记录** —— `/profile?section=requests` 展示发布者提交过的申请，驳回时显示审核员备注；待审请求可撤回。
+- **CLI 契约不变** —— `/api/v1` 的 `badge` 字段从新的官方级别派生，CLI 行为不变。详细决策见 [ADR-0001](./adr/0001-official-tier-approval-workflow.md)。
 
 ### 账号与登录
 
