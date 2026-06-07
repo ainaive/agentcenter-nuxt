@@ -1,0 +1,49 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "0194a271f7e8",
+  "session_id": "9a6b310b-3c05-4985-b43f-cf9b10b8bedc",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-07T22:41:25.162214Z",
+  "branch": "feat/approvals-product-line-dimension",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "server/api/internal/admin/reviewers/assign.post.ts",
+    "server/utils/auth.ts",
+    "server/api/internal/admin/reviewers/unassign.delete.ts",
+    "server/api/internal/admin/reviewers/index.get.ts",
+    "server/api/internal/product-lines/index.get.ts",
+    "server/api/v1/extensions/index.get.ts",
+    "shared/search/query.ts"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "1069395f98dc",
+  "token_usage": {
+    "input_tokens": 151,
+    "cache_creation_tokens": 367573,
+    "cache_read_tokens": 22669275,
+    "output_tokens": 94840,
+    "api_call_count": 136
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-07T22:41:25.137401Z",
+    "agent_lines": 124,
+    "agent_removed": 12,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 124,
+    "total_lines_changed": 136,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}

@@ -8,7 +8,9 @@
     "server/api/internal/admin/reviewers/assign.post.ts",
     "server/api/internal/admin/reviewers/index.get.ts",
     "server/api/internal/admin/reviewers/unassign.delete.ts",
+    "server/api/internal/product-lines/index.get.ts",
     "server/api/v1/extensions/index.get.ts",
+    "server/utils/auth.ts",
     "shared/search/query.ts"
   ],
   "sessions": [
@@ -17,13 +19,19 @@
       "transcript": "/01/94a271f7e8/0/full.jsonl",
       "content_hash": "/01/94a271f7e8/0/content_hash.txt",
       "prompt": "/01/94a271f7e8/0/prompt.txt"
+    },
+    {
+      "metadata": "/01/94a271f7e8/1/metadata.json",
+      "transcript": "/01/94a271f7e8/1/full.jsonl",
+      "content_hash": "/01/94a271f7e8/1/content_hash.txt",
+      "prompt": "/01/94a271f7e8/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 1408,
-    "cache_creation_tokens": 2809495,
-    "cache_read_tokens": 177005333,
-    "output_tokens": 337389,
-    "api_call_count": 455
+    "input_tokens": 1559,
+    "cache_creation_tokens": 3177068,
+    "cache_read_tokens": 199674608,
+    "output_tokens": 432229,
+    "api_call_count": 591
   }
 }
