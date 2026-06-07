@@ -9,6 +9,8 @@ const ERROR_STATUS: Record<string, number> = {
   not_publisher_owner: 403,
   extension_not_published: 409,
   duplicate_pending_request: 409,
+  missing_product_line: 400,
+  unexpected_product_line: 400,
 }
 
 export default defineEventHandler(async (event) => {
@@ -22,6 +24,7 @@ export default defineEventHandler(async (event) => {
       extensionId: body.extensionId,
       requestedTier: body.requestedTier,
       subCat: body.subCat,
+      productLineId: body.productLineId ?? null,
       userId: user.id,
       reason: body.reason,
     })

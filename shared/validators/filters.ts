@@ -31,6 +31,16 @@ export const filtersSchema = z.object({
   // Separate from the legacy `filter=official` chip (which now means "any
   // official tier"); `tier=` picks a specific cell.
   tier: z.enum(TIERS).optional(),
+  // Optional product-line id (kebab-case). Only meaningful when paired with
+  // `tier=productLine`; the listing query still honours it standalone (acts
+  // as "narrow to this line") which keeps the filter rail simple.
+  productLineId: z
+    .string()
+    .trim()
+    .min(1)
+    .max(40)
+    .regex(/^[a-z][a-z0-9-]*$/)
+    .optional(),
   sort: z.enum(SORTS).optional(),
   page: z.coerce.number().int().min(1).max(1000).optional(),
 });

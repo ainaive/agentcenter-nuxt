@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, sql } from "drizzle-orm"
+import { and, desc, eq, inArray, isNull, sql } from "drizzle-orm"
 
 import type {
   ApprovalStatus,
@@ -24,6 +24,7 @@ export interface ApprovalRequestRow {
   extensionId: string
   requestedTier: OfficialTier
   subCat: string
+  productLineId: string | null
   requestedByUserId: string
   reason: string | null
   status: ApprovalStatus
@@ -39,6 +40,7 @@ const fullSelect = {
   extensionId: approvalRequests.extensionId,
   requestedTier: approvalRequests.requestedTier,
   subCat: approvalRequests.subCat,
+  productLineId: approvalRequests.productLineId,
   requestedByUserId: approvalRequests.requestedByUserId,
   reason: approvalRequests.reason,
   status: approvalRequests.status,
@@ -54,6 +56,7 @@ export interface InsertApprovalRequest {
   extensionId: string
   requestedTier: OfficialTier
   subCat: string
+  productLineId: string | null
   requestedByUserId: string
   reason: string | null
 }
@@ -132,21 +135,25 @@ export async function listForPublisher(
     .orderBy(desc(approvalRequests.createdAt))
 }
 
-// Reviewer's queue — pending requests in any (tier, subCat) cell that the
-// reviewer is assigned to. Implemented as a single query against the cells
-// the reviewer covers; the orchestrator pre-computes the cell list from
-// `approval_reviewers` to keep this method driver-portable (no LATERAL).
+// Reviewer's queue — pending requests in any (tier, subCat, productLineId?)
+// cell that the reviewer is assigned to. Implemented as a single query
+// against the cells the reviewer covers; the orchestrator pre-computes the
+// cell list from `approval_reviewers` to keep this method driver-portable
+// (no LATERAL). ProductLineId is matched IS NULL for company-tier cells
+// and = productLineId for productLine-tier cells, so a company-tier
+// reviewer never sees productLine-tier requests and vice versa.
 export async function listPendingForCells(
   db: Transactable,
-  cells: Array<{ tier: OfficialTier; subCat: string }>,
+  cells: Array<{ tier: OfficialTier; subCat: string; productLineId: string | null }>,
 ): Promise<ApprovalRequestRow[]> {
   if (cells.length === 0) return []
-  // Build an OR over (tier=, subCat=) pairs. Postgres collapses these into
-  // a single index scan against idx_approval_status_cell.
   const cellMatches = cells.map((c) =>
     and(
       eq(approvalRequests.requestedTier, c.tier),
       eq(approvalRequests.subCat, c.subCat),
+      c.productLineId === null
+        ? isNull(approvalRequests.productLineId)
+        : eq(approvalRequests.productLineId, c.productLineId),
     ),
   )
   return db
@@ -211,18 +218,22 @@ export async function applyWithdraw(
   return updated.length
 }
 
-// Companion mutator for the approve path — stamps `officialTier` on the
-// parent extension. Lives here (rather than in `extensions.ts`) because
-// the approval orchestrator is the only legitimate writer; keeping the
-// call adjacent to the request mutation makes that intent obvious.
+// Companion mutator for the approve path — stamps `officialTier` and the
+// matching `productLineId` (null for company tier) on the parent extension.
+// Lives here (rather than in `extensions.ts`) because the approval
+// orchestrator is the only legitimate writer; keeping the call adjacent to
+// the request mutation makes that intent obvious. The DB CHECK enforces
+// productLineId is non-null iff tier='productLine', so a bad pair from a
+// caller is rejected at the boundary.
 export async function setExtensionOfficialTier(
   db: Transactable,
   extensionId: string,
   tier: OfficialTier,
+  productLineId: string | null,
 ): Promise<void> {
   await db
     .update(extensions)
-    .set({ officialTier: tier, updatedAt: new Date() })
+    .set({ officialTier: tier, productLineId, updatedAt: new Date() })
     .where(eq(extensions.id, extensionId))
 }
 
@@ -244,11 +255,14 @@ export async function findTiersForExtensions(
 // Used by guards in `decide.post.ts` — confirms a user is assigned to the
 // cell that the request originated from. Super-admins are handled in the
 // orchestrator (a separate join) so this stays a pure reviewer check.
+// ProductLineId is null for company-tier requests and the cell match must
+// be exact on that NULLness to keep tiers from leaking into one another.
 export async function isReviewerForCell(
   db: Transactable,
   userId: string,
   tier: OfficialTier,
   subCat: string,
+  productLineId: string | null,
 ): Promise<boolean> {
   const [row] = await db
     .select({ id: approvalReviewers.id })
@@ -258,6 +272,9 @@ export async function isReviewerForCell(
         eq(approvalReviewers.userId, userId),
         eq(approvalReviewers.tier, tier),
         eq(approvalReviewers.subCat, subCat),
+        productLineId === null
+          ? isNull(approvalReviewers.productLineId)
+          : eq(approvalReviewers.productLineId, productLineId),
       ),
     )
     .limit(1)

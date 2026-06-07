@@ -11,6 +11,7 @@ export default defineEventHandler(async (event) => {
     id: crypto.randomUUID(),
     tier: body.tier,
     subCat: body.subCat,
+    productLineId: body.productLineId ?? null,
     userId: body.userId,
   })
   return { ok: true }
