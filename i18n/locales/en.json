@@ -134,6 +134,7 @@
     "officialTier": {
       "unofficial": "Unofficial",
       "productLine": "Product-Line Official",
+      "productLineWith": "{line} Official",
       "company": "Company Official"
     }
   },
@@ -168,6 +169,10 @@
       "personal": "Personal",
       "org": "Organization",
       "enterprise": "Enterprise"
+    },
+    "productLineLabel": "Product line",
+    "productLine": {
+      "all": "All lines"
     },
     "tierLabel": "Official tier",
     "tier": {

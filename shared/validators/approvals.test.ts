@@ -41,14 +41,37 @@ describe("SubmitApprovalSchema", () => {
       extensionId: "ext_1",
       requestedTier: "productLine",
       subCat: "softDev",
+      productLineId: "wireless",
       reason: "Used by 5 teams across the product line.",
     })
     expect(parsed).toEqual({
       extensionId: "ext_1",
       requestedTier: "productLine",
       subCat: "softDev",
+      productLineId: "wireless",
       reason: "Used by 5 teams across the product line.",
     })
+  })
+
+  it("rejects a productLine submission without productLineId", () => {
+    expect(() =>
+      SubmitApprovalSchema.parse({
+        extensionId: "ext_1",
+        requestedTier: "productLine",
+        subCat: "softDev",
+      }),
+    ).toThrow(/productLineId/)
+  })
+
+  it("rejects a company submission that includes productLineId", () => {
+    expect(() =>
+      SubmitApprovalSchema.parse({
+        extensionId: "ext_1",
+        requestedTier: "company",
+        subCat: "docs",
+        productLineId: "wireless",
+      }),
+    ).toThrow(/productLineId/)
   })
 
   it("collapses a whitespace-only reason to undefined", () => {

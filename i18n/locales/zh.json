@@ -134,6 +134,7 @@
     "officialTier": {
       "unofficial": "非官方",
       "productLine": "产品线官方",
+      "productLineWith": "{line}官方",
       "company": "公司官方"
     }
   },
@@ -168,6 +169,10 @@
       "personal": "个人",
       "org": "组织",
       "enterprise": "企业"
+    },
+    "productLineLabel": "产品线",
+    "productLine": {
+      "all": "全部产品线"
     },
     "tierLabel": "官方级别",
     "tier": {

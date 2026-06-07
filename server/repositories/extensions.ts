@@ -78,6 +78,7 @@ const detailSelect = {
   publisherUserId: extensions.publisherUserId,
   ownerOrgId: extensions.ownerOrgId,
   visibility: extensions.visibility,
+  productLineId: extensions.productLineId,
   tagIds: sql<string[]>`coalesce(array_agg(${extensionTags.tagId}) FILTER (WHERE ${extensionTags.tagId} IS NOT NULL), '{}')`,
 }
 

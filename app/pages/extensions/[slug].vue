@@ -66,6 +66,7 @@ defineOgImageComponent("Frame", {
           :icon-emoji="ext.iconEmoji"
           :icon-color="ext.iconColor"
           :official-tier="ext.officialTier"
+          :product-line-label="ext.productLineLabel ?? null"
           :stars-avg="ext.starsAvg"
           :downloads-count="ext.downloadsCount"
           :updated-at="updatedAt"
