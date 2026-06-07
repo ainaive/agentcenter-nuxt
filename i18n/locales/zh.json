@@ -530,6 +530,38 @@
       "generic": "无法保存资料，请重试。"
     }
   },
+  "admin": {
+    "approvals": {
+      "title": "审核队列",
+      "subtitle": "你负责审核的分类中的待处理申请。",
+      "loading": "加载中…",
+      "empty": "你的审核分类暂无待处理申请。",
+      "requestedOn": "提交于 {date}",
+      "approve": "通过",
+      "reject": "驳回",
+      "cancel": "取消",
+      "confirmReject": "确认驳回",
+      "rejectNotePlaceholder": "驳回原因（可选，会展示给申请者）"
+    },
+    "reviewers": {
+      "title": "审核员矩阵",
+      "subtitle": "为每个（级别 × 功能分类）单元分配审核员。",
+      "loading": "加载矩阵…",
+      "matrix": {
+        "subCatColumn": "分类",
+        "add": "添加",
+        "addTitle": "添加审核员",
+        "addSubtitle": "为「{subCat}」类别的「{tier}」申请指派审核员。",
+        "emailLabel": "用户邮箱",
+        "emailPlaceholder": "邮箱地址",
+        "noSuchUser": "找不到该邮箱对应的用户 — 请让对方先登录一次再分配。",
+        "genericError": "添加失败，请重试。",
+        "removeAria": "移除 {user}",
+        "cancel": "取消",
+        "confirmAdd": "添加审核员"
+      }
+    }
+  },
   "approvals": {
     "applyForOfficial": "申请官方认证",
     "pendingFor": "{tier}审核中",
