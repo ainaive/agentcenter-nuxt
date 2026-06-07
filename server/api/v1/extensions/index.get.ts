@@ -33,8 +33,9 @@ export default defineEventHandler(async (event) => {
         category: ext.category,
         scope: ext.scope,
         // Preserve the frozen /api/v1 contract: any officialTier surfaces as
-        // `badge: "official"`. The new tier dimension stays internal until
-        // a contract bump intentionally exposes it.
+        // `badge: "official"`. The tier dimension AND the productLineId
+        // column stay internal until a contract bump intentionally exposes
+        // them — CLI consumers depend on the current shape.
         badge: ext.officialTier ? "official" : ext.badge,
         description: ext.description,
         descriptionZh: ext.descriptionZh,
