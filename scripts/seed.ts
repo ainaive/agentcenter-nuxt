@@ -189,6 +189,12 @@ async function main() {
       // the approval workflow; the seed pre-stamps a handful so the new
       // badge styling and filter pill have visible coverage on a fresh DB.
       officialTier: e.officialTier ?? null,
+      // CHECK constraint: productLineId is required iff officialTier='productLine'.
+      // Default to 'wireless' for legacy seed rows that pre-date the dimension.
+      productLineId:
+        e.officialTier === "productLine"
+          ? (e.productLineId ?? "wireless")
+          : null,
       scope: e.scope,
       funcCat: e.funcCat,
       subCat: e.subCat,
@@ -252,9 +258,11 @@ async function main() {
   console.log(`seed: inserting ${membershipRows.length} memberships`)
   await db.insert(memberships).values(membershipRows)
 
-  // Reviewer matrix: every (tier, subCat) cell gets at least one
-  // assignment from APPROVAL_REVIEWERS. Emails that don't resolve to a
-  // creator are skipped with a warning so a typo doesn't break the seed.
+  // Reviewer matrix: every (tier, subCat[, productLineId]) cell gets at least
+  // one assignment from APPROVAL_REVIEWERS. Emails that don't resolve to a
+  // creator are skipped with a warning so a typo doesn't break the seed. The
+  // DB CHECK enforces productLineId presence per tier; we mirror it here so a
+  // bad shape in the seed file fails loudly instead of at INSERT time.
   const reviewerRows = APPROVAL_REVIEWERS.flatMap((r, i) => {
     const reviewer = CREATORS.find((u) => u.email === r.reviewerEmail)
     if (!reviewer) {
@@ -263,11 +271,25 @@ async function main() {
       )
       return []
     }
+    const requiresPl = r.tier === "productLine"
+    if (requiresPl && !r.productLineId) {
+      console.warn(
+        `seed: approval reviewer #${i} (${r.tier}/${r.subCat}) missing productLineId — skipping`,
+      )
+      return []
+    }
+    if (!requiresPl && r.productLineId) {
+      console.warn(
+        `seed: approval reviewer #${i} (${r.tier}/${r.subCat}) carries productLineId on a company-tier row — skipping`,
+      )
+      return []
+    }
     return [
       {
         id: `appr-rev-${i}`,
         tier: r.tier,
         subCat: r.subCat,
+        productLineId: r.productLineId ?? null,
         userId: reviewer.id,
       },
     ]
@@ -302,6 +324,7 @@ async function main() {
     extensionId: string
     requestedTier: "productLine" | "company"
     subCat: string
+    productLineId: string | null
     requestedByUserId: string
     reason: string | null
     status: "pending" | "approved" | "rejected"
@@ -309,7 +332,11 @@ async function main() {
     decidedAt: Date | null
     reviewerNote: string | null
   }[] = []
-  const officialTierStamps: { extensionId: string; tier: "productLine" | "company" }[] = []
+  const officialTierStamps: {
+    extensionId: string
+    tier: "productLine" | "company"
+    productLineId: string | null
+  }[] = []
   for (const [i, r] of APPROVAL_REQUESTS.entries()) {
     const extensionId = extIdBySlug.get(r.extensionSlug)
     if (!extensionId) {
@@ -352,11 +379,25 @@ async function main() {
       )
       continue
     }
+    const requiresPl = r.requestedTier === "productLine"
+    if (requiresPl && !r.productLineId) {
+      console.warn(
+        `seed: approval request #${i} (${r.requestedTier}/${r.subCat}) missing productLineId — skipping`,
+      )
+      continue
+    }
+    if (!requiresPl && r.productLineId) {
+      console.warn(
+        `seed: approval request #${i} carries productLineId on a company-tier row — skipping`,
+      )
+      continue
+    }
     approvalRequestRows.push({
       id: `appr-req-${i}`,
       extensionId,
       requestedTier: r.requestedTier,
       subCat: r.subCat,
+      productLineId: r.productLineId ?? null,
       requestedByUserId: publisherId,
       reason: r.reason ?? null,
       status: r.status,
@@ -365,7 +406,11 @@ async function main() {
       reviewerNote: r.reviewerNote ?? null,
     })
     if (r.status === "approved") {
-      officialTierStamps.push({ extensionId, tier: r.requestedTier })
+      officialTierStamps.push({
+        extensionId,
+        tier: r.requestedTier,
+        productLineId: r.productLineId ?? null,
+      })
     }
   }
   if (approvalRequestRows.length > 0) {
@@ -375,7 +420,7 @@ async function main() {
   for (const stamp of officialTierStamps) {
     await db
       .update(extensions)
-      .set({ officialTier: stamp.tier })
+      .set({ officialTier: stamp.tier, productLineId: stamp.productLineId })
       .where(sql`${extensions.id} = ${stamp.extensionId}`)
   }
   if (officialTierStamps.length > 0) {

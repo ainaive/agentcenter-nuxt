@@ -85,6 +85,12 @@ export async function seedCatalog(db: Db): Promise<void> {
       l2: entry.l2,
       badge: entry.badge ?? null,
       officialTier: entry.officialTier ?? null,
+      // CHECK constraint: productLineId is required iff officialTier='productLine'.
+      // Catalog entries that pre-date the dimension default to 'wireless'.
+      productLineId:
+        entry.officialTier === "productLine"
+          ? (entry.productLineId ?? "wireless")
+          : null,
       publisherUserId: null,
       ownerOrgId: SYSTEM_ORG_ID,
       deptId: null,
@@ -117,6 +123,7 @@ export async function seedCatalog(db: Db): Promise<void> {
           l2: sql`excluded.l2`,
           badge: sql`excluded.badge`,
           officialTier: sql`excluded.official_tier`,
+          productLineId: sql`excluded.product_line_id`,
           ownerOrgId: sql`excluded.owner_org_id`,
           iconEmoji: sql`excluded.icon_emoji`,
           iconColor: sql`excluded.icon_color`,

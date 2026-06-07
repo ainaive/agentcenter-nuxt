@@ -34,6 +34,11 @@ export interface CatalogEntry {
   // light up on a fresh DB. Production rows get this through the approval
   // workflow; this field is the dev/demo lever only.
   officialTier?: "productLine" | "company"
+  // Required iff officialTier='productLine' (DB CHECK enforces). When the
+  // catalog stamps officialTier='productLine' without picking a line, the
+  // seed-catalog script defaults to 'wireless' so the row still satisfies
+  // the constraint.
+  productLineId?: "wireless" | "datacom" | "terminals" | "cloud"
   downloadsCount: number
   starsAvg: string
 }

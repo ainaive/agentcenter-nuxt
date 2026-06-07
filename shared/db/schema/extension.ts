@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
+  check,
   customType,
   index,
   integer,
@@ -77,6 +78,20 @@ export const fileScanStatusEnum = pgEnum("file_scan_status", [
   "flagged",
 ]);
 
+// Product-line lookup table — bilingual labels, kebab-case ids
+// (`wireless`, `datacom`, `terminals`, `cloud`). Seeded by migration 0009.
+// Used as the third axis of the reviewer matrix for the productLine tier,
+// and as the company-level "endorsing line" on extensions whose
+// officialTier='productLine'. Editable as data, not code, so adding a line
+// is a content migration rather than a release.
+export const productLines = pgTable("product_lines", {
+  id: text().primaryKey(),
+  labelEn: text().notNull(),
+  labelZh: text().notNull(),
+  sortOrder: integer().notNull().default(0),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+});
+
 export const extensions = pgTable(
   "extensions",
   {
@@ -87,6 +102,12 @@ export const extensions = pgTable(
     scope: extensionScopeEnum().notNull(),
     // Official-tier approval outcome. Null = unofficial. See approval.ts.
     officialTier: officialTierEnum(),
+    // Endorsing product line — required iff officialTier='productLine',
+    // null otherwise. CHECK constraint below enforces the shape; the
+    // approval orchestrator is the only writer.
+    productLineId: text().references(() => productLines.id, {
+      onDelete: "set null",
+    }),
     // funcCat/subCat are nullable — the redesigned publish wizard does not
     // collect them; admin curation can backfill or system defaults apply.
     funcCat: funcCatEnum(),
@@ -138,6 +159,7 @@ export const extensions = pgTable(
     index("idx_ext_category").on(t.category),
     index("idx_ext_scope").on(t.scope),
     index("idx_ext_official_tier").on(t.officialTier),
+    index("idx_ext_product_line").on(t.productLineId),
     index("idx_ext_func_sub_l2").on(t.funcCat, t.subCat, t.l2),
     index("idx_ext_dept_path").using(
       "btree",
@@ -149,6 +171,14 @@ export const extensions = pgTable(
     index("idx_ext_featured_published").on(
       t.featured,
       sql`${t.publishedAt} DESC`,
+    ),
+    // Shape invariant: productLineId is present iff officialTier='productLine'.
+    // Mirrors the same rule on approval_requests and approval_reviewers.
+    check(
+      "extensions_pl_shape_chk",
+      sql`official_tier IS NULL
+        OR (official_tier = 'productLine' AND product_line_id IS NOT NULL)
+        OR (official_tier = 'company' AND product_line_id IS NULL)`,
     ),
   ],
 );
