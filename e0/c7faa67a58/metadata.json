@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "e0c7faa67a58",
+  "strategy": "manual-commit",
+  "branch": "feat/approvals-product-line-dimension",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/components/approvals/ReviewerMatrix.vue",
+    "app/pages/admin/reviewers/index.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/e0/c7faa67a58/0/metadata.json",
+      "transcript": "/e0/c7faa67a58/0/full.jsonl",
+      "content_hash": "/e0/c7faa67a58/0/content_hash.txt",
+      "prompt": "/e0/c7faa67a58/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 1408,
+    "cache_creation_tokens": 2809495,
+    "cache_read_tokens": 177005333,
+    "output_tokens": 337389,
+    "api_call_count": 455
+  }
+}
