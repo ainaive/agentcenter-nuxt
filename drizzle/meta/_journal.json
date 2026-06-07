@@ -57,6 +57,13 @@
       "when": 1779436266174,
       "tag": "0007_wakeful_cloak",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1780826724250,
+      "tag": "0008_large_lizard",
+      "breakpoints": true
     }
   ]
 }
