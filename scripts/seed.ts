@@ -125,8 +125,13 @@ async function main() {
 
   console.log("seed: starting")
   console.log("seed: truncating catalog tables")
+  // Orgs + tags CASCADE through extensions and their dependents (versions,
+  // installs, ratings, extension_tags, approval_requests). approval_reviewers
+  // only cascades from `users` (which we don't truncate to preserve dev
+  // identities), so include it explicitly — otherwise a re-run hits the
+  // appr-rev-0 PK collision below.
   await db.execute(
-    sql`TRUNCATE TABLE ${organizations}, ${tags} RESTART IDENTITY CASCADE`,
+    sql`TRUNCATE TABLE ${organizations}, ${tags}, ${approvalReviewers} RESTART IDENTITY CASCADE`,
   )
 
   const authorOrgIdMap = new Map<string, string>()
