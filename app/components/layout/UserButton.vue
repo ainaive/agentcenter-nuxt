@@ -27,8 +27,19 @@ const adminMe = ref<AdminMe>({
   cells: [],
 })
 
+// Best-effort probe: failures keep the current adminMe (anon defaults
+// at first load, last good value thereafter). A per-call token guards
+// against the rare overlap when the session-user-id watcher fires
+// repeatedly — only the most recent response commits.
+let adminMeRequestId = 0
 async function refreshAdminMe() {
-  adminMe.value = await $fetch<AdminMe>("/api/internal/admin/me")
+  const myRequest = ++adminMeRequestId
+  try {
+    const next = await $fetch<AdminMe>("/api/internal/admin/me")
+    if (next && myRequest === adminMeRequestId) adminMe.value = next
+  } catch {
+    // Probe is non-blocking; leave adminMe at its current value.
+  }
 }
 
 onMounted(() => {
