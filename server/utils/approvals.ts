@@ -272,20 +272,38 @@ export async function revokeTier(
   return { extensionId: params.extensionId, revokedAt }
 }
 
+export interface ReviewerQueueFilters {
+  tier?: OfficialTier
+  subCat?: string
+  productLineId?: string
+}
+
 // Reviewer queue — pending requests in any cell this user covers. Returns
 // an empty array when the user has no cell assignments (and is not a
 // super-admin); super-admins see the whole pending queue.
+//
+// Optional `filters` narrow the queue without changing the trust model:
+// the cells are computed first (so a reviewer never queries outside their
+// own assignment), then filtered, then handed to listPendingForCells. A
+// filter that excludes every cell yields an empty `cells` array, which
+// listPendingForCells short-circuits to [] — no special-case branch.
 export async function listReviewerQueue(
   userId: string,
+  filters: ReviewerQueueFilters = {},
 ): Promise<approvalsRepo.ApprovalRequestRow[]> {
   const db = useDb()
+  let cells: Array<{
+    tier: OfficialTier
+    subCat: string
+    productLineId: string | null
+  }>
   if (await reviewersRepo.isSuperAdmin(db, userId)) {
     // Treat super-admin as "assigned to every cell". Pulled from the matrix
     // verbatim so an empty matrix still surfaces no rows — better than a
     // silent firehose. Productline IS NULL is encoded as the literal '∅' in
     // the dedup key so a (company, cloud, null) cell doesn't collapse onto
     // (productLine, cloud, '') by accident.
-    const cells = await reviewersRepo
+    cells = await reviewersRepo
       .listMatrix(db)
       .then((rows) =>
         Array.from(
@@ -301,11 +319,18 @@ export async function listReviewerQueue(
           }
         }),
       )
-    return approvalsRepo.listPendingForCells(db, cells)
+  } else {
+    cells = await reviewersRepo.listCellsForUser(db, userId)
   }
 
-  const cells = await reviewersRepo.listCellsForUser(db, userId)
-  return approvalsRepo.listPendingForCells(db, cells)
+  const narrowed = cells.filter((c) => {
+    if (filters.tier && c.tier !== filters.tier) return false
+    if (filters.subCat && c.subCat !== filters.subCat) return false
+    if (filters.productLineId && c.productLineId !== filters.productLineId)
+      return false
+    return true
+  })
+  return approvalsRepo.listPendingForCells(db, narrowed)
 }
 
 export async function listPublisherRequests(

@@ -508,6 +508,88 @@ describe("listReviewerQueue", () => {
     expect(result).toEqual([])
     expect(approvalsRepo.listPendingForCells).toHaveBeenCalledWith(DB, [])
   })
+
+  it("narrows the cells against tier / subCat / productLineId filters before the DB query", async () => {
+    vi.mocked(reviewersRepo.isSuperAdmin).mockResolvedValue(false)
+    vi.mocked(reviewersRepo.listCellsForUser).mockResolvedValue([
+      { tier: "productLine", subCat: "softDev", productLineId: "wireless" },
+      { tier: "productLine", subCat: "softDev", productLineId: "datacom" },
+      { tier: "productLine", subCat: "docs", productLineId: "wireless" },
+      { tier: "company", subCat: "softDev", productLineId: null },
+    ])
+    vi.mocked(approvalsRepo.listPendingForCells).mockResolvedValue([])
+
+    await listReviewerQueue("u-rev", {
+      tier: "productLine",
+      productLineId: "wireless",
+    })
+
+    expect(approvalsRepo.listPendingForCells).toHaveBeenCalledWith(DB, [
+      { tier: "productLine", subCat: "softDev", productLineId: "wireless" },
+      { tier: "productLine", subCat: "docs", productLineId: "wireless" },
+    ])
+  })
+
+  it("intersects subCat AND tier filters without leaking adjacent cells", async () => {
+    vi.mocked(reviewersRepo.isSuperAdmin).mockResolvedValue(false)
+    vi.mocked(reviewersRepo.listCellsForUser).mockResolvedValue([
+      { tier: "productLine", subCat: "softDev", productLineId: "wireless" },
+      { tier: "company", subCat: "softDev", productLineId: null },
+      { tier: "company", subCat: "docs", productLineId: null },
+    ])
+    vi.mocked(approvalsRepo.listPendingForCells).mockResolvedValue([])
+
+    await listReviewerQueue("u-rev", { tier: "company", subCat: "docs" })
+
+    expect(approvalsRepo.listPendingForCells).toHaveBeenCalledWith(DB, [
+      { tier: "company", subCat: "docs", productLineId: null },
+    ])
+  })
+
+  it("returns [] without throwing when filters exclude every covered cell", async () => {
+    vi.mocked(reviewersRepo.isSuperAdmin).mockResolvedValue(false)
+    vi.mocked(reviewersRepo.listCellsForUser).mockResolvedValue([
+      { tier: "productLine", subCat: "softDev", productLineId: "wireless" },
+    ])
+    vi.mocked(approvalsRepo.listPendingForCells).mockResolvedValue([])
+
+    await listReviewerQueue("u-rev", { subCat: "cloud" })
+
+    expect(approvalsRepo.listPendingForCells).toHaveBeenCalledWith(DB, [])
+  })
+
+  it("super-admin path applies the same filter against the matrix-wide cell set", async () => {
+    vi.mocked(reviewersRepo.isSuperAdmin).mockResolvedValue(true)
+    vi.mocked(reviewersRepo.listMatrix).mockResolvedValue([
+      {
+        id: "rev-1",
+        tier: "productLine",
+        subCat: "softDev",
+        productLineId: "wireless",
+        userId: "u-a",
+        userEmail: "a@x",
+        userName: null,
+        createdAt: new Date(),
+      },
+      {
+        id: "rev-2",
+        tier: "company",
+        subCat: "docs",
+        productLineId: null,
+        userId: "u-b",
+        userEmail: "b@x",
+        userName: null,
+        createdAt: new Date(),
+      },
+    ])
+    vi.mocked(approvalsRepo.listPendingForCells).mockResolvedValue([])
+
+    await listReviewerQueue("u-super", { tier: "company" })
+
+    expect(approvalsRepo.listPendingForCells).toHaveBeenCalledWith(DB, [
+      { tier: "company", subCat: "docs", productLineId: null },
+    ])
+  })
 })
 
 describe("revokeTier", () => {

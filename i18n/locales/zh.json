@@ -184,6 +184,12 @@
     "tierPicker": {
       "triggerLabel": "官方"
     },
+    "subCatPicker": {
+      "triggerLabel": "分类"
+    },
+    "subCat": {
+      "all": "全部分类"
+    },
     "chips": {
       "all": "全部",
       "trending": "热门",

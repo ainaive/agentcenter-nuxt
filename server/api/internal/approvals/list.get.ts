@@ -15,7 +15,14 @@ export default defineEventHandler(async (event) => {
   )
 
   if (query.view === "queue") {
-    return { ok: true, requests: await listReviewerQueue(user.id) }
+    return {
+      ok: true,
+      requests: await listReviewerQueue(user.id, {
+        tier: query.tier,
+        subCat: query.subCat,
+        productLineId: query.productLineId,
+      }),
+    }
   }
   return { ok: true, requests: await listPublisherRequests(user.id) }
 })

@@ -15,7 +15,7 @@ export const SUB_CAT_KEY_LIST: readonly string[] = [...SUB_CAT_KEYS]
 export const OfficialTier = z.enum(["productLine", "company"])
 export type OfficialTier = z.infer<typeof OfficialTier>
 
-const SubCatKey = z.string().refine((v) => SUB_CAT_KEYS.has(v), {
+export const SubCatKey = z.string().refine((v) => SUB_CAT_KEYS.has(v), {
   message: "must be a key from FUNC_TAXONOMY",
 })
 
@@ -131,5 +131,13 @@ export const ListApprovalsQuerySchema = z.object({
   // "mine"  → requests this user submitted as a publisher
   // "queue" → pending requests routed to this user as a reviewer
   view: z.enum(["mine", "queue"]).default("mine"),
+  // Reviewer-queue narrowing keys. Reused from the cell-shape validators
+  // above so the queue picker stays in lockstep with the publisher dialog
+  // and the listing rail. No iff-rule between tier and productLineId here:
+  // a reviewer can legitimately narrow to "any Wireless requests" across
+  // every subCat without being forced to pick a tier first.
+  tier: OfficialTier.optional(),
+  subCat: SubCatKey.optional(),
+  productLineId: ProductLineId.optional(),
 })
 export type ListApprovalsQuery = z.infer<typeof ListApprovalsQuerySchema>
