@@ -5,15 +5,16 @@ vi.mock("~~/server/repositories/approvals", () => ({
   findById: vi.fn(),
   findPendingByExtension: vi.fn(),
   listForPublisher: vi.fn(),
-  listPendingForCells: vi.fn(),
+  listPendingForUser: vi.fn(),
+  listAllPending: vi.fn(),
   applyDecision: vi.fn(),
   applyWithdraw: vi.fn(),
   setExtensionOfficialTier: vi.fn(),
   applyRevocation: vi.fn(),
-  isReviewerForCell: vi.fn(),
 }))
-vi.mock("~~/server/repositories/reviewers", () => ({
+vi.mock("~~/server/repositories/admins", () => ({
   isSuperAdmin: vi.fn(),
+  isAdminCoveringRequest: vi.fn(),
   listCellsForUser: vi.fn(),
   listMatrix: vi.fn(),
 }))
@@ -46,7 +47,7 @@ vi.mock("./inngest", () => ({
 }))
 
 const approvalsRepo = await import("~~/server/repositories/approvals")
-const reviewersRepo = await import("~~/server/repositories/reviewers")
+const adminsRepo = await import("~~/server/repositories/admins")
 const extensionsRepo = await import("~~/server/repositories/extensions")
 const {
   submitRequest,
@@ -58,18 +59,23 @@ const {
 } = await import("./approvals")
 
 // Minimal stand-in for `extensionsRepo.findById`'s detailSelect row — the
-// orchestrator only reads publisherUserId, visibility, and id.
+// orchestrator reads publisherUserId, visibility, id, plus the new
+// `category` and `l2` columns it snapshots onto the request row.
 const EXT_PUBLISHED = {
   id: "ext-1",
   publisherUserId: "u-pub",
   visibility: "published" as const,
+  category: "skills" as const,
+  l2: "backend" as string | null,
 }
 
 const PENDING_ROW = {
   id: "req-1",
   extensionId: "ext-1",
+  extensionCategory: "skills" as const,
   requestedTier: "company" as const,
   subCat: "softDev",
+  l2: "backend" as string | null,
   productLineId: null as string | null,
   requestedByUserId: "u-pub",
   reason: null,
@@ -107,8 +113,10 @@ describe("submitRequest", () => {
       TX,
       expect.objectContaining({
         extensionId: "ext-1",
+        extensionCategory: "skills",
         requestedTier: "company",
         subCat: "softDev",
+        l2: "backend",
         productLineId: null,
         requestedByUserId: "u-pub",
         reason: "lots of usage",
@@ -124,6 +132,25 @@ describe("submitRequest", () => {
           subCat: "softDev",
         }),
       }),
+    )
+  })
+
+  it("snapshots l2=null when the extension carries no l2 classification", async () => {
+    vi.mocked(extensionsRepo.findById).mockResolvedValue({
+      ...EXT_PUBLISHED,
+      l2: null,
+    } as never)
+    await submitRequest({
+      extensionId: "ext-1",
+      requestedTier: "company",
+      subCat: "softDev",
+      productLineId: null,
+      userId: "u-pub",
+      reason: undefined,
+    })
+    expect(approvalsRepo.insertRequest).toHaveBeenCalledWith(
+      TX,
+      expect.objectContaining({ l2: null }),
     )
   })
 
@@ -277,8 +304,8 @@ describe("submitRequest", () => {
 describe("decideRequest", () => {
   beforeEach(() => {
     vi.mocked(approvalsRepo.findById).mockResolvedValue(PENDING_ROW)
-    vi.mocked(reviewersRepo.isSuperAdmin).mockResolvedValue(false)
-    vi.mocked(approvalsRepo.isReviewerForCell).mockResolvedValue(true)
+    vi.mocked(adminsRepo.isSuperAdmin).mockResolvedValue(false)
+    vi.mocked(adminsRepo.isAdminCoveringRequest).mockResolvedValue(true)
     // Default the optimistic-locking return to 1 (success). Tests that
     // exercise the race-loss path override this to 0.
     vi.mocked(approvalsRepo.applyDecision).mockResolvedValue(1)
@@ -314,6 +341,30 @@ describe("decideRequest", () => {
     )
   })
 
+  it("passes the full request cell (incl. l2 + extensionCategory) to the covering probe", async () => {
+    vi.mocked(approvalsRepo.findById)
+      .mockResolvedValueOnce(PENDING_ROW)
+      .mockResolvedValueOnce({ ...PENDING_ROW, status: "approved" })
+
+    await decideRequest({
+      requestId: "req-1",
+      action: { decision: "approve" },
+      reviewerUserId: "u-rev",
+    })
+
+    expect(adminsRepo.isAdminCoveringRequest).toHaveBeenCalledWith(
+      DB,
+      "u-rev",
+      {
+        extensionCategory: "skills",
+        tier: "company",
+        productLineId: null,
+        subCat: "softDev",
+        l2: "backend",
+      },
+    )
+  })
+
   it("rejects: stamps the request only, no extension write", async () => {
     vi.mocked(approvalsRepo.findById)
       .mockResolvedValueOnce(PENDING_ROW)
@@ -336,9 +387,9 @@ describe("decideRequest", () => {
     expect(approvalsRepo.setExtensionOfficialTier).not.toHaveBeenCalled()
   })
 
-  it("super-admins bypass the reviewer-cell check", async () => {
-    vi.mocked(reviewersRepo.isSuperAdmin).mockResolvedValue(true)
-    vi.mocked(approvalsRepo.isReviewerForCell).mockResolvedValue(false)
+  it("super-admins bypass the covering probe", async () => {
+    vi.mocked(adminsRepo.isSuperAdmin).mockResolvedValue(true)
+    vi.mocked(adminsRepo.isAdminCoveringRequest).mockResolvedValue(false)
     vi.mocked(approvalsRepo.findById)
       .mockResolvedValueOnce(PENDING_ROW)
       .mockResolvedValueOnce({ ...PENDING_ROW, status: "approved" })
@@ -349,11 +400,12 @@ describe("decideRequest", () => {
       reviewerUserId: "u-super",
     })
     expect(approvalsRepo.applyDecision).toHaveBeenCalled()
+    expect(adminsRepo.isAdminCoveringRequest).not.toHaveBeenCalled()
   })
 
-  it("throws not_reviewer when neither super-admin nor an assigned reviewer", async () => {
-    vi.mocked(reviewersRepo.isSuperAdmin).mockResolvedValue(false)
-    vi.mocked(approvalsRepo.isReviewerForCell).mockResolvedValue(false)
+  it("throws not_reviewer when neither super-admin nor a covering admin", async () => {
+    vi.mocked(adminsRepo.isSuperAdmin).mockResolvedValue(false)
+    vi.mocked(adminsRepo.isAdminCoveringRequest).mockResolvedValue(false)
 
     await expect(
       decideRequest({
@@ -462,161 +514,100 @@ describe("withdrawRequest", () => {
 })
 
 describe("listReviewerQueue", () => {
-  it("uses the user's assigned cells when not a super-admin", async () => {
-    vi.mocked(reviewersRepo.isSuperAdmin).mockResolvedValue(false)
-    vi.mocked(reviewersRepo.listCellsForUser).mockResolvedValue([
-      { tier: "productLine", subCat: "softDev", productLineId: "wireless" },
-    ])
-    vi.mocked(approvalsRepo.listPendingForCells).mockResolvedValue([])
+  // Helper rows for the listPendingForUser / listAllPending mocks.
+  const ROW_PL_SOFTDEV_WIRELESS = {
+    ...PENDING_ROW,
+    id: "req-pl",
+    requestedTier: "productLine" as const,
+    productLineId: "wireless",
+    subCat: "softDev",
+    l2: "backend" as string | null,
+  }
+  const ROW_COMPANY_DOCS = {
+    ...PENDING_ROW,
+    id: "req-co",
+    requestedTier: "company" as const,
+    productLineId: null,
+    subCat: "docs",
+    l2: null,
+    extensionCategory: "mcp" as const,
+  }
 
-    await listReviewerQueue("u-rev")
-    expect(approvalsRepo.listPendingForCells).toHaveBeenCalledWith(DB, [
-      { tier: "productLine", subCat: "softDev", productLineId: "wireless" },
+  it("non-super-admins get the JOIN-driven covered pending list", async () => {
+    vi.mocked(adminsRepo.isSuperAdmin).mockResolvedValue(false)
+    vi.mocked(approvalsRepo.listPendingForUser).mockResolvedValue([
+      ROW_PL_SOFTDEV_WIRELESS,
     ])
+
+    const result = await listReviewerQueue("u-rev")
+    expect(approvalsRepo.listPendingForUser).toHaveBeenCalledWith(DB, "u-rev")
+    expect(approvalsRepo.listAllPending).not.toHaveBeenCalled()
+    expect(result.map((r) => r.id)).toEqual(["req-pl"])
   })
 
-  it("super-admins see pending requests across every cell currently in the matrix", async () => {
-    vi.mocked(reviewersRepo.isSuperAdmin).mockResolvedValue(true)
-    vi.mocked(reviewersRepo.listMatrix).mockResolvedValue([
-      {
-        id: "rev-1",
-        tier: "productLine",
-        subCat: "softDev",
-        productLineId: "wireless",
-        userId: "u-a",
-        userEmail: "a@x",
-        userName: null,
-        createdAt: new Date(),
-      },
-      {
-        id: "rev-2",
-        tier: "company",
-        subCat: "docs",
-        productLineId: null,
-        userId: "u-b",
-        userEmail: "b@x",
-        userName: null,
-        createdAt: new Date(),
-      },
-      // Duplicate cell with a different user — must dedupe to one cell.
-      {
-        id: "rev-3",
-        tier: "productLine",
-        subCat: "softDev",
-        productLineId: "wireless",
-        userId: "u-c",
-        userEmail: "c@x",
-        userName: null,
-        createdAt: new Date(),
-      },
+  it("super-admins see every pending request via listAllPending", async () => {
+    vi.mocked(adminsRepo.isSuperAdmin).mockResolvedValue(true)
+    vi.mocked(approvalsRepo.listAllPending).mockResolvedValue([
+      ROW_PL_SOFTDEV_WIRELESS,
+      ROW_COMPANY_DOCS,
     ])
-    vi.mocked(approvalsRepo.listPendingForCells).mockResolvedValue([])
 
-    await listReviewerQueue("u-super")
-    const args = vi.mocked(approvalsRepo.listPendingForCells).mock.calls[0]
-    const passed = (args![1] as Array<{
-      tier: string
-      subCat: string
-      productLineId: string | null
-    }>)
-      .map((c) => `${c.tier}:${c.subCat}:${c.productLineId ?? "∅"}`)
-      .sort()
-    expect(passed).toEqual([
-      "company:docs:∅",
-      "productLine:softDev:wireless",
-    ])
+    const result = await listReviewerQueue("u-super")
+    expect(approvalsRepo.listAllPending).toHaveBeenCalledWith(DB)
+    expect(approvalsRepo.listPendingForUser).not.toHaveBeenCalled()
+    expect(result.map((r) => r.id).sort()).toEqual(["req-co", "req-pl"])
   })
 
-  it("returns an empty array for a user with no cells (and not super-admin)", async () => {
-    vi.mocked(reviewersRepo.isSuperAdmin).mockResolvedValue(false)
-    vi.mocked(reviewersRepo.listCellsForUser).mockResolvedValue([])
-    vi.mocked(approvalsRepo.listPendingForCells).mockResolvedValue([])
-
-    const result = await listReviewerQueue("u-noone")
-    expect(result).toEqual([])
-    expect(approvalsRepo.listPendingForCells).toHaveBeenCalledWith(DB, [])
+  it("returns an empty array for a user with no covered requests (and not super-admin)", async () => {
+    vi.mocked(adminsRepo.isSuperAdmin).mockResolvedValue(false)
+    vi.mocked(approvalsRepo.listPendingForUser).mockResolvedValue([])
+    expect(await listReviewerQueue("u-noone")).toEqual([])
   })
 
-  it("narrows the cells against tier / subCat / productLineId filters before the DB query", async () => {
-    vi.mocked(reviewersRepo.isSuperAdmin).mockResolvedValue(false)
-    vi.mocked(reviewersRepo.listCellsForUser).mockResolvedValue([
-      { tier: "productLine", subCat: "softDev", productLineId: "wireless" },
-      { tier: "productLine", subCat: "softDev", productLineId: "datacom" },
-      { tier: "productLine", subCat: "docs", productLineId: "wireless" },
-      { tier: "company", subCat: "softDev", productLineId: null },
+  it("narrows by tier / productLineId after the DB fetch", async () => {
+    vi.mocked(adminsRepo.isSuperAdmin).mockResolvedValue(false)
+    vi.mocked(approvalsRepo.listPendingForUser).mockResolvedValue([
+      ROW_PL_SOFTDEV_WIRELESS,
+      ROW_COMPANY_DOCS,
     ])
-    vi.mocked(approvalsRepo.listPendingForCells).mockResolvedValue([])
 
-    await listReviewerQueue("u-rev", {
+    const out = await listReviewerQueue("u-rev", {
       tier: "productLine",
       productLineId: "wireless",
     })
-
-    expect(approvalsRepo.listPendingForCells).toHaveBeenCalledWith(DB, [
-      { tier: "productLine", subCat: "softDev", productLineId: "wireless" },
-      { tier: "productLine", subCat: "docs", productLineId: "wireless" },
-    ])
+    expect(out.map((r) => r.id)).toEqual(["req-pl"])
   })
 
-  it("intersects subCat AND tier filters without leaking adjacent cells", async () => {
-    vi.mocked(reviewersRepo.isSuperAdmin).mockResolvedValue(false)
-    vi.mocked(reviewersRepo.listCellsForUser).mockResolvedValue([
-      { tier: "productLine", subCat: "softDev", productLineId: "wireless" },
-      { tier: "company", subCat: "softDev", productLineId: null },
-      { tier: "company", subCat: "docs", productLineId: null },
+  it("narrows by subCat without leaking adjacent cells", async () => {
+    vi.mocked(adminsRepo.isSuperAdmin).mockResolvedValue(false)
+    vi.mocked(approvalsRepo.listPendingForUser).mockResolvedValue([
+      ROW_PL_SOFTDEV_WIRELESS,
+      ROW_COMPANY_DOCS,
     ])
-    vi.mocked(approvalsRepo.listPendingForCells).mockResolvedValue([])
 
-    await listReviewerQueue("u-rev", { tier: "company", subCat: "docs" })
-
-    expect(approvalsRepo.listPendingForCells).toHaveBeenCalledWith(DB, [
-      { tier: "company", subCat: "docs", productLineId: null },
-    ])
+    const out = await listReviewerQueue("u-rev", { subCat: "docs" })
+    expect(out.map((r) => r.id)).toEqual(["req-co"])
   })
 
-  it("returns [] without throwing when filters exclude every covered cell", async () => {
-    vi.mocked(reviewersRepo.isSuperAdmin).mockResolvedValue(false)
-    vi.mocked(reviewersRepo.listCellsForUser).mockResolvedValue([
-      { tier: "productLine", subCat: "softDev", productLineId: "wireless" },
+  it("narrows by extensionCategory (matrix tab)", async () => {
+    vi.mocked(adminsRepo.isSuperAdmin).mockResolvedValue(false)
+    vi.mocked(approvalsRepo.listPendingForUser).mockResolvedValue([
+      ROW_PL_SOFTDEV_WIRELESS,
+      ROW_COMPANY_DOCS,
     ])
-    vi.mocked(approvalsRepo.listPendingForCells).mockResolvedValue([])
 
-    await listReviewerQueue("u-rev", { subCat: "cloud" })
-
-    expect(approvalsRepo.listPendingForCells).toHaveBeenCalledWith(DB, [])
+    const out = await listReviewerQueue("u-rev", { extensionCategory: "mcp" })
+    expect(out.map((r) => r.id)).toEqual(["req-co"])
   })
 
-  it("super-admin path applies the same filter against the matrix-wide cell set", async () => {
-    vi.mocked(reviewersRepo.isSuperAdmin).mockResolvedValue(true)
-    vi.mocked(reviewersRepo.listMatrix).mockResolvedValue([
-      {
-        id: "rev-1",
-        tier: "productLine",
-        subCat: "softDev",
-        productLineId: "wireless",
-        userId: "u-a",
-        userEmail: "a@x",
-        userName: null,
-        createdAt: new Date(),
-      },
-      {
-        id: "rev-2",
-        tier: "company",
-        subCat: "docs",
-        productLineId: null,
-        userId: "u-b",
-        userEmail: "b@x",
-        userName: null,
-        createdAt: new Date(),
-      },
+  it("returns [] without throwing when filters exclude every row", async () => {
+    vi.mocked(adminsRepo.isSuperAdmin).mockResolvedValue(false)
+    vi.mocked(approvalsRepo.listPendingForUser).mockResolvedValue([
+      ROW_PL_SOFTDEV_WIRELESS,
     ])
-    vi.mocked(approvalsRepo.listPendingForCells).mockResolvedValue([])
-
-    await listReviewerQueue("u-super", { tier: "company" })
-
-    expect(approvalsRepo.listPendingForCells).toHaveBeenCalledWith(DB, [
-      { tier: "company", subCat: "docs", productLineId: null },
-    ])
+    expect(
+      await listReviewerQueue("u-rev", { subCat: "cloud" }),
+    ).toEqual([])
   })
 })
 
@@ -627,6 +618,8 @@ describe("revokeTier", () => {
     visibility: "published" as const,
     officialTier: "company" as const,
     productLineId: null as string | null,
+    category: "skills" as const,
+    l2: null as string | null,
   }
 
   beforeEach(() => {

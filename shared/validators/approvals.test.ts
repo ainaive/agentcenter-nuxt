@@ -3,13 +3,13 @@ import { describe, expect, it } from "vitest"
 import {
   APPROVAL_NOTE_MAX,
   APPROVAL_REASON_MAX,
-  AssignReviewerSchema,
+  AssignAdminSchema,
   DecideApprovalSchema,
   ListApprovalsQuerySchema,
   OfficialTier,
   SubmitApprovalSchema,
   SUB_CAT_KEY_LIST,
-  UnassignReviewerSchema,
+  UnassignAdminSchema,
   WithdrawApprovalSchema,
 } from "./approvals"
 
@@ -179,42 +179,144 @@ describe("WithdrawApprovalSchema", () => {
   })
 })
 
-describe("AssignReviewerSchema", () => {
-  it("parses a full assignment", () => {
+describe("AssignAdminSchema", () => {
+  it("parses a macro-level company assignment", () => {
     expect(
-      AssignReviewerSchema.parse({
+      AssignAdminSchema.parse({
+        extensionCategory: "skills",
         tier: "company",
-        subCat: "cloud",
+        categoryLevel: "macro",
+        categoryKey: "cloud",
         userId: "user_42",
       }),
-    ).toEqual({ tier: "company", subCat: "cloud", userId: "user_42" })
+    ).toEqual({
+      extensionCategory: "skills",
+      tier: "company",
+      categoryLevel: "macro",
+      categoryKey: "cloud",
+      userId: "user_42",
+    })
   })
 
-  it("rejects an unknown subCat", () => {
-    expect(() =>
-      AssignReviewerSchema.parse({
+  it("parses an All × productLine assignment with the wildcard key", () => {
+    expect(
+      AssignAdminSchema.parse({
+        extensionCategory: "mcp",
+        tier: "productLine",
+        productLineId: "wireless",
+        categoryLevel: "all",
+        categoryKey: "*",
+        userId: "user_42",
+      }),
+    ).toMatchObject({
+      categoryLevel: "all",
+      categoryKey: "*",
+      productLineId: "wireless",
+    })
+  })
+
+  it("parses a micro-level assignment with an l2 key", () => {
+    expect(
+      AssignAdminSchema.parse({
+        extensionCategory: "slash",
         tier: "company",
-        subCat: "unknownCat",
+        categoryLevel: "micro",
+        categoryKey: "reqAnalysis",
+        userId: "user_42",
+      }),
+    ).toMatchObject({ categoryLevel: "micro", categoryKey: "reqAnalysis" })
+  })
+
+  it("rejects an unknown extension category", () => {
+    expect(() =>
+      AssignAdminSchema.parse({
+        extensionCategory: "cli",
+        tier: "company",
+        categoryLevel: "macro",
+        categoryKey: "cloud",
         userId: "user_42",
       }),
     ).toThrow()
   })
 
+  it("rejects a macro key that isn't an l1 leaf", () => {
+    expect(() =>
+      AssignAdminSchema.parse({
+        extensionCategory: "skills",
+        tier: "company",
+        categoryLevel: "macro",
+        categoryKey: "reqAnalysis", // l2, not l1
+        userId: "user_42",
+      }),
+    ).toThrow(/categoryKey/)
+  })
+
+  it("rejects a micro key that isn't an l2 leaf", () => {
+    expect(() =>
+      AssignAdminSchema.parse({
+        extensionCategory: "skills",
+        tier: "company",
+        categoryLevel: "micro",
+        categoryKey: "systemDesign", // l1, not l2
+        userId: "user_42",
+      }),
+    ).toThrow(/categoryKey/)
+  })
+
+  it("rejects an 'all' level paired with a non-wildcard key", () => {
+    expect(() =>
+      AssignAdminSchema.parse({
+        extensionCategory: "skills",
+        tier: "company",
+        categoryLevel: "all",
+        categoryKey: "softDev",
+        userId: "user_42",
+      }),
+    ).toThrow(/categoryKey/)
+  })
+
+  it("rejects a productLine assignment without productLineId", () => {
+    expect(() =>
+      AssignAdminSchema.parse({
+        extensionCategory: "skills",
+        tier: "productLine",
+        categoryLevel: "macro",
+        categoryKey: "softDev",
+        userId: "user_42",
+      }),
+    ).toThrow(/productLineId/)
+  })
+
+  it("rejects a company assignment that includes productLineId", () => {
+    expect(() =>
+      AssignAdminSchema.parse({
+        extensionCategory: "skills",
+        tier: "company",
+        productLineId: "wireless",
+        categoryLevel: "macro",
+        categoryKey: "softDev",
+        userId: "user_42",
+      }),
+    ).toThrow(/productLineId/)
+  })
+
   it("rejects an unknown tier", () => {
     expect(() =>
-      AssignReviewerSchema.parse({
+      AssignAdminSchema.parse({
+        extensionCategory: "skills",
         tier: "executive",
-        subCat: "cloud",
+        categoryLevel: "macro",
+        categoryKey: "cloud",
         userId: "user_42",
       }),
     ).toThrow()
   })
 })
 
-describe("UnassignReviewerSchema", () => {
+describe("UnassignAdminSchema", () => {
   it("requires a non-empty id", () => {
-    expect(UnassignReviewerSchema.parse({ id: "rev_1" })).toEqual({ id: "rev_1" })
-    expect(() => UnassignReviewerSchema.parse({ id: "" })).toThrow()
+    expect(UnassignAdminSchema.parse({ id: "adm_1" })).toEqual({ id: "adm_1" })
+    expect(() => UnassignAdminSchema.parse({ id: "" })).toThrow()
   })
 })
 

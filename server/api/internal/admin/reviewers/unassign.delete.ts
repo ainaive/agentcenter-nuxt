@@ -1,27 +1,29 @@
 import {
-  deleteReviewer,
-  findReviewerById,
-} from "~~/server/repositories/reviewers"
-import { UnassignReviewerSchema } from "~~/shared/validators/approvals"
+  deleteAdmin,
+  findAdminById,
+} from "~~/server/repositories/admins"
+import { UnassignAdminSchema } from "~~/shared/validators/approvals"
 
-// Load the row first so the cell-aware gate authorises against the row's
-// own (tier, subCat, productLineId), not against anything the caller
-// supplies. Without this, a company admin of subCat X could uncover the
-// id of a company-tier reviewer in any subCat by guessing — the request
-// body alone can't tell us which cell the id belongs to.
+// Load the row first so the cell-aware gate authorises against the
+// row's own 5-coord cell, not against anything the caller supplies.
+// Without this, a non-super admin could uncover the id of any row by
+// guessing — the request body alone can't tell us which cell the id
+// belongs to.
 export default defineEventHandler(async (event) => {
   const body = await readValidatedBody(event, (raw) =>
-    UnassignReviewerSchema.parse(raw),
+    UnassignAdminSchema.parse(raw),
   )
-  const row = await findReviewerById(useDb(), body.id)
+  const row = await findAdminById(useDb(), body.id)
   if (!row) {
-    throw createError({ statusCode: 404, statusMessage: "reviewer_not_found" })
+    throw createError({ statusCode: 404, statusMessage: "admin_not_found" })
   }
   await requireCellAdmin(event, {
+    extensionCategory: row.extensionCategory,
     tier: row.tier,
-    subCat: row.subCat,
     productLineId: row.productLineId,
+    categoryLevel: row.categoryLevel,
+    categoryKey: row.categoryKey,
   })
-  await deleteReviewer(useDb(), body.id)
+  await deleteAdmin(useDb(), body.id)
   return { ok: true }
 })

@@ -2,9 +2,10 @@ import { eq, sql } from "drizzle-orm"
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest"
 
 import * as approvalsRepo from "~~/server/repositories/approvals"
+import * as adminsRepo from "~~/server/repositories/admins"
 import {
+  approvalAdmins,
   approvalRequests,
-  approvalReviewers,
   extensions,
   organizations,
   users,
@@ -40,6 +41,7 @@ describe("approvals repository", () => {
         ownerOrgId: "org-1",
         publisherUserId: "u-pub",
         subCat: "softDev",
+        l2: "backend",
         name: "Ext A",
         visibility: "published",
       },
@@ -63,7 +65,7 @@ describe("approvals repository", () => {
 
   beforeEach(async () => {
     await db.delete(approvalRequests)
-    await db.delete(approvalReviewers)
+    await db.delete(approvalAdmins)
     // Reset officialTier between specs so the bulk-lookup test starts clean.
     // No `.where(...)` would also wipe everything but Drizzle requires the
     // clause; sql`1=1` is the standard "match every row" pattern.
@@ -71,24 +73,44 @@ describe("approvals repository", () => {
   })
 
   describe("insertRequest + findById", () => {
-    it("persists a pending request with snapshotted tier and subCat", async () => {
+    it("persists a pending request with snapshotted tier / category / l2 / subCat", async () => {
       const row = await approvalsRepo.insertRequest(db, {
         id: "req-1",
         extensionId: "ext-a",
+        extensionCategory: "skills",
         requestedTier: "company",
         subCat: "softDev",
+        l2: "backend",
+        productLineId: null,
         requestedByUserId: "u-pub",
         reason: "Used by 5 teams.",
       })
 
       expect(row.status).toBe("pending")
       expect(row.requestedTier).toBe("company")
+      expect(row.extensionCategory).toBe("skills")
       expect(row.subCat).toBe("softDev")
+      expect(row.l2).toBe("backend")
       expect(row.reason).toBe("Used by 5 teams.")
       expect(row.decidedByUserId).toBeNull()
       expect(row.decidedAt).toBeNull()
       expect(row.reviewerNote).toBeNull()
       expect(row.createdAt).toBeInstanceOf(Date)
+    })
+
+    it("accepts l2=null for extensions without an l2 classification", async () => {
+      const row = await approvalsRepo.insertRequest(db, {
+        id: "req-2",
+        extensionId: "ext-b",
+        extensionCategory: "skills",
+        requestedTier: "company",
+        subCat: "docs",
+        l2: null,
+        productLineId: null,
+        requestedByUserId: "u-pub",
+        reason: null,
+      })
+      expect(row.l2).toBeNull()
     })
   })
 
@@ -97,8 +119,10 @@ describe("approvals repository", () => {
       await approvalsRepo.insertRequest(db, {
         id: "req-1",
         extensionId: "ext-a",
+        extensionCategory: "skills",
         requestedTier: "productLine",
         subCat: "softDev",
+        l2: "backend",
         productLineId: "wireless",
         requestedByUserId: "u-pub",
         reason: null,
@@ -117,8 +141,10 @@ describe("approvals repository", () => {
       await approvalsRepo.insertRequest(db, {
         id: "req-1",
         extensionId: "ext-a",
+        extensionCategory: "skills",
         requestedTier: "productLine",
         subCat: "softDev",
+        l2: "backend",
         productLineId: "wireless",
         requestedByUserId: "u-pub",
         reason: null,
@@ -135,8 +161,10 @@ describe("approvals repository", () => {
       await approvalsRepo.insertRequest(db, {
         id: "req-old",
         extensionId: "ext-a",
+        extensionCategory: "skills",
         requestedTier: "productLine",
         subCat: "softDev",
+        l2: "backend",
         productLineId: "wireless",
         requestedByUserId: "u-pub",
         reason: null,
@@ -151,8 +179,10 @@ describe("approvals repository", () => {
       await approvalsRepo.insertRequest(db, {
         id: "req-new",
         extensionId: "ext-b",
+        extensionCategory: "skills",
         requestedTier: "company",
         subCat: "docs",
+        l2: null,
         productLineId: null,
         requestedByUserId: "u-pub",
         reason: null,
@@ -170,8 +200,10 @@ describe("approvals repository", () => {
       await approvalsRepo.insertRequest(db, {
         id: "req-other",
         extensionId: "ext-a",
+        extensionCategory: "skills",
         requestedTier: "company",
         subCat: "softDev",
+        l2: null,
         productLineId: null,
         requestedByUserId: "u-other",
         reason: null,
@@ -181,13 +213,17 @@ describe("approvals repository", () => {
     })
   })
 
-  describe("listPendingForCells", () => {
+  describe("listPendingForUser", () => {
+    // Fixtures: three requests on two extensions; one decided so it never
+    // belongs in the queue regardless of admin coverage.
     beforeEach(async () => {
       await approvalsRepo.insertRequest(db, {
         id: "req-pl-softDev",
         extensionId: "ext-a",
+        extensionCategory: "skills",
         requestedTier: "productLine",
         subCat: "softDev",
+        l2: "backend",
         productLineId: "wireless",
         requestedByUserId: "u-pub",
         reason: null,
@@ -195,8 +231,10 @@ describe("approvals repository", () => {
       await approvalsRepo.insertRequest(db, {
         id: "req-co-docs",
         extensionId: "ext-b",
+        extensionCategory: "skills",
         requestedTier: "company",
         subCat: "docs",
+        l2: null,
         productLineId: null,
         requestedByUserId: "u-pub",
         reason: null,
@@ -205,8 +243,10 @@ describe("approvals repository", () => {
       await approvalsRepo.insertRequest(db, {
         id: "req-decided",
         extensionId: "ext-a",
+        extensionCategory: "skills",
         requestedTier: "productLine",
         subCat: "softDev",
+        l2: "backend",
         productLineId: "wireless",
         requestedByUserId: "u-pub",
         reason: null,
@@ -219,49 +259,182 @@ describe("approvals repository", () => {
       })
     })
 
-    it("returns empty when the cell list is empty", async () => {
-      expect(await approvalsRepo.listPendingForCells(db, [])).toEqual([])
+    it("returns empty for a user with no admin rows", async () => {
+      expect(await approvalsRepo.listPendingForUser(db, "u-rev")).toEqual([])
     })
 
-    it("returns only pending requests in the matching cells", async () => {
-      const rows = await approvalsRepo.listPendingForCells(db, [
-        { tier: "productLine", subCat: "softDev", productLineId: "wireless" },
-      ])
+    it("(productLine wireless × macro=softDev) covers the wireless-softDev request", async () => {
+      await adminsRepo.insertAdmin(db, {
+        id: "adm-1",
+        extensionCategory: "skills",
+        tier: "productLine",
+        productLineId: "wireless",
+        categoryLevel: "macro",
+        categoryKey: "softDev",
+        userId: "u-rev",
+      })
+      const rows = await approvalsRepo.listPendingForUser(db, "u-rev")
       expect(rows.map((r) => r.id)).toEqual(["req-pl-softDev"])
     })
 
-    it("matches multiple cells via an OR", async () => {
-      const rows = await approvalsRepo.listPendingForCells(db, [
-        { tier: "productLine", subCat: "softDev", productLineId: "wireless" },
-        { tier: "company", subCat: "docs", productLineId: null },
-      ])
-      expect(rows.map((r) => r.id).sort()).toEqual(
-        ["req-co-docs", "req-pl-softDev"].sort(),
-      )
+    it("(company × macro=docs) covers the company-docs request", async () => {
+      await adminsRepo.insertAdmin(db, {
+        id: "adm-1",
+        extensionCategory: "skills",
+        tier: "company",
+        productLineId: null,
+        categoryLevel: "macro",
+        categoryKey: "docs",
+        userId: "u-rev",
+      })
+      const rows = await approvalsRepo.listPendingForUser(db, "u-rev")
+      expect(rows.map((r) => r.id)).toEqual(["req-co-docs"])
     })
 
-    it("returns nothing when the cells don't match any pending requests", async () => {
-      const rows = await approvalsRepo.listPendingForCells(db, [
-        { tier: "company", subCat: "softDev", productLineId: null },
-      ])
+    it("a micro=backend admin covers the wireless-softDev request via the l2 snapshot", async () => {
+      await adminsRepo.insertAdmin(db, {
+        id: "adm-1",
+        extensionCategory: "skills",
+        tier: "productLine",
+        productLineId: "wireless",
+        categoryLevel: "micro",
+        categoryKey: "backend",
+        userId: "u-rev",
+      })
+      const rows = await approvalsRepo.listPendingForUser(db, "u-rev")
+      expect(rows.map((r) => r.id)).toEqual(["req-pl-softDev"])
+    })
+
+    it("a micro=backend admin does NOT pick up the l2-less company-docs request", async () => {
+      await adminsRepo.insertAdmin(db, {
+        id: "adm-1",
+        extensionCategory: "skills",
+        tier: "company",
+        productLineId: null,
+        categoryLevel: "micro",
+        categoryKey: "backend",
+        userId: "u-rev",
+      })
+      const rows = await approvalsRepo.listPendingForUser(db, "u-rev")
       expect(rows).toHaveLength(0)
     })
 
-    it("does not leak a productLine request to a same-subCat company cell", async () => {
-      const rows = await approvalsRepo.listPendingForCells(db, [
-        { tier: "company", subCat: "softDev", productLineId: null },
-      ])
-      // req-pl-softDev is productLine-tier; the company cell must not match it.
+    it("DISTINCT de-dupes when a user holds multiple cells covering the same request", async () => {
+      // Two admin rows both cover req-pl-softDev: the macro=softDev cell
+      // AND the micro=backend cell. The query must not double-count.
+      await adminsRepo.insertAdmin(db, {
+        id: "adm-1",
+        extensionCategory: "skills",
+        tier: "productLine",
+        productLineId: "wireless",
+        categoryLevel: "macro",
+        categoryKey: "softDev",
+        userId: "u-rev",
+      })
+      await adminsRepo.insertAdmin(db, {
+        id: "adm-2",
+        extensionCategory: "skills",
+        tier: "productLine",
+        productLineId: "wireless",
+        categoryLevel: "micro",
+        categoryKey: "backend",
+        userId: "u-rev",
+      })
+      const rows = await approvalsRepo.listPendingForUser(db, "u-rev")
+      expect(rows.map((r) => r.id)).toEqual(["req-pl-softDev"])
+    })
+
+    it("does NOT leak a productLine request to a company-tier admin in the same subCat", async () => {
+      await adminsRepo.insertAdmin(db, {
+        id: "adm-1",
+        extensionCategory: "skills",
+        tier: "company",
+        productLineId: null,
+        categoryLevel: "macro",
+        categoryKey: "softDev",
+        userId: "u-rev",
+      })
+      const rows = await approvalsRepo.listPendingForUser(db, "u-rev")
+      // Cover does NOT widen company → product line for routing.
       expect(rows.map((r) => r.id)).not.toContain("req-pl-softDev")
     })
 
-    it("treats different product lines as distinct cells", async () => {
-      // The productLine-softDev fixture is in 'wireless'; a 'datacom' cell
-      // should not surface it.
-      const rows = await approvalsRepo.listPendingForCells(db, [
-        { tier: "productLine", subCat: "softDev", productLineId: "datacom" },
-      ])
-      expect(rows.map((r) => r.id)).not.toContain("req-pl-softDev")
+    it("treats different product lines as distinct (wireless admin doesn't see datacom requests)", async () => {
+      await adminsRepo.insertAdmin(db, {
+        id: "adm-1",
+        extensionCategory: "skills",
+        tier: "productLine",
+        productLineId: "datacom",
+        categoryLevel: "macro",
+        categoryKey: "softDev",
+        userId: "u-rev",
+      })
+      const rows = await approvalsRepo.listPendingForUser(db, "u-rev")
+      expect(rows).toHaveLength(0)
+    })
+
+    it("does NOT cross extensionCategory boundaries", async () => {
+      await adminsRepo.insertAdmin(db, {
+        id: "adm-1",
+        extensionCategory: "mcp",
+        tier: "productLine",
+        productLineId: "wireless",
+        categoryLevel: "all",
+        categoryKey: "*",
+        userId: "u-rev",
+      })
+      const rows = await approvalsRepo.listPendingForUser(db, "u-rev")
+      expect(rows).toHaveLength(0)
+    })
+  })
+
+  describe("listAllPending", () => {
+    it("returns every pending request, regardless of admin coverage", async () => {
+      await approvalsRepo.insertRequest(db, {
+        id: "req-1",
+        extensionId: "ext-a",
+        extensionCategory: "skills",
+        requestedTier: "productLine",
+        subCat: "softDev",
+        l2: "backend",
+        productLineId: "wireless",
+        requestedByUserId: "u-pub",
+        reason: null,
+      })
+      await approvalsRepo.insertRequest(db, {
+        id: "req-2",
+        extensionId: "ext-b",
+        extensionCategory: "skills",
+        requestedTier: "company",
+        subCat: "docs",
+        l2: null,
+        productLineId: null,
+        requestedByUserId: "u-pub",
+        reason: null,
+      })
+      const rows = await approvalsRepo.listAllPending(db)
+      expect(rows.map((r) => r.id).sort()).toEqual(["req-1", "req-2"])
+    })
+
+    it("excludes decided requests", async () => {
+      await approvalsRepo.insertRequest(db, {
+        id: "req-1",
+        extensionId: "ext-a",
+        extensionCategory: "skills",
+        requestedTier: "company",
+        subCat: "softDev",
+        l2: null,
+        productLineId: null,
+        requestedByUserId: "u-pub",
+        reason: null,
+      })
+      await approvalsRepo.applyDecision(db, "req-1", {
+        status: "approved",
+        decidedByUserId: "u-rev",
+        decidedAt: new Date(),
+        reviewerNote: null,
+      })
+      expect(await approvalsRepo.listAllPending(db)).toHaveLength(0)
     })
   })
 
@@ -270,8 +443,10 @@ describe("approvals repository", () => {
       await approvalsRepo.insertRequest(db, {
         id: "req-1",
         extensionId: "ext-a",
+        extensionCategory: "skills",
         requestedTier: "company",
         subCat: "softDev",
+        l2: null,
         productLineId: null,
         requestedByUserId: "u-pub",
         reason: null,
@@ -293,8 +468,10 @@ describe("approvals repository", () => {
       await approvalsRepo.insertRequest(db, {
         id: "req-1",
         extensionId: "ext-a",
+        extensionCategory: "skills",
         requestedTier: "company",
         subCat: "softDev",
+        l2: null,
         productLineId: null,
         requestedByUserId: "u-pub",
         reason: null,
@@ -314,8 +491,10 @@ describe("approvals repository", () => {
       await approvalsRepo.insertRequest(db, {
         id: "req-1",
         extensionId: "ext-a",
+        extensionCategory: "skills",
         requestedTier: "company",
         subCat: "softDev",
+        l2: null,
         productLineId: null,
         requestedByUserId: "u-pub",
         reason: null,
@@ -350,8 +529,10 @@ describe("approvals repository", () => {
       await approvalsRepo.insertRequest(db, {
         id: "req-1",
         extensionId: "ext-a",
+        extensionCategory: "skills",
         requestedTier: "productLine",
         subCat: "softDev",
+        l2: "backend",
         productLineId: "wireless",
         requestedByUserId: "u-pub",
         reason: null,
@@ -369,8 +550,10 @@ describe("approvals repository", () => {
       await approvalsRepo.insertRequest(db, {
         id: "req-1",
         extensionId: "ext-a",
+        extensionCategory: "skills",
         requestedTier: "productLine",
         subCat: "softDev",
+        l2: "backend",
         productLineId: "wireless",
         requestedByUserId: "u-pub",
         reason: null,
@@ -512,65 +695,6 @@ describe("approvals repository", () => {
         revocationNote: "redundant",
       })
       expect(affected).toBe(0)
-    })
-  })
-
-  describe("isReviewerForCell", () => {
-    it("returns true when the user is assigned to the productLine cell", async () => {
-      await db.insert(approvalReviewers).values({
-        id: "rev-1",
-        tier: "productLine",
-        subCat: "softDev",
-        productLineId: "wireless",
-        userId: "u-rev",
-      })
-      expect(
-        await approvalsRepo.isReviewerForCell(
-          db,
-          "u-rev",
-          "productLine",
-          "softDev",
-          "wireless",
-        ),
-      ).toBe(true)
-    })
-
-    it("returns false for a different productLine on the same subCat", async () => {
-      await db.insert(approvalReviewers).values({
-        id: "rev-1",
-        tier: "productLine",
-        subCat: "softDev",
-        productLineId: "wireless",
-        userId: "u-rev",
-      })
-      expect(
-        await approvalsRepo.isReviewerForCell(
-          db,
-          "u-rev",
-          "productLine",
-          "softDev",
-          "datacom",
-        ),
-      ).toBe(false)
-    })
-
-    it("returns false for a company cell when the user is a productLine reviewer", async () => {
-      await db.insert(approvalReviewers).values({
-        id: "rev-1",
-        tier: "productLine",
-        subCat: "softDev",
-        productLineId: "wireless",
-        userId: "u-rev",
-      })
-      expect(
-        await approvalsRepo.isReviewerForCell(
-          db,
-          "u-rev",
-          "company",
-          "softDev",
-          null,
-        ),
-      ).toBe(false)
     })
   })
 })

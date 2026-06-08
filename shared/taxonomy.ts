@@ -87,9 +87,11 @@ export function isL2Key(k: string): boolean {
   return L2_TO_L1.has(k)
 }
 
-// Self + ancestors up to (all, '*'). Drives both `requireCellAdmin`
-// (covering-row probe) and the routing fan-out in
-// `server/repositories/admins.ts:findAdminsFor`.
+// Self + ancestors up to (all, '*'). Drives `requireCellAdmin`'s
+// covering-row probe (see `findCoveringAdmin` in
+// `server/repositories/admins.ts`); the reviewer queue uses the
+// inverse direction (admin → covered requests) via a single JOIN
+// rather than this helper.
 //   ('micro', l2)  → [(micro, l2), (macro, l1Parent), (all, '*')]
 //   ('macro', l1)  → [(macro, l1), (all, '*')]
 //   ('all',   '*') → [(all, '*')]

@@ -1,17 +1,18 @@
+import * as adminsRepo from "~~/server/repositories/admins"
 import * as approvalsRepo from "~~/server/repositories/approvals"
 import * as extensionsRepo from "~~/server/repositories/extensions"
-import * as reviewersRepo from "~~/server/repositories/reviewers"
 import {
   decideApprovalOutcome,
   decideWithdrawOutcome,
   type ApprovalAction,
   type OfficialTier,
 } from "~~/shared/approvals/state"
+import type { ExtensionCategory } from "~~/shared/types"
 
 import { useDb } from "./db"
 import { safeSend } from "./inngest"
 
-// Orchestrators over the approvals/reviewers/extensions repositories. Pure
+// Orchestrators over the approvals/admins/extensions repositories. Pure
 // transitions live in `shared/approvals/state.ts`; this file loads rows,
 // opens transactions, fires Inngest events, and maps domain errors to
 // HTTP-shaped codes the endpoints translate.
@@ -85,8 +86,13 @@ export async function submitRequest(
     return approvalsRepo.insertRequest(tx, {
       id: crypto.randomUUID(),
       extensionId: params.extensionId,
+      // Snapshot the extension's category + l2 onto the request so
+      // routing fan-out doesn't have to join `extensions` and so the
+      // audit trail freezes them at submission time.
+      extensionCategory: ext.category as ExtensionCategory,
       requestedTier: params.requestedTier,
       subCat: params.subCat,
+      l2: ext.l2 ?? null,
       productLineId: params.productLineId,
       requestedByUserId: params.userId,
       reason: params.reason ?? null,
@@ -129,18 +135,19 @@ export async function decideRequest(
     throw new ApprovalError("request_not_pending")
   }
 
-  // Super-admins can decide on any cell; otherwise the reviewer must be
-  // assigned to the exact (requestedTier, subCat, productLineId?) cell this
-  // request was filed against. Tier mismatches don't leak across cells.
+  // Super-admins can decide on any cell; otherwise the reviewer must
+  // hold an admin row whose covered shadow includes this request's
+  // cell. Coverage is computed in one query against the user's admin
+  // rows (see `isAdminCoveringRequest`).
   const allowed =
-    (await reviewersRepo.isSuperAdmin(db, params.reviewerUserId)) ||
-    (await approvalsRepo.isReviewerForCell(
-      db,
-      params.reviewerUserId,
-      current.requestedTier,
-      current.subCat,
-      current.productLineId,
-    ))
+    (await adminsRepo.isSuperAdmin(db, params.reviewerUserId)) ||
+    (await adminsRepo.isAdminCoveringRequest(db, params.reviewerUserId, {
+      extensionCategory: current.extensionCategory,
+      tier: current.requestedTier,
+      productLineId: current.productLineId,
+      subCat: current.subCat,
+      l2: current.l2,
+    }))
   if (!allowed) throw new ApprovalError("not_reviewer")
 
   const outcome = decideApprovalOutcome({
@@ -278,65 +285,46 @@ export async function revokeTier(
   return { extensionId: params.extensionId, revokedAt }
 }
 
+// Reviewer queue — pending requests in any cell this user covers.
+// Super-admins get the full pending list; everyone else gets the
+// JOIN-driven covered set (see `listPendingForUser`).
+//
+// Optional `filters` narrow the queue without changing the trust model:
+// they're applied as in-memory predicates so a reviewer never queries
+// outside their covered set. A filter that matches nothing yields [].
 export interface ReviewerQueueFilters {
   tier?: OfficialTier
   subCat?: string
   productLineId?: string
+  extensionCategory?: ExtensionCategory
 }
 
-// Reviewer queue — pending requests in any cell this user covers. Returns
-// an empty array when the user has no cell assignments (and is not a
-// super-admin); super-admins see the whole pending queue.
-//
-// Optional `filters` narrow the queue without changing the trust model:
-// the cells are computed first (so a reviewer never queries outside their
-// own assignment), then filtered, then handed to listPendingForCells. A
-// filter that excludes every cell yields an empty `cells` array, which
-// listPendingForCells short-circuits to [] — no special-case branch.
 export async function listReviewerQueue(
   userId: string,
   filters: ReviewerQueueFilters = {},
 ): Promise<approvalsRepo.ApprovalRequestRow[]> {
   const db = useDb()
-  let cells: Array<{
-    tier: OfficialTier
-    subCat: string
-    productLineId: string | null
-  }>
-  if (await reviewersRepo.isSuperAdmin(db, userId)) {
-    // Treat super-admin as "assigned to every cell". Pulled from the matrix
-    // verbatim so an empty matrix still surfaces no rows — better than a
-    // silent firehose. Productline IS NULL is encoded as the literal '∅' in
-    // the dedup key so a (company, cloud, null) cell doesn't collapse onto
-    // (productLine, cloud, '') by accident.
-    cells = await reviewersRepo
-      .listMatrix(db)
-      .then((rows) =>
-        Array.from(
-          new Set(
-            rows.map((r) => `${r.tier}:${r.subCat}:${r.productLineId ?? "∅"}`),
-          ),
-        ).map((k) => {
-          const [tier, subCat, pl] = k.split(":") as [OfficialTier, string, string]
-          return {
-            tier,
-            subCat,
-            productLineId: pl === "∅" ? null : pl,
-          }
-        }),
-      )
-  } else {
-    cells = await reviewersRepo.listCellsForUser(db, userId)
-  }
+  const rows = (await adminsRepo.isSuperAdmin(db, userId))
+    ? await approvalsRepo.listAllPending(db)
+    : await approvalsRepo.listPendingForUser(db, userId)
 
-  const narrowed = cells.filter((c) => {
-    if (filters.tier && c.tier !== filters.tier) return false
-    if (filters.subCat && c.subCat !== filters.subCat) return false
-    if (filters.productLineId && c.productLineId !== filters.productLineId)
+  return rows.filter((r) => {
+    if (filters.tier && r.requestedTier !== filters.tier) return false
+    if (filters.subCat && r.subCat !== filters.subCat) return false
+    if (
+      filters.productLineId &&
+      r.productLineId !== filters.productLineId
+    ) {
       return false
+    }
+    if (
+      filters.extensionCategory &&
+      r.extensionCategory !== filters.extensionCategory
+    ) {
+      return false
+    }
     return true
   })
-  return approvalsRepo.listPendingForCells(db, narrowed)
 }
 
 export async function listPublisherRequests(

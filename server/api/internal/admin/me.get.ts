@@ -1,7 +1,7 @@
 import {
   isSuperAdmin,
   listCellsForUser,
-} from "~~/server/repositories/reviewers"
+} from "~~/server/repositories/admins"
 
 // Lightweight "what can I do in the admin surface" probe — backs the
 // require-reviewer / require-super-admin client middleware so the pages

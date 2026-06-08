@@ -81,6 +81,7 @@ describe("getRequestsForUser", () => {
     await db.insert(approvalRequests).values({
       id: "req-1",
       extensionId: "ext-a",
+      extensionCategory: "skills",
       requestedTier: "company",
       subCat: "softDev",
       requestedByUserId: "u-pub",
@@ -110,6 +111,7 @@ describe("getRequestsForUser", () => {
     await db.insert(approvalRequests).values({
       id: "req-old",
       extensionId: "ext-a",
+      extensionCategory: "skills",
       requestedTier: "productLine",
       subCat: "softDev",
       productLineId: "wireless",
@@ -124,6 +126,7 @@ describe("getRequestsForUser", () => {
     await db.insert(approvalRequests).values({
       id: "req-new",
       extensionId: "ext-b",
+      extensionCategory: "skills",
       requestedTier: "company",
       subCat: "docs",
       requestedByUserId: "u-pub",
@@ -142,6 +145,7 @@ describe("getRequestsForUser", () => {
     await db.insert(approvalRequests).values({
       id: "req-other",
       extensionId: "ext-a",
+      extensionCategory: "skills",
       requestedTier: "company",
       subCat: "softDev",
       // Same extension, different requester.

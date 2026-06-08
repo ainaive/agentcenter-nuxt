@@ -1,25 +1,32 @@
-import { insertReviewer } from "~~/server/repositories/reviewers"
-import { AssignReviewerSchema } from "~~/shared/validators/approvals"
+import { insertAdmin } from "~~/server/repositories/admins"
+import { AssignAdminSchema } from "~~/shared/validators/approvals"
 
-// Per-cell authorisation: super-admins anywhere, company admins of subCat X
-// may assign productLine reviewers for subCat X (any productLine), and
-// company-tier cells stay super-admin-only. The validator's iff-rule
-// already guarantees productLineId is present iff tier='productLine'.
+// Per-cell authorisation via the redesigned `requireCellAdmin` gate:
+// super-admins everywhere, plus any user whose admin shadow covers the
+// target cell. Coverage is computed in one indexed query — see
+// `findCoveringAdmin` in `server/repositories/admins.ts`. The
+// validator's refines already guarantee the (level, key) keyspace and
+// the productLineId iff-rule, so any failure past this point would be
+// a true 23514 not a Zod error.
 export default defineEventHandler(async (event) => {
   const body = await readValidatedBody(event, (raw) =>
-    AssignReviewerSchema.parse(raw),
+    AssignAdminSchema.parse(raw),
   )
   await requireCellAdmin(event, {
+    extensionCategory: body.extensionCategory,
     tier: body.tier,
-    subCat: body.subCat,
     productLineId: body.productLineId ?? null,
+    categoryLevel: body.categoryLevel,
+    categoryKey: body.categoryKey,
   })
 
-  await insertReviewer(useDb(), {
+  await insertAdmin(useDb(), {
     id: crypto.randomUUID(),
+    extensionCategory: body.extensionCategory,
     tier: body.tier,
-    subCat: body.subCat,
     productLineId: body.productLineId ?? null,
+    categoryLevel: body.categoryLevel,
+    categoryKey: body.categoryKey,
     userId: body.userId,
   })
   return { ok: true }

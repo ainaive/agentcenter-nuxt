@@ -1,14 +1,15 @@
-import { and, desc, eq, inArray, isNull, sql } from "drizzle-orm"
+import { and, desc, eq, inArray, isNull, or, sql } from "drizzle-orm"
 
 import type {
   ApprovalStatus,
   OfficialTier,
 } from "~~/shared/approvals/state"
 import {
+  approvalAdmins,
   approvalRequests,
-  approvalReviewers,
   extensions,
 } from "~~/shared/db/schema"
+import type { ExtensionCategory } from "~~/shared/types"
 
 import type { Transactable } from "./types"
 
@@ -22,8 +23,15 @@ export type { ApprovalStatus, OfficialTier }
 export interface ApprovalRequestRow {
   id: string
   extensionId: string
+  // Snapshot of the extension's category at submission time. Frozen
+  // here so the routing fan-out doesn't have to join `extensions`.
+  extensionCategory: ExtensionCategory
   requestedTier: OfficialTier
   subCat: string
+  // Snapshot of the extension's l2 leaf, when classified. Null for
+  // extensions that only carry a macro classification — routing fan-out
+  // simply omits the `micro` candidate when this is null.
+  l2: string | null
   productLineId: string | null
   requestedByUserId: string
   reason: string | null
@@ -38,8 +46,10 @@ export interface ApprovalRequestRow {
 const fullSelect = {
   id: approvalRequests.id,
   extensionId: approvalRequests.extensionId,
+  extensionCategory: approvalRequests.extensionCategory,
   requestedTier: approvalRequests.requestedTier,
   subCat: approvalRequests.subCat,
+  l2: approvalRequests.l2,
   productLineId: approvalRequests.productLineId,
   requestedByUserId: approvalRequests.requestedByUserId,
   reason: approvalRequests.reason,
@@ -54,8 +64,10 @@ const fullSelect = {
 export interface InsertApprovalRequest {
   id: string
   extensionId: string
+  extensionCategory: ExtensionCategory
   requestedTier: OfficialTier
   subCat: string
+  l2: string | null
   productLineId: string | null
   requestedByUserId: string
   reason: string | null
@@ -135,36 +147,83 @@ export async function listForPublisher(
     .orderBy(desc(approvalRequests.createdAt))
 }
 
-// Reviewer's queue — pending requests in any (tier, subCat, productLineId?)
-// cell that the reviewer is assigned to. Implemented as a single query
-// against the cells the reviewer covers; the orchestrator pre-computes the
-// cell list from `approval_reviewers` to keep this method driver-portable
-// (no LATERAL). ProductLineId is matched IS NULL for company-tier cells
-// and = productLineId for productLine-tier cells, so a company-tier
-// reviewer never sees productLine-tier requests and vice versa.
-export async function listPendingForCells(
+// Reviewer queue — pending requests covered by the user's admin cells.
+// Implemented as a single JOIN between approval_admins and
+// approval_requests on the cover relation, so coverage logic lives in
+// one SQL clause rather than being recomputed per-cell in the
+// orchestrator.
+//
+// Cover relation (per the redesigned 5-coord cell):
+//   - extensionCategory, tier, and productLineId match exactly. The
+//     column-tier dimension is intentionally NOT widened for routing
+//     (company admins do not pick up product-line requests for review);
+//     the company→PL cover applies only to matrix-edit authority,
+//     handled by `findCoveringAdmin` in `admins.ts`.
+//   - category dimension covers via the all → macro → micro walk:
+//     'all' covers everything; 'macro' covers requests with matching
+//     subCat (l2 may be anything, including NULL); 'micro' covers only
+//     requests where l2 matches exactly (so an l2-less request never
+//     reaches a micro admin — the right semantic).
+//
+// DISTINCT on r.id de-dupes the case where the same user holds two
+// admin rows that both cover the same request (e.g. (all,'*') AND
+// (macro, subCat)). The pattern mirrors today's Set-based dedup in
+// `listReviewerQueue` and stays consistent across the orchestrator.
+export async function listPendingForUser(
   db: Transactable,
-  cells: Array<{ tier: OfficialTier; subCat: string; productLineId: string | null }>,
+  userId: string,
 ): Promise<ApprovalRequestRow[]> {
-  if (cells.length === 0) return []
-  const cellMatches = cells.map((c) =>
-    and(
-      eq(approvalRequests.requestedTier, c.tier),
-      eq(approvalRequests.subCat, c.subCat),
-      c.productLineId === null
-        ? isNull(approvalRequests.productLineId)
-        : eq(approvalRequests.productLineId, c.productLineId),
-    ),
-  )
+  return db
+    .selectDistinct(fullSelect)
+    .from(approvalRequests)
+    .innerJoin(
+      approvalAdmins,
+      and(
+        eq(approvalAdmins.userId, userId),
+        eq(approvalAdmins.extensionCategory, approvalRequests.extensionCategory),
+        eq(approvalAdmins.tier, approvalRequests.requestedTier),
+        // Column-tier match — same PL on both sides, including the
+        // both-NULL case for company-tier rows. SQL's `=` returns NULL
+        // for NULL operands, so the IS NULL fallback is required.
+        or(
+          eq(approvalAdmins.productLineId, approvalRequests.productLineId),
+          and(
+            isNull(approvalAdmins.productLineId),
+            isNull(approvalRequests.productLineId),
+          ),
+        ),
+        // Category cover: all/macro/micro per the level.
+        or(
+          and(
+            eq(approvalAdmins.categoryLevel, "all"),
+            eq(approvalAdmins.categoryKey, "*"),
+          ),
+          and(
+            eq(approvalAdmins.categoryLevel, "macro"),
+            eq(approvalAdmins.categoryKey, approvalRequests.subCat),
+          ),
+          and(
+            eq(approvalAdmins.categoryLevel, "micro"),
+            eq(approvalAdmins.categoryKey, approvalRequests.l2),
+          ),
+        ),
+      ),
+    )
+    .where(eq(approvalRequests.status, "pending"))
+    .orderBy(desc(approvalRequests.createdAt))
+}
+
+// Super-admin variant — every pending request, no JOIN. Kept separate
+// from `listPendingForUser` so the trust model is explicit at the call
+// site (the orchestrator picks one or the other based on the
+// super-admin check).
+export async function listAllPending(
+  db: Transactable,
+): Promise<ApprovalRequestRow[]> {
   return db
     .select(fullSelect)
     .from(approvalRequests)
-    .where(
-      and(
-        eq(approvalRequests.status, "pending"),
-        sql`(${sql.join(cellMatches, sql` OR `)})`,
-      ),
-    )
+    .where(eq(approvalRequests.status, "pending"))
     .orderBy(desc(approvalRequests.createdAt))
 }
 
@@ -295,33 +354,4 @@ export async function findTiersForExtensions(
     .from(extensions)
     .where(inArray(extensions.id, extensionIds))
   return new Map(rows.map((r) => [r.id, r.officialTier ?? null]))
-}
-
-// Used by guards in `decide.post.ts` — confirms a user is assigned to the
-// cell that the request originated from. Super-admins are handled in the
-// orchestrator (a separate join) so this stays a pure reviewer check.
-// ProductLineId is null for company-tier requests and the cell match must
-// be exact on that NULLness to keep tiers from leaking into one another.
-export async function isReviewerForCell(
-  db: Transactable,
-  userId: string,
-  tier: OfficialTier,
-  subCat: string,
-  productLineId: string | null,
-): Promise<boolean> {
-  const [row] = await db
-    .select({ id: approvalReviewers.id })
-    .from(approvalReviewers)
-    .where(
-      and(
-        eq(approvalReviewers.userId, userId),
-        eq(approvalReviewers.tier, tier),
-        eq(approvalReviewers.subCat, subCat),
-        productLineId === null
-          ? isNull(approvalReviewers.productLineId)
-          : eq(approvalReviewers.productLineId, productLineId),
-      ),
-    )
-    .limit(1)
-  return !!row
 }

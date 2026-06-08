@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { l1KeyFor } from "~~/shared/taxonomy"
+
 definePageMeta({
   middleware: ["require-auth", "require-reviewer"],
 })
@@ -38,9 +40,11 @@ const { data: adminMe } = await useFetch("/api/internal/admin/me", {
     isSuperAdmin: false,
     isReviewer: false,
     cells: [] as Array<{
+      extensionCategory: "skills" | "mcp" | "slash" | "plugins"
       tier: "productLine" | "company"
-      subCat: string
       productLineId: string | null
+      categoryLevel: "all" | "macro" | "micro"
+      categoryKey: string
     }>,
   }),
 })
@@ -49,11 +53,27 @@ const rows = computed(() => data.value.requests)
 const productLines = computed(() => productLinesData.value.productLines)
 
 // Super-admins narrow against the full taxonomy; non-super reviewers narrow
-// only against the subCats they actually cover. Omitting `allowedSubCats`
+// only against the macro keys they actually cover. Omitting `allowedSubCats`
 // signals "full grid" to the picker.
+//   - An `all` cell carries the wildcard — any subCat is allowed.
+//   - A `macro` cell contributes its key (an l1 leaf) directly.
+//   - A `micro` cell contributes its parent l1 via `l1KeyFor` so the
+//     picker offers the broader leaf even when the reviewer only owns
+//     a single l2 underneath it.
 const allowedSubCats = computed<readonly string[] | undefined>(() => {
   if (adminMe.value.isSuperAdmin) return undefined
-  return Array.from(new Set(adminMe.value.cells.map((c) => c.subCat)))
+  if (adminMe.value.cells.some((c) => c.categoryLevel === "all")) {
+    return undefined
+  }
+  const keys = new Set<string>()
+  for (const c of adminMe.value.cells) {
+    if (c.categoryLevel === "macro") keys.add(c.categoryKey)
+    else if (c.categoryLevel === "micro") {
+      const parent = l1KeyFor(c.categoryKey)
+      if (parent) keys.add(parent)
+    }
+  }
+  return Array.from(keys)
 })
 </script>
 
