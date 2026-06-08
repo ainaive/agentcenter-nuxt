@@ -43,12 +43,26 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
-const initialTab: Tab = route.hash === "#tab=productLine" ? "productLine" : "company"
-const activeTab = ref<Tab>(initialTab)
+function hashToTab(hash: string): Tab {
+  return hash === "#tab=productLine" ? "productLine" : "company"
+}
+
+const activeTab = ref<Tab>(hashToTab(route.hash))
 
 watch(activeTab, (next) => {
   router.replace({ hash: `#tab=${next}` })
 })
+
+// Reverse binding so browser back / forward (or any external hash change)
+// keeps the UI in sync with the URL. Guard against the loop the assignment
+// would otherwise trigger via the watcher above.
+watch(
+  () => route.hash,
+  (next) => {
+    const tab = hashToTab(next)
+    if (activeTab.value !== tab) activeTab.value = tab
+  },
+)
 
 // Provide a Ref<boolean> for the subviews so they don't need to thread
 // the viewer prop themselves. Wrapped as a computed so reactivity follows

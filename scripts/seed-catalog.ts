@@ -86,11 +86,10 @@ export async function seedCatalog(db: Db): Promise<void> {
       badge: entry.badge ?? null,
       officialTier: entry.officialTier ?? null,
       // CHECK constraint: productLineId is required iff officialTier='productLine'.
-      // Catalog entries that pre-date the dimension default to 'wireless'.
+      // The catalog type is a discriminated union so the right-hand side
+      // is guaranteed non-null whenever officialTier='productLine'.
       productLineId:
-        entry.officialTier === "productLine"
-          ? (entry.productLineId ?? "wireless")
-          : null,
+        entry.officialTier === "productLine" ? entry.productLineId : null,
       publisherUserId: null,
       ownerOrgId: SYSTEM_ORG_ID,
       deptId: null,

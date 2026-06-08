@@ -2,14 +2,17 @@ import * as extensionsRepo from "~~/server/repositories/extensions"
 import { listAllProductLines } from "~~/server/repositories/productLines"
 import * as versionsRepo from "~~/server/repositories/versions"
 
-// Detail endpoint adds a resolved `productLineLabel` to the response so
-// the hero badge can render "Wireless Official" / "无线官方" without a
-// second round-trip. The locale comes from the i18n `accept-locale`
-// header set by @nuxtjs/i18n; we fall back to English when absent.
+// Detail endpoint adds a resolved `productLineLabel` so the hero badge can
+// render "Wireless Official" / "无线官方" without a second round-trip. The
+// page passes its i18n locale as a `?locale=` query param — locked
+// decision #5 makes locales always-prefixed in URLs, so the page already
+// knows the canonical locale and we don't need an accept-language parser
+// here. Unknown / missing locale falls back to English.
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const slug = typeof query.slug === "string" ? query.slug : null
   if (!slug) throw createError({ statusCode: 400, statusMessage: "slug required" })
+  const locale = typeof query.locale === "string" ? query.locale : "en"
 
   const db = useDb()
   const ext = await extensionsRepo.findBySlug(db, slug)
@@ -21,13 +24,11 @@ export default defineEventHandler(async (event) => {
     ext.productLineId ? listAllProductLines(db) : Promise.resolve([]),
   ])
 
-  const acceptLang = getRequestHeader(event, "accept-language") ?? ""
-  const isZh = acceptLang.toLowerCase().startsWith("zh")
   const productLine = ext.productLineId
     ? productLines.find((l) => l.id === ext.productLineId)
     : null
   const productLineLabel = productLine
-    ? isZh
+    ? locale === "zh"
       ? productLine.labelZh
       : productLine.labelEn
     : null

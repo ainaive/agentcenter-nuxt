@@ -104,9 +104,11 @@ export const extensions = pgTable(
     officialTier: officialTierEnum(),
     // Endorsing product line — required iff officialTier='productLine',
     // null otherwise. CHECK constraint below enforces the shape; the
-    // approval orchestrator is the only writer.
+    // approval orchestrator is the only writer. ON DELETE RESTRICT matches
+    // the iff-rule: SET NULL would still fail the CHECK for every
+    // productLine-tier row, so RESTRICT just surfaces the real outcome.
     productLineId: text().references(() => productLines.id, {
-      onDelete: "set null",
+      onDelete: "restrict",
     }),
     // funcCat/subCat are nullable — the redesigned publish wizard does not
     // collect them; admin curation can backfill or system defaults apply.
