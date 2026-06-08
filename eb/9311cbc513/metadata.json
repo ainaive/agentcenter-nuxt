@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "eb9311cbc513",
+  "strategy": "manual-commit",
+  "branch": "feat/p9-admin-entry",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/components/layout/UserButton.vue"
+  ],
+  "sessions": [
+    {
+      "metadata": "/eb/9311cbc513/0/metadata.json",
+      "transcript": "/eb/9311cbc513/0/full.jsonl",
+      "content_hash": "/eb/9311cbc513/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 14,
+    "cache_creation_tokens": 17442,
+    "cache_read_tokens": 1768318,
+    "output_tokens": 7203,
+    "api_call_count": 14
+  }
+}
