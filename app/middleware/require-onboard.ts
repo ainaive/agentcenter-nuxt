@@ -1,30 +1,29 @@
-type UserShape = { defaultDeptId?: string | null }
+// SSR session lookup goes through `$fetch` to better-auth's own
+// `/api/auth/get-session` route — see require-auth.ts for the rationale.
 
-function toFetchHeaders(raw: Record<string, string | undefined>): Headers {
-  const headers = new Headers()
-  for (const [key, value] of Object.entries(raw)) {
-    if (value !== undefined) headers.append(key, value)
-  }
-  return headers
-}
+type UserShape = { defaultDeptId?: string | null }
+type SessionResponse = { user?: (UserShape & { id: string }) | null } | null
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  const auth = useAuth()
+  let rawUser: UserShape | null = null
 
-  let rawUser: unknown = null
   if (import.meta.server) {
-    const result = await auth.getSession({
-      fetchOptions: { headers: toFetchHeaders(useRequestHeaders(["cookie"])) },
-    })
-    rawUser = result.data?.user ?? null
+    const headers = useRequestHeaders(["cookie"])
+    try {
+      const session = await $fetch<SessionResponse>("/api/auth/get-session", {
+        headers: headers as Record<string, string>,
+      })
+      rawUser = session?.user ?? null
+    } catch {
+      rawUser = null
+    }
   } else {
-    const session = auth.useSession()
-    rawUser = session.value.data?.user ?? null
+    const session = useAuth().useSession()
+    rawUser = (session.value.data?.user as UserShape | undefined) ?? null
   }
 
   if (!rawUser) return
-  const user = rawUser as UserShape
-  if (user.defaultDeptId) return
+  if (rawUser.defaultDeptId) return
 
   const localePath = useLocalePath()
   if (to.path === localePath("/onboard")) return
