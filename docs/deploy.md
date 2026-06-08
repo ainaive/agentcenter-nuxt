@@ -73,16 +73,30 @@ populated.
    vercel link
    ```
 
-2. **Pull the staging env** into a local file:
+2. **Pull the env for the right environment** into a local file:
 
    ```bash
-   vercel env pull .env.staging --environment=preview
+   vercel env pull .env.staging --environment=<env>
    ```
 
-   Use `--environment=production` only if your staging deployment is
-   the production environment of a separate Vercel project. If a
-   single project hosts both staging and real prod, you almost
-   certainly want `preview`.
+   Pick `<env>` based on your project's shape:
+
+   - **Single-environment project** (the only deployed URL is the
+     Vercel `production` env, no real prod users yet) → use
+     `--environment=production`. The demo site IS the production
+     environment; that's where the seed needs to land.
+   - **Separate staging Vercel project** (e.g. `agentcenter-staging`
+     distinct from `agentcenter-prod`) → use `--environment=production`
+     against the staging project. Same logic — its `production` is
+     your demo.
+   - **Single project hosting both real prod and a preview branch**
+     → use `--environment=preview`. `production` here means the live
+     site with real users; do not seed it.
+
+   When in doubt, run `vercel env ls` to list environments and confirm
+   what's there before pulling. The `SEED_ALLOW_REMOTE=1` guardrail in
+   step 5 is a checkpoint, not a substitute for knowing which DB the
+   pulled `DATABASE_URL` actually points at.
 
 3. **Export into the shell**:
 
