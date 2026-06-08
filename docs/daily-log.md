@@ -12,6 +12,21 @@ What changed each day. For the current capability list, see [features.md](./feat
 
 ## English
 
+### 2026-06-10
+
+**Briefing.** The reviewer queue at `/admin/approvals` picks up the same pill-rail filter affordance the listing page uses, so reviewers with multi-cell assignments (and super-admins) can narrow the queue to one tier / subCat / product line without scrolling.
+
+<details>
+<summary>Details</summary>
+
+- **Two pickers above the queue** — Official (tier + productLine) ports from the listing rail unchanged; Category is new but matches the same shape. URL-state-backed: `/en/admin/approvals?tier=productLine&productLineId=wireless&subCat=cloud` is a shareable triage view.
+- **Smart pickers** — A non-super reviewer's Category picker only offers subCats they actually cover; super-admins see the full 9-leaf grid. Bound comes from `admin/me.cells`, which now ships alongside the existing role flags.
+- **Server intersects cells first** — Filters intersect the viewer's covered cells before the DB query, so a filter that excludes every cell yields an empty queue naturally — no special-case branch, no trust-model widening (reviewers still can't query outside their own assignment). (#NEW)
+
+</details>
+
+---
+
 ### 2026-06-09
 
 **Briefing.** Closes the loudest open follow-up from ADR-0001: a super-admin can now revoke an Official extension back to Unofficial directly from its detail page. The publisher sees the reason on their dashboard.
@@ -165,6 +180,21 @@ What changed each day. For the current capability list, see [features.md](./feat
 ---
 
 ## 中文
+
+### 2026-06-10
+
+**简报。** `/admin/approvals` 审核队列引入与浏览页一致的过滤条样式，覆盖多个单元的审核员（以及超级管理员）现在可按级别 / subCat / 产品线即时收窄队列，无需滚动。
+
+<details>
+<summary>详情</summary>
+
+- **队列上方两个选择器** —— 官方（级别 + 产品线）从浏览页过滤条原样移植；分类是新组件但沿用同一形状。URL 状态可分享：`/zh/admin/approvals?tier=productLine&productLineId=wireless&subCat=cloud` 可直接打开对应的筛选视图。
+- **智能选项** —— 非超级管理员的"分类"选择器仅展示其实际覆盖的 subCat，避免选择空集；超级管理员看到完整的 9 项分类。边界来自 `admin/me.cells`，该端点现在与既有角色字段一起返回单元列表。
+- **服务端先收窄单元** —— 过滤条件在数据库查询之前与审核员的覆盖单元求交集，若交集为空则自然返回空队列，无需特殊分支；信任模型保持不变（审核员仍无法查询自己未被分配的单元）。 (#NEW)
+
+</details>
+
+---
 
 ### 2026-06-09
 

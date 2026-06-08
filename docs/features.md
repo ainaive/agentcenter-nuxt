@@ -70,7 +70,7 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **Two-tier officialness** — Published extensions default to Unofficial; publishers can apply for **Product-Line Official** (per product line) or **Company Official** elevation.
 - **Apply-for-official dialog** — From the publisher dashboard, an extension that's published and unofficial gets an "Apply for official" action: pick a tier, pick a functional category (defaults to the extension's existing subCat), pick a product line when the tier is Product-Line, optionally explain why.
 - **Product-Line dimension** — The Product-Line tier is keyed by `(subCat × productLine)` against a seeded `product_lines` table (Wireless, Datacom, Terminals, Cloud). Approved extensions wear a line-specific badge ("Wireless Official" / "无线官方") on the detail page.
-- **Reviewer queue** — Each (tier × functional category × productLine?) cell is owned by an assigned set of reviewers. `/admin/approvals` shows the reviewer their queue. Approve in one click; reject opens an inline note field.
+- **Reviewer queue** — Each (tier × functional category × productLine?) cell is owned by an assigned set of reviewers. `/admin/approvals` shows the reviewer their queue. Approve in one click; reject opens an inline note field. The queue carries a small pill rail (Official + Category pickers) so reviewers can narrow a multi-cell assignment to one tier, one subCat, or one product line at a time; the URL is shareable.
 - **Configurable matrix with delegation** — `/admin/reviewers` is now tabbed by tier: Company-tier cells stay super-admin-only; the Product-Line grid lets each Company-tier admin of subCat X manage Product-Line reviewers for subCat X (any line), while greying out cells outside their scope. Super-admins still edit anywhere.
 - **Tier badges & filter** — Approved extensions wear a Product-Line or Company chip on cards, hero, and related-lists. The browse filter rail surfaces a single "Official" picker that owns both the tier and the product-line narrows: pick a tier, and when "Product-Line" is chosen, the same popover reveals a row of product-line options for narrowing the catalog further. Keeps the rail to a single row on a typical viewport.
 - **Requests tab** — `/profile?section=requests` tracks the publisher's submitted applications and shows the reviewer's note on rejections; pending requests can be withdrawn.
@@ -189,7 +189,7 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **两级官方** ——已发布扩展默认为非官方；发布者可按产品线申请**产品线官方**或申请**公司官方**认证。
 - **申请对话框** ——发布工作台中已发布且未认证的扩展会出现"申请官方认证"操作：选择级别、选择功能分类（默认沿用扩展的 subCat）、目标为产品线级时还要选择产品线，可填理由。
 - **产品线维度** ——产品线官方按 `(subCat × productLine)` 路由，产品线来自种子表 `product_lines`（无线、数通、终端、云）。通过审核的扩展在详情页显示带产品线名称的徽章（"无线官方" / "Wireless Official"）。
-- **审核队列** ——每个（级别 × 功能分类 × 产品线?）单元由指定的审核员负责。审核员在 `/admin/approvals` 看到属于自己的待审请求；一键通过；驳回时弹出内嵌备注框。
+- **审核队列** ——每个（级别 × 功能分类 × 产品线?）单元由指定的审核员负责。审核员在 `/admin/approvals` 看到属于自己的待审请求；一键通过；驳回时弹出内嵌备注框。队列上方有一行简洁的过滤条（官方 + 分类两个选择器），覆盖多个单元的审核员可按级别、subCat 或产品线快速收窄队列，URL 状态可分享。
 - **可配置矩阵与代理授权** —— `/admin/reviewers` 按级别分页：公司级单元仅超级管理员可管理；产品线网格中，公司级管理员可管理自己 subCat 下的所有产品线单元，其他单元只读。超级管理员仍可全局编辑。
 - **级别徽章与筛选** ——通过审核的扩展在卡片、详情页、关联列表上展示产品线 / 公司徽章。浏览页过滤条中只保留一个"官方"选择器，同时承载级别和产品线两个维度：选择级别后，若选中"产品线"，同一个弹层中会显示产品线选项。整条过滤条在常规视口宽度下保持单行。
 - **申请记录** —— `/profile?section=requests` 展示发布者提交过的申请，驳回时显示审核员备注；待审请求可撤回。
