@@ -1,0 +1,48 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "f6d6976d5e1b",
+  "session_id": "b39a7302-46b1-4db9-980b-b545170f710a",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-08T14:08:04.866187Z",
+  "branch": "fix/p9-approvals-inngest-tolerance",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "server/utils/approvals.ts"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "8a04d47c89ce",
+  "checkpoint_transcript_start": 210,
+  "transcript_lines_at_start": 210,
+  "token_usage": {
+    "input_tokens": 26,
+    "cache_creation_tokens": 20668,
+    "cache_read_tokens": 1236517,
+    "output_tokens": 5210,
+    "api_call_count": 11
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-08T14:08:04.852192Z",
+    "agent_lines": 2,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 2,
+    "total_lines_changed": 2,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}
