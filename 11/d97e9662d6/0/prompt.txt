@@ -1,0 +1,49 @@
+Read /Users/hutusi/.claude/plans/let-s-continue-to-enhance-mighty-micali.md first — it's a handoff brief from the
+  ▎ previous session. Then ask me the two open clarifying questions and plan the extension-category dimension on the
+  ▎ reviewer matrix.
+
+---
+
+do we have reviews settings matrix now?
+
+---
+
+when I open "http://localhost:3000/zh/admin/reviewers", the server console show errors: [3:41:36 p.m.] [@nuxtjs/og-image]  WARN  defineOgImageComponent() is deprecated. Use defineOgImage() instead. Run npx nuxt-og-image migrate v6 to auto-migrate.
+[3:41:40 p.m.] [@nuxtjs/og-image]  WARN  defineOgImageComponent() is deprecated. Use defineOgImage() instead. Run npx nuxt-og-image migrate v6 to auto-migrate.
+ WARN  [Vue Router warn]: No match found for location with path "/zh//admin/reviewers"                    5:16:56 p.m.
+ WARN  [Vue Router warn]: No match found for location with path "/zh//admin/reviewers"                    5:16:56 p.m.
+ WARN  [Vue Router warn]: No match found for location with path "/zh//admin/reviewers"                    5:16:56 p.m.
+ WARN  [Vue Router warn]: No match found for location with path "/zh//admin/reviewers"                    5:16:56 p.m.
+ ERROR  Cannot read properties of undefined (reading 'replace')                                           5:17:05 p.m.
+
+    at #getRelativeFileName (node_modules/youch/build/src/templates/error_stack/main.js:21:19)
+    at #getEditorLink (node_modules/youch/build/src/templates/error_stack/main.js:33:35)
+    at #renderFrameLocation (node_modules/youch/build/src/templates/error_stack/main.js:37:45)
+    at #renderStackFrame (node_modules/youch/build/src/templates/error_stack/main.js:58:36)
+    at node_modules/youch/build/src/templates/error_stack/main.js:114:33
+    at Array.map (<anonymous>)
+    at ErrorStack.toHTML (node_modules/youch/build/src/templates/error_stack/main.js:113:59)
+    at #tmplToHTML (node_modules/youch/build/index.js:83:20)
+    at async Object.children (node_modules/youch/build/index.js:106:102)
+    at async Layout.toHTML (node_modules/youch/build/src/templates/layout/main.js:17:13)
+ ERROR  Cannot read properties of undefined (reading 'replace')                                           5:17:05 p.m.
+
+    at #getRelativeFileName (node_modules/youch/build/src/templates/error_stack/main.js:21:19)
+    at #getEditorLink (node_modules/youch/build/src/templates/error_stack/main.js:33:35)
+    at #renderFrameLocation (node_modules/youch/build/src/templates/error_stack/main.js:37:45)
+    at #renderStackFrame (node_modules/youch/build/src/templates/error_stack/main.js:58:36)
+    at node_modules/youch/build/src/templates/error_stack/main.js:114:33
+    at Array.map (<anonymous>)
+    at ErrorStack.toHTML (node_modules/youch/build/src/templates/error_stack/main.js:113:59)
+    at #tmplToHTML (node_modules/youch/build/index.js:83:20)
+    at async Object.children (node_modules/youch/build/index.js:106:102)
+    at async Layout.toHTML (node_modules/youch/build/src/templates/layout/main.js:17:13)
+ WARN  [Vue Router warn]: No match found for location wi
+
+---
+
+or how can I entering the admin reviews settings page? is there a link on website?
+
+---
+
+I think we need to fix the admin entering problem first, let me see the admin page, then I will decide the matrix ui should or no need to refine. what do you think?
