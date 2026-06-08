@@ -3,19 +3,19 @@ import { sql } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
 
-import { APPROVAL_REQUESTS } from "../shared/data/approval-requests"
 import {
-  APPROVAL_REVIEWERS,
+  APPROVAL_ADMINS,
   DEFAULT_SUPER_ADMIN_EMAIL,
-} from "../shared/data/approval-reviewers"
+} from "../shared/data/approval-admins"
+import { APPROVAL_REQUESTS } from "../shared/data/approval-requests"
 import { COLLECTIONS } from "../shared/data/collections"
 import { DEPARTMENTS } from "../shared/data/departments"
 import { EXTENSIONS } from "../shared/data/extensions"
 import * as schema from "../shared/db/schema"
 import {
   accounts,
+  approvalAdmins,
   approvalRequests,
-  approvalReviewers,
   collectionItems,
   collections,
   departments,
@@ -27,7 +27,7 @@ import {
   users,
 } from "../shared/db/schema"
 import { TAG_LABELS } from "../shared/tags"
-import type { Department } from "../shared/types"
+import type { Department, ExtensionCategory } from "../shared/types"
 import { seedMcpLandscape } from "./seed-mcp-landscape"
 
 const ORG_ID = "default"
@@ -128,7 +128,7 @@ async function main() {
     process.exit(1)
   }
 
-  // This script TRUNCATEs organizations/tags/approval_reviewers (CASCADE
+  // This script TRUNCATEs organizations/tags/approval_admins (CASCADE
   // through extensions, approvals, memberships, departments, …). Safe
   // against a dev DB; catastrophic against a populated remote one. Bail
   // unless the operator opts in explicitly, so a typo (sourced wrong
@@ -151,12 +151,12 @@ async function main() {
   console.log("seed: starting")
   console.log("seed: truncating catalog tables")
   // Orgs + tags CASCADE through extensions and their dependents (versions,
-  // installs, ratings, extension_tags, approval_requests). approval_reviewers
+  // installs, ratings, extension_tags, approval_requests). approval_admins
   // only cascades from `users` (which we don't truncate to preserve dev
   // identities), so include it explicitly — otherwise a re-run hits the
-  // appr-rev-0 PK collision below.
+  // appr-adm-0 PK collision below.
   await db.execute(
-    sql`TRUNCATE TABLE ${organizations}, ${tags}, ${approvalReviewers} RESTART IDENTITY CASCADE`,
+    sql`TRUNCATE TABLE ${organizations}, ${tags}, ${approvalAdmins} RESTART IDENTITY CASCADE`,
   )
 
   const authorOrgIdMap = new Map<string, string>()
@@ -317,44 +317,59 @@ async function main() {
   console.log(`seed: inserting ${membershipRows.length} memberships`)
   await db.insert(memberships).values(membershipRows)
 
-  // Reviewer matrix: every (tier, subCat[, productLineId]) cell gets at least
-  // one assignment from APPROVAL_REVIEWERS. Emails that don't resolve to a
-  // creator are skipped with a warning so a typo doesn't break the seed. The
-  // DB CHECK enforces productLineId presence per tier; we mirror it here so a
-  // bad shape in the seed file fails loudly instead of at INSERT time.
-  const reviewerRows = APPROVAL_REVIEWERS.flatMap((r, i) => {
-    const reviewer = CREATORS.find((u) => u.email === r.reviewerEmail)
-    if (!reviewer) {
+  // Admin matrix: every 5-coord cell in APPROVAL_ADMINS becomes one row
+  // in approval_admins. Emails that don't resolve to a creator are
+  // skipped with a warning so a typo doesn't break the seed. Both DB
+  // CHECK constraints (productLineId-iff-tier, key='*'-iff-level='all')
+  // are mirrored here so a bad shape in the seed file fails loudly
+  // instead of at INSERT time.
+  const adminRows = APPROVAL_ADMINS.flatMap((r, i) => {
+    const admin = CREATORS.find((u) => u.email === r.reviewerEmail)
+    if (!admin) {
       console.warn(
-        `seed: approval reviewer email ${r.reviewerEmail} did not match any creator — skipping`,
+        `seed: approval admin email ${r.reviewerEmail} did not match any creator — skipping`,
       )
       return []
     }
     const requiresPl = r.tier === "productLine"
     if (requiresPl && !r.productLineId) {
       console.warn(
-        `seed: approval reviewer #${i} (${r.tier}/${r.subCat}) missing productLineId — skipping`,
+        `seed: approval admin #${i} (${r.extensionCategory}/${r.tier}/${r.categoryLevel}:${r.categoryKey}) missing productLineId — skipping`,
       )
       return []
     }
     if (!requiresPl && r.productLineId) {
       console.warn(
-        `seed: approval reviewer #${i} (${r.tier}/${r.subCat}) carries productLineId on a company-tier row — skipping`,
+        `seed: approval admin #${i} (${r.extensionCategory}/${r.tier}/${r.categoryLevel}:${r.categoryKey}) carries productLineId on a company-tier row — skipping`,
+      )
+      return []
+    }
+    if (r.categoryLevel === "all" && r.categoryKey !== "*") {
+      console.warn(
+        `seed: approval admin #${i} has categoryLevel='all' but categoryKey='${r.categoryKey}' (must be '*') — skipping`,
+      )
+      return []
+    }
+    if (r.categoryLevel !== "all" && r.categoryKey === "*") {
+      console.warn(
+        `seed: approval admin #${i} has categoryLevel='${r.categoryLevel}' with the wildcard categoryKey — skipping`,
       )
       return []
     }
     return [
       {
-        id: `appr-rev-${i}`,
+        id: `appr-adm-${i}`,
+        extensionCategory: r.extensionCategory,
         tier: r.tier,
-        subCat: r.subCat,
         productLineId: r.productLineId ?? null,
-        userId: reviewer.id,
+        categoryLevel: r.categoryLevel,
+        categoryKey: r.categoryKey,
+        userId: admin.id,
       },
     ]
   })
-  console.log(`seed: inserting ${reviewerRows.length} approval reviewers`)
-  await db.insert(approvalReviewers).values(reviewerRows)
+  console.log(`seed: inserting ${adminRows.length} approval admins`)
+  await db.insert(approvalAdmins).values(adminRows)
 
   const extTagRows = EXTENSIONS.flatMap((e) =>
     e.tags.map((tagKey) => ({
@@ -378,11 +393,21 @@ async function main() {
   // these rows are inserted directly, bypassing `submitRequest`, so no
   // `extension/approval.requested` Inngest event fires for them — that's
   // expected on a fresh seed and not a bug in the workflow.
+  // Look up extension category by slug for the snapshot fields the new
+  // approval_requests carries. Uses the same `slugify` the extension
+  // insert above used, so the lookup matches the row keyed in
+  // `extIdBySlug`.
+  const extCategoryBySlug = new Map<string, ExtensionCategory>(
+    EXTENSIONS.map((e) => [slugify(e.name), e.category]),
+  )
+
   const approvalRequestRows: {
     id: string
     extensionId: string
+    extensionCategory: ExtensionCategory
     requestedTier: "productLine" | "company"
     subCat: string
+    l2: string | null
     productLineId: string | null
     requestedByUserId: string
     reason: string | null
@@ -451,9 +476,22 @@ async function main() {
       )
       continue
     }
+    const extensionCategory = extCategoryBySlug.get(r.extensionSlug)
+    if (!extensionCategory) {
+      console.warn(
+        `seed: approval request #${i} (slug "${r.extensionSlug}") has no category in EXTENSIONS — skipping`,
+      )
+      continue
+    }
     approvalRequestRows.push({
       id: `appr-req-${i}`,
       extensionId,
+      // Snapshots match what `submitRequest` would have frozen on a
+      // live submission. Seeded extensions don't carry l2 (the
+      // Extension type has no l2 field), so the snapshot is null —
+      // routing fan-out simply omits the `micro` candidate for these.
+      extensionCategory,
+      l2: null,
       requestedTier: r.requestedTier,
       subCat: r.subCat,
       productLineId: r.productLineId ?? null,

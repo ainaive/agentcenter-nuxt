@@ -109,9 +109,9 @@ test.describe("approval workflow — multi-actor golden path", () => {
   const PASSWORD = process.env.SEED_PASSWORD!
   // Pick an unofficial extension owned by ben that lands on a cell where
   // eli is the assigned reviewer. From the seed: ben owns /translate
-  // (ext-8, subCat=docs); productLine × docs → eli per
-  // shared/data/approval-reviewers.ts. Calendar-agent already has a
-  // pending row, so don't reuse it.
+  // (slash, subCat=docs); (slash, productLine, wireless, macro=docs)
+  // routes to eli per shared/data/approval-admins.ts. Calendar-agent
+  // already has a pending row, so don't reuse it.
   const PUBLISHER_EXT_SLUG = "translate"
 
   test("publisher submits, reviewer approves, badge appears", async ({
