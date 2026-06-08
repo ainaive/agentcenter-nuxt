@@ -310,7 +310,9 @@
       "signIn": "登录",
       "signOut": "退出",
       "settings": "设置",
-      "profile": "个人资料"
+      "profile": "个人资料",
+      "adminApprovals": "审核队列",
+      "adminReviewers": "审核员矩阵"
     }
   },
   "publish": {

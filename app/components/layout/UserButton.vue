@@ -12,6 +12,47 @@ const root = useTemplateRef<HTMLDivElement>("root")
 
 const user = computed(() => session.value.data?.user ?? null)
 
+// Admin entries surface on the dropdown for reviewers + super-admins.
+// Client-only probe: better-auth's useSession() never resolves a user
+// during SSR (see useAuth.ts), so an SSR fetch would always return the
+// anon default — we'd pay one round-trip per request for an answer
+// hydration would immediately invalidate. UserButton lives in the
+// persistent layout header, so we also watch the session-user id and
+// re-probe after sign-in / sign-out events that don't trigger a full
+// nav.
+type AdminMe = { isSuperAdmin: boolean; isReviewer: boolean; cells: unknown[] }
+const adminMe = ref<AdminMe>({
+  isSuperAdmin: false,
+  isReviewer: false,
+  cells: [],
+})
+
+// Best-effort probe: failures keep the current adminMe (anon defaults
+// at first load, last good value thereafter). A per-call token guards
+// against the rare overlap when the session-user-id watcher fires
+// repeatedly — only the most recent response commits.
+let adminMeRequestId = 0
+async function refreshAdminMe() {
+  const myRequest = ++adminMeRequestId
+  try {
+    const next = await $fetch<AdminMe>("/api/internal/admin/me")
+    if (next && myRequest === adminMeRequestId) adminMe.value = next
+  } catch {
+    // Probe is non-blocking; leave adminMe at its current value.
+  }
+}
+
+onMounted(() => {
+  void refreshAdminMe()
+})
+
+watch(
+  () => session.value.data?.user?.id ?? null,
+  (next, prev) => {
+    if (next !== prev) void refreshAdminMe()
+  },
+)
+
 function close() {
   open.value = false
 }
@@ -78,6 +119,26 @@ async function handleSignOut() {
         >
           {{ t("auth.userMenu.profile") }}
         </NuxtLink>
+        <template v-if="adminMe.isReviewer">
+          <div class="my-1 border-t border-(--color-border)" role="separator" />
+          <NuxtLink
+            :to="localePath('/admin/approvals')"
+            class="block px-3 py-2 text-sm rounded text-(--color-ink) hover:bg-(--color-sidebar)"
+            role="menuitem"
+            @click="close"
+          >
+            {{ t("auth.userMenu.adminApprovals") }}
+          </NuxtLink>
+          <NuxtLink
+            :to="localePath('/admin/reviewers')"
+            class="block px-3 py-2 text-sm rounded text-(--color-ink) hover:bg-(--color-sidebar)"
+            role="menuitem"
+            @click="close"
+          >
+            {{ t("auth.userMenu.adminReviewers") }}
+          </NuxtLink>
+          <div class="my-1 border-t border-(--color-border)" role="separator" />
+        </template>
         <button
           type="button"
           class="flex w-full items-center gap-2 px-3 py-2 text-sm rounded text-(--color-ink) hover:bg-(--color-sidebar) text-left"
