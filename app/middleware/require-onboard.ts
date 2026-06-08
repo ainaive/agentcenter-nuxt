@@ -1,19 +1,19 @@
-// SSR session lookup goes through `$fetch` to better-auth's own
-// `/api/auth/get-session` route — see require-auth.ts for the rationale.
+// SSR session lookup goes through `useRequestFetch()` against the
+// thin `/api/internal/auth/me` endpoint — see require-auth.ts for the
+// rationale.
 
-type UserShape = { defaultDeptId?: string | null }
-type SessionResponse = { user?: (UserShape & { id: string }) | null } | null
+type UserShape = { id: string; defaultDeptId?: string | null }
+type MeResponse = { user: UserShape | null }
 
 export default defineNuxtRouteMiddleware(async (to) => {
   let rawUser: UserShape | null = null
 
   if (import.meta.server) {
-    const headers = useRequestHeaders(["cookie"])
     try {
-      const session = await $fetch<SessionResponse>("/api/auth/get-session", {
-        headers: headers as Record<string, string>,
-      })
-      rawUser = session?.user ?? null
+      const { user } = await useRequestFetch()<MeResponse>(
+        "/api/internal/auth/me",
+      )
+      rawUser = user
     } catch {
       rawUser = null
     }
