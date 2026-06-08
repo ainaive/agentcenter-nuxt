@@ -1,0 +1,8 @@
+let's continue on the official extension apply feature. when I apply for official status, it says: couldn't submit, please try again. the console shows error:  ERROR  internal submitRequest failed fetch failed                                                        9:42:08 p.m.
+
+
+
+  [cause]:
+
+      at internalConnectMultiple (node:net:1193:18)
+      at afterConnectMultiple (node:net:1783:7)
