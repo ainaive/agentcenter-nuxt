@@ -21,7 +21,7 @@ What changed each day. For the current capability list, see [features.md](./feat
 
 - **Per-product-line endorsements** — Applying for Product-Line Official now requires picking a product line. The reviewer matrix at `/admin/reviewers` splits into two tabs: Company stays a single column per subCat, Product-Line becomes a 9 × 4 grid (subCats × product lines). Detail-page badges read "Wireless Official" / "无线官方" instead of the generic Product-Line label. (#43)
 - **Delegated matrix edits** — Company-tier admins of subCat X can now manage the Product-Line reviewers for subCat X across every line, without escalating to a super-admin. Cells outside their subCat render greyed and read-only. Company-tier cells stay super-admin-only. (#43)
-- **Product-line filter on the browse rail** — When the tier filter is set to Product-Line, a compact product-line pill rail appears next to it on the same row, honouring the single-row quiet pill style. `?tier=productLine&productLineId=wireless` round-trips through SSR. (#43)
+- **Product-line filter on the browse rail** — Both the tier filter and the product-line narrow live behind a single "Official" picker on the rail. The popover shows the four tiers; when Product-Line is selected it reveals a product-line row inside the same popover. `?tier=productLine&productLineId=wireless` round-trips through SSR; the trigger reads "Official: Wireless". (#43)
 - **`/api/v1` contract preserved** — Tier and product line are intentionally suppressed at the public-CLI boundary; `badge: "official"` still derives from `officialTier != null`. ADR-0001 picks up a dated addendum capturing the rationale for partial-unique indexes and the delegation rule. (#43)
 
 </details>
@@ -158,7 +158,7 @@ What changed each day. For the current capability list, see [features.md](./feat
 
 - **按产品线认证** —— 申请产品线官方时必须选择产品线。`/admin/reviewers` 审核员矩阵拆为两个标签页：公司级仍是 subCat 单列，产品线级变为 9×4 网格（subCat × 产品线）。详情页徽章显示具体产品线，如"无线官方" / "Wireless Official"，不再是泛指的"产品线官方"。 (#43)
 - **代理矩阵编辑** —— subCat X 的公司级管理员现在可直接管理该 subCat 下所有产品线的审核员，无需超级管理员介入。其他 subCat 的单元呈灰色只读。公司级单元仍仅超级管理员可改。 (#43)
-- **浏览页加入产品线筛选** —— 当级别筛选选中"产品线"时，紧贴其右出现紧凑的产品线选择条，保持单行安静风格。`?tier=productLine&productLineId=wireless` 可在 SSR 中完整往返。 (#43)
+- **浏览页加入产品线筛选** —— 浏览页过滤条上只保留一个"官方"选择器，同时承载级别和产品线两个维度。弹层中先展示四个级别，选中"产品线"后再在同一弹层中显示产品线选项。`?tier=productLine&productLineId=wireless` 可在 SSR 中完整往返，触发器文本显示为"官方: 无线"。 (#43)
 - **`/api/v1` 契约不变** —— 级别和产品线在公共 CLI 边界仍被刻意屏蔽，`badge: "official"` 仍由 `officialTier != null` 派生。ADR-0001 新增一则补遗，记录使用分区唯一索引（而非 `NULLS NOT DISTINCT`）以及代理授权规则的取舍。 (#43)
 
 </details>

@@ -72,7 +72,7 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **Product-Line dimension** — The Product-Line tier is keyed by `(subCat × productLine)` against a seeded `product_lines` table (Wireless, Datacom, Terminals, Cloud). Approved extensions wear a line-specific badge ("Wireless Official" / "无线官方") on the detail page.
 - **Reviewer queue** — Each (tier × functional category × productLine?) cell is owned by an assigned set of reviewers. `/admin/approvals` shows the reviewer their queue. Approve in one click; reject opens an inline note field.
 - **Configurable matrix with delegation** — `/admin/reviewers` is now tabbed by tier: Company-tier cells stay super-admin-only; the Product-Line grid lets each Company-tier admin of subCat X manage Product-Line reviewers for subCat X (any line), while greying out cells outside their scope. Super-admins still edit anywhere.
-- **Tier badges & filter** — Approved extensions wear a Product-Line or Company chip on cards, hero, and related-lists. The browse filter rail adds an "Official tier" pill plus, when Product-Line is active, an inline product-line picker for narrowing the catalog to a specific line.
+- **Tier badges & filter** — Approved extensions wear a Product-Line or Company chip on cards, hero, and related-lists. The browse filter rail surfaces a single "Official" picker that owns both the tier and the product-line narrows: pick a tier, and when "Product-Line" is chosen, the same popover reveals a row of product-line options for narrowing the catalog further. Keeps the rail to a single row on a typical viewport.
 - **Requests tab** — `/profile?section=requests` tracks the publisher's submitted applications and shows the reviewer's note on rejections; pending requests can be withdrawn.
 - **CLI contract preserved** — The `/api/v1` `badge` field is derived from the new tier so existing CLI installs see no change; `productLineId` stays internal. See [ADR-0001](./adr/0001-official-tier-approval-workflow.md) (with the 2026-06-08 product-line addendum) for the full rationale.
 
@@ -190,7 +190,7 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **产品线维度** ——产品线官方按 `(subCat × productLine)` 路由，产品线来自种子表 `product_lines`（无线、数通、终端、云）。通过审核的扩展在详情页显示带产品线名称的徽章（"无线官方" / "Wireless Official"）。
 - **审核队列** ——每个（级别 × 功能分类 × 产品线?）单元由指定的审核员负责。审核员在 `/admin/approvals` 看到属于自己的待审请求；一键通过；驳回时弹出内嵌备注框。
 - **可配置矩阵与代理授权** —— `/admin/reviewers` 按级别分页：公司级单元仅超级管理员可管理；产品线网格中，公司级管理员可管理自己 subCat 下的所有产品线单元，其他单元只读。超级管理员仍可全局编辑。
-- **级别徽章与筛选** ——通过审核的扩展在卡片、详情页、关联列表上展示产品线 / 公司徽章。浏览页过滤条增加"官方级别"筛选；选中产品线级后，还会出现内嵌的产品线选择条用于进一步缩窄。
+- **级别徽章与筛选** ——通过审核的扩展在卡片、详情页、关联列表上展示产品线 / 公司徽章。浏览页过滤条中只保留一个"官方"选择器，同时承载级别和产品线两个维度：选择级别后，若选中"产品线"，同一个弹层中会显示产品线选项。整条过滤条在常规视口宽度下保持单行。
 - **申请记录** —— `/profile?section=requests` 展示发布者提交过的申请，驳回时显示审核员备注；待审请求可撤回。
 - **CLI 契约不变** —— `/api/v1` 的 `badge` 字段从新的官方级别派生，`productLineId` 也保留为内部字段，CLI 行为不变。详细决策见 [ADR-0001](./adr/0001-official-tier-approval-workflow.md)（含 2026-06-08 产品线补遗）。
 

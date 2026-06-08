@@ -188,6 +188,40 @@ Cross-references for this update:
 - New endpoint: `server/api/internal/product-lines/index.get.ts`
 - UI: `app/components/approvals/ReviewerMatrix{,Company,ProductLine}.vue`,
   `app/components/approvals/RequestOfficialDialog.vue`,
-  `app/components/filters/ProductLinePill.vue`, and the
+  `app/components/filters/OfficialTierPicker.vue` (collapses the original
+  OfficialTierPill + ProductLinePill into one popover trigger so the
+  listing rail stays a single row — see the 2026-06-08-b followup), and the
   `extensions.officialTier.productLineWith` i18n key consumed by
   `app/components/extension/ExtHero.vue`.
+
+## Followup 2026-06-08-b — filter rail consolidation
+
+The product-line dimension surfaced as a second inline pill rail
+(`ProductLinePill.vue`) immediately next to the tier pill rail
+(`OfficialTierPill.vue`). With `tier=productLine` selected the listing
+rail rendered roughly twenty interactive elements on one row and wrapped
+into 2–3 physical lines on a typical viewport — at odds with locked
+decision #3's "single-row quiet pill rail".
+
+The two pill components are replaced by a single popover trigger,
+`OfficialTierPicker.vue`, that owns both the `tier` and `productLineId`
+URL keys. The trigger reads `Official: <value>` and matches the
+existing `CreatorPicker` / `PublisherPicker` / `DeptPicker` affordance.
+Opening it exposes a Tier row of four options and, when Product-Line is
+active, a Product-Line row of N+1 options inside the same popover.
+Switching tier *away* from Product-Line clears `productLineId` in the
+same `update({...})` call so the URL never carries a stale line on a
+non-productLine tier — mirroring the iff-rule the server already
+enforces.
+
+No URL contract change. No API change. The active-filter chip strip
+(`ResultsSummary.vue`) keeps surfacing dismissible chips for the
+applied filters, unchanged. Cross-references for the followup:
+
+- New component: `app/components/filters/OfficialTierPicker.vue`
+- Filter rail mount: `app/components/filters/FilterBar.vue`
+- Removed: `app/components/filters/OfficialTierPill.vue`,
+  `app/components/filters/ProductLinePill.vue`
+- New i18n key: `filters.tierPicker.triggerLabel` (EN: "Official", ZH: "官方"),
+  reusing the existing `filters.tierLabel` / `filters.productLineLabel`
+  keys as popover section headers.
