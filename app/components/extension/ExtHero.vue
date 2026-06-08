@@ -16,7 +16,13 @@ const props = defineProps<{
   updatedAt: string | null
   deptId: string | null
   shareUrl: string
+  /** True when the viewer is a super-admin AND the extension is Official —
+   *  shows the small "Revoke" affordance next to the badge. The page hosts
+   *  the actual dialog and refresh; we just emit `revoke` on click. */
+  canRevoke?: boolean
 }>()
+
+defineEmits<{ (e: "revoke"): void }>()
 
 const { t, locale } = useI18n()
 
@@ -92,6 +98,14 @@ const updatedRelative = computed(() => {
           >
             {{ tierBadgeText }}
           </span>
+          <button
+            v-if="canRevoke && officialTier"
+            type="button"
+            class="rounded border border-(--color-border) px-1.5 py-0.5 text-[11px] font-medium text-(--color-ink-muted) hover:border-(--color-ink)/40 hover:text-(--color-ink)"
+            @click="$emit('revoke')"
+          >
+            {{ t("approvals.revoke.button") }}
+          </button>
         </div>
         <p
           v-if="description"
