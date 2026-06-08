@@ -30,7 +30,20 @@ const DB = {
 vi.mock("./db", () => ({ useDb: () => DB }))
 
 const sendEvent = vi.fn(async () => undefined)
-vi.mock("./inngest", () => ({ inngest: { send: sendEvent } }))
+// `safeSend` shares the same spy so existing `expect(sendEvent).…`
+// assertions continue to observe approval-side event sends. The real
+// `safeSend` wraps `inngest.send` in try/catch; the orchestrator's
+// behavior under a rejected send is covered by the dedicated test below.
+vi.mock("./inngest", () => ({
+  inngest: { send: sendEvent },
+  safeSend: async (event: unknown) => {
+    try {
+      await sendEvent(event as Parameters<typeof sendEvent>[0])
+    } catch (error) {
+      console.error("[inngest] safeSend failed", error)
+    }
+  },
+}))
 
 const approvalsRepo = await import("~~/server/repositories/approvals")
 const reviewersRepo = await import("~~/server/repositories/reviewers")
@@ -112,6 +125,21 @@ describe("submitRequest", () => {
         }),
       }),
     )
+  })
+
+  it("still resolves with the row when the inngest send rejects", async () => {
+    sendEvent.mockRejectedValueOnce(new Error("fetch failed"))
+    const row = await submitRequest({
+      extensionId: "ext-1",
+      requestedTier: "company",
+      subCat: "softDev",
+      productLineId: null,
+      userId: "u-pub",
+      reason: undefined,
+    })
+    expect(row).toEqual(PENDING_ROW)
+    expect(approvalsRepo.insertRequest).toHaveBeenCalledTimes(1)
+    expect(sendEvent).toHaveBeenCalledTimes(1)
   })
 
   it("maps undefined reason to null on the insert row", async () => {

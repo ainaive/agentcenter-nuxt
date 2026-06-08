@@ -9,7 +9,7 @@ import {
 } from "~~/shared/approvals/state"
 
 import { useDb } from "./db"
-import { inngest } from "./inngest"
+import { safeSend } from "./inngest"
 
 // Orchestrators over the approvals/reviewers/extensions repositories. Pure
 // transitions live in `shared/approvals/state.ts`; this file loads rows,
@@ -93,7 +93,11 @@ export async function submitRequest(
     })
   })
 
-  await inngest.send({
+  // Best-effort: the request row is the source of truth and is already
+  // visible in the reviewer queue. A transient Inngest outage (or, in dev,
+  // a missing `inngest-cli dev` process) must not fail the user's submit
+  // after the row has been committed.
+  await safeSend({
     name: "extension/approval.requested",
     data: {
       requestId: row.id,
@@ -173,7 +177,7 @@ export async function decideRequest(
   const updated = await approvalsRepo.findById(db, params.requestId)
   if (!updated) throw new Error("approval request vanished mid-decide")
 
-  await inngest.send({
+  await safeSend({
     name: "extension/approval.decided",
     data: {
       requestId: updated.id,
@@ -259,7 +263,7 @@ export async function revokeTier(
   })
   if (affected === 0) throw new ApprovalError("extension_not_official")
 
-  await inngest.send({
+  await safeSend({
     name: "extension/tier.revoked",
     data: {
       extensionId: params.extensionId,
