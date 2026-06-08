@@ -1,0 +1,39 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "87cadfeada93",
+  "session_id": "9a6b310b-3c05-4985-b43f-cf9b10b8bedc",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-08T06:09:27.016139Z",
+  "branch": "feat/p9-queue-filtering",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/pages/admin/approvals/index.vue",
+    "i18n/locales/en.json",
+    "i18n/locales/zh.json"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "7b3bcaf0a4dd",
+  "token_usage": {
+    "input_tokens": 641,
+    "cache_creation_tokens": 1727205,
+    "cache_read_tokens": 209844761,
+    "output_tokens": 331062,
+    "api_call_count": 536
+  },
+  "session_metrics": {
+    "turn_count": 18
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-08T06:09:26.93492Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 149,
+    "human_modified": 4,
+    "human_removed": 0,
+    "total_committed": 149,
+    "total_lines_changed": 153,
+    "agent_percentage": 0,
+    "metric_version": 2
+  }
+}
