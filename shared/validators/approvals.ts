@@ -52,6 +52,7 @@ const requireProductLineIff = <T extends {
 
 export const APPROVAL_REASON_MAX = 500
 export const APPROVAL_NOTE_MAX = 500
+export const REVOKE_NOTE_MAX = 500
 
 const optionalText = (max: number) =>
   z
@@ -96,6 +97,17 @@ export const WithdrawApprovalSchema = z.object({
   requestId: z.string().trim().min(1),
 })
 export type WithdrawApprovalInput = z.infer<typeof WithdrawApprovalSchema>
+
+// Super-admin Revoke action from the detail page. The note is REQUIRED
+// (mirrors the existing reject flow) — the publisher dashboard surfaces
+// it directly so a missing note would leave the publisher in the dark.
+// `.trim().min(1)` enforces "non-empty after trim" so whitespace-only
+// submissions are caught at the validator boundary.
+export const RevokeTierSchema = z.object({
+  extensionId: z.string().trim().min(1),
+  note: z.string().trim().min(1).max(REVOKE_NOTE_MAX),
+})
+export type RevokeTierInput = z.infer<typeof RevokeTierSchema>
 
 export const AssignReviewerSchema = z
   .object({

@@ -118,6 +118,17 @@ export const extensions = pgTable(
     publisherUserId: text().references(() => users.id, {
       onDelete: "set null",
     }),
+    // Tier revocation audit trail. Populated when a super-admin demotes
+    // an Official extension back to Unofficial via the detail page
+    // Revoke action. Cleared on the next approval — see the orchestrator
+    // in server/utils/approvals.ts. ON DELETE SET NULL on the admin FK
+    // so deleting an admin orphans the attribution rather than failing
+    // the cascade.
+    revokedAt: timestamp({ withTimezone: true }),
+    revokedByUserId: text().references(() => users.id, {
+      onDelete: "set null",
+    }),
+    revocationNote: text(),
     ownerOrgId: text()
       .notNull()
       .references(() => organizations.id, { onDelete: "cascade" }),

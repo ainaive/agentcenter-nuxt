@@ -12,12 +12,28 @@ const slug = computed(() => String(route.params.slug ?? ""))
 // productLineLabel against the right bilingual column without having to
 // parse the accept-language header (locked decision #5 makes locales
 // always-prefixed in URLs, so the page already knows the canonical one).
-const { data } = await useFetch("/api/internal/extension-detail", {
+const { data, refresh } = await useFetch("/api/internal/extension-detail", {
   query: computed(() => ({ slug: slug.value, locale: locale.value })),
 })
 
 if (!data.value || !data.value.ext) {
   throw createError({ statusCode: 404, statusMessage: "Extension not found" })
+}
+
+// admin/me returns safe `false` defaults for anonymous callers (no 401)
+// so this useFetch never throws even when the page is browsed signed-out.
+// Only super-admins see the Revoke affordance — the server still
+// re-checks via requireSuperAdmin on the actual endpoint.
+const { data: adminMe } = await useFetch("/api/internal/admin/me", {
+  default: () => ({ isSuperAdmin: false, isReviewer: false }),
+})
+const canRevoke = computed(
+  () => !!adminMe.value?.isSuperAdmin && !!data.value?.ext?.officialTier,
+)
+const revokeDialogOpen = ref(false)
+function onRevoked() {
+  revokeDialogOpen.value = false
+  void refresh()
 }
 
 const ext = computed(() => data.value!.ext)
@@ -76,6 +92,15 @@ defineOgImageComponent("Frame", {
           :updated-at="updatedAt"
           :dept-id="ext.deptId"
           :share-url="shareUrl"
+          :can-revoke="canRevoke"
+          @revoke="revokeDialogOpen = true"
+        />
+
+        <RevokeTierDialog
+          v-model:open="revokeDialogOpen"
+          :extension-id="ext.id"
+          :extension-name="name"
+          @revoked="onRevoked"
         />
 
         <ExtTabs

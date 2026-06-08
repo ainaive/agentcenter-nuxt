@@ -27,6 +27,7 @@ export type ApprovalErrorCode =
   | "not_requester"
   | "missing_product_line"
   | "unexpected_product_line"
+  | "extension_not_official"
 
 export class ApprovalError extends Error {
   readonly code: ApprovalErrorCode
@@ -218,6 +219,57 @@ export async function withdrawRequest(
   const updated = await approvalsRepo.findById(db, params.requestId)
   if (!updated) throw new Error("approval request vanished mid-withdraw")
   return updated
+}
+
+export interface RevokeTierParams {
+  extensionId: string
+  superAdminUserId: string
+  note: string
+}
+
+export interface RevokeTierResult {
+  extensionId: string
+  revokedAt: Date
+}
+
+// Super-admin Revoke action from the detail page. Loads the extension,
+// pre-checks that it's actually Official, then atomically clears tier +
+// productLineId and writes the audit trio. The DB-level WHERE clause in
+// applyRevocation re-checks officialTier IS NOT NULL so a concurrent
+// revoke / re-approval loses the race and surfaces as
+// `extension_not_official` rather than silently clobbering the row.
+// Caller is expected to already be a super-admin (gated at the endpoint
+// via requireSuperAdmin) — we don't re-check here for the same reason the
+// reviewer-assign endpoint doesn't re-check its gate.
+export async function revokeTier(
+  params: RevokeTierParams,
+): Promise<RevokeTierResult> {
+  const db = useDb()
+  const ext = await extensionsRepo.findById(db, params.extensionId)
+  if (!ext) throw new ApprovalError("extension_not_found")
+  if (!ext.officialTier) throw new ApprovalError("extension_not_official")
+
+  const revokedAt = new Date()
+  const affected = await db.transaction(async (tx) => {
+    return approvalsRepo.applyRevocation(tx, params.extensionId, {
+      revokedAt,
+      revokedByUserId: params.superAdminUserId,
+      revocationNote: params.note,
+    })
+  })
+  if (affected === 0) throw new ApprovalError("extension_not_official")
+
+  await inngest.send({
+    name: "extension/tier.revoked",
+    data: {
+      extensionId: params.extensionId,
+      revokedByUserId: params.superAdminUserId,
+      revokedAt: revokedAt.toISOString(),
+      note: params.note,
+    },
+  })
+
+  return { extensionId: params.extensionId, revokedAt }
 }
 
 // Reviewer queue — pending requests in any cell this user covers. Returns

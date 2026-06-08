@@ -79,6 +79,9 @@ const detailSelect = {
   ownerOrgId: extensions.ownerOrgId,
   visibility: extensions.visibility,
   productLineId: extensions.productLineId,
+  revokedAt: extensions.revokedAt,
+  revokedByUserId: extensions.revokedByUserId,
+  revocationNote: extensions.revocationNote,
   tagIds: sql<string[]>`coalesce(array_agg(${extensionTags.tagId}) FILTER (WHERE ${extensionTags.tagId} IS NOT NULL), '{}')`,
 }
 

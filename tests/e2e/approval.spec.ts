@@ -65,6 +65,19 @@ test.describe("approval workflow", () => {
       page.getByRole("button", { name: "Official: Wireless" }),
     ).toBeVisible()
   })
+
+  test("anonymous detail page does not render the Revoke button", async ({
+    request,
+  }) => {
+    // Pick a seeded Official extension. "web-search-pro" is stamped
+    // productLine in shared/data/extensions.ts; the SSR HTML for an
+    // anonymous request should contain the badge but never the localized
+    // "Revoke" trigger — the trigger is gated on admin/me.isSuperAdmin.
+    const response = await request.get("/en/extensions/web-search-pro")
+    expect(response.status()).toBe(200)
+    const html = await response.text()
+    expect(html).not.toContain(">Revoke<")
+  })
 })
 
 // ───── Multi-actor golden path ──────────────────────────────────────────

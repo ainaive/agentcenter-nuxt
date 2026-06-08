@@ -91,9 +91,6 @@ What we gave up:
 
 Open follow-ups (not blocking):
 
-- **Tier revocation** — a super-admin removing a granted tier is not
-  yet supported. Data model allows `null` already; needs a single
-  orchestrator + endpoint.
 - **Notification fan-out** — the orchestrator emits
   `extension/approval.{requested,decided}` Inngest events, but the
   current consumer only logs them. Email / in-app notifications are
@@ -225,3 +222,73 @@ applied filters, unchanged. Cross-references for the followup:
 - New i18n key: `filters.tierPicker.triggerLabel` (EN: "Official", ZH: "官方"),
   reusing the existing `filters.tierLabel` / `filters.productLineLabel`
   keys as popover section headers.
+
+## Update 2026-06-09 — tier revocation
+
+The original ADR called out tier revocation as the most load-bearing
+open follow-up: "a super-admin removing a granted tier is not yet
+supported. Data model allows `null` already; needs a single
+orchestrator + endpoint." We've now closed it.
+
+Design:
+
+- **Trigger lives on the detail page**, next to the badge, gated on
+  `admin/me.isSuperAdmin && officialTier`. Super-admins find an
+  extension the same way as anyone else — by browsing — and act
+  spatially next to the thing they're operating on. We deliberately
+  did not add a dedicated `/admin/officials` list page for v1; if bulk
+  audits become a need, that's an additive page later.
+- **Reason note is required**, matching the existing Reject flow.
+  `RevokeTierSchema` enforces `.trim().min(1)`; the publisher sees the
+  reason verbatim on their dashboard so a missing note would leave
+  them in the dark.
+- **Pending elevation requests are left alone.** Revocation clears the
+  *current* tier; a pending request asks for a *future* tier. Coupling
+  them would mean a Company-Official extension with a pending
+  Wireless productLine request can't be revoked without also
+  withdrawing the unrelated request — confusing for everyone.
+
+Audit trail strategy:
+
+- **Three new columns on `extensions`**: `revoked_at`,
+  `revoked_by_user_id` (FK to `users` with `ON DELETE SET NULL`),
+  `revocation_note`. Kept on the row itself rather than in a separate
+  `audit_events` table because the publisher dashboard's "why am I no
+  longer Official?" answer is one JOIN-free read.
+- **`setExtensionOfficialTier` extends to clear the trio** in the same
+  UPDATE whenever a tier is stamped. The invariant "you're either
+  currently Official with no pending revocation explanation, or
+  Unofficial" lives in the repo, not scattered across orchestrator
+  branches.
+- **`applyRevocation` is a CAS** via `WHERE official_tier IS NOT NULL`:
+  the returned affected-row count tells the orchestrator whether the
+  row actually transitioned, so a concurrent revoke / re-approve
+  surfaces cleanly as `extension_not_official` rather than silently
+  no-op'ing.
+
+Inngest event `extension/tier.revoked` fires with `{ extensionId,
+revokedByUserId, revokedAt, note }`. The existing notify-approval
+consumer hasn't been wired to it yet — that's the next follow-up.
+
+What we gave up:
+
+- A dedicated `audit_events` table would survive across the
+  Official→Unofficial→Official cycle. Today the columns clear on
+  re-approval, so once an extension is back to Official the prior
+  revocation history is gone. That's intentional: the columns answer
+  "what's happening now?", not "what's ever happened?" If you need
+  durable history, the table is a separate ADR.
+
+Cross-references for this update:
+
+- Migration: `drizzle/0011_warm_mandrill.sql`
+- Schema: `shared/db/schema/extension.ts` (revokedAt / revokedByUserId / revocationNote columns)
+- Repo: `server/repositories/approvals.ts` (`applyRevocation`,
+  extended `setExtensionOfficialTier`)
+- Orchestrator: `server/utils/approvals.ts` (`revokeTier`,
+  `extension_not_official` code)
+- Endpoint: `server/api/internal/approvals/revoke.post.ts`
+- UI: `app/components/extension/ExtHero.vue` (canRevoke prop +
+  button), `app/components/approvals/RevokeTierDialog.vue`,
+  `app/pages/extensions/[slug].vue` (admin/me fetch + dialog host),
+  `app/pages/publish/index.vue` (revocation annotation row)

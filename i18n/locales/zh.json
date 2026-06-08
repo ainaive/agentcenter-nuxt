@@ -601,6 +601,16 @@
       "rejected": "已驳回",
       "withdrawn": "已撤回"
     },
+    "revoke": {
+      "button": "撤销",
+      "title": "撤销官方认证",
+      "subtitle": "将「{name}」降级为非官方，发布者会看到你填写的理由。",
+      "noteLabel": "理由（必填）",
+      "notePlaceholder": "为何撤销？",
+      "cancel": "取消",
+      "confirm": "确认撤销"
+    },
+    "revokedAnnotation": "于 {date} 被 {admin} 撤销：{note}",
     "dialog": {
       "title": "申请官方认证",
       "subtitle": "为「{name}」提交官方认证审核。",
@@ -629,7 +639,8 @@
       "extension_not_published": "请先发布扩展再申请认证。",
       "duplicate_pending_request": "该扩展已有待审核的申请。",
       "missing_product_line": "请选择产品线后再提交。",
-      "unexpected_product_line": "公司级申请不应携带产品线。"
+      "unexpected_product_line": "公司级申请不应携带产品线。",
+      "extension_not_official": "该扩展并非官方扩展，无需撤销。"
     }
   },
   "cliAuth": {

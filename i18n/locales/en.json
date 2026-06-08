@@ -601,6 +601,16 @@
       "rejected": "Rejected",
       "withdrawn": "Withdrawn"
     },
+    "revoke": {
+      "button": "Revoke",
+      "title": "Revoke Official status",
+      "subtitle": "Demote \"{name}\" back to Unofficial. The publisher will see your reason.",
+      "noteLabel": "Reason (required)",
+      "notePlaceholder": "What's the reason for revocation?",
+      "cancel": "Cancel",
+      "confirm": "Confirm revoke"
+    },
+    "revokedAnnotation": "Revoked on {date} by {admin}: {note}",
     "dialog": {
       "title": "Apply for official status",
       "subtitle": "Elevate \"{name}\" by sending it for review.",
@@ -629,7 +639,8 @@
       "extension_not_published": "Publish the extension before requesting elevation.",
       "duplicate_pending_request": "You already have a pending request for this extension.",
       "missing_product_line": "Pick a product line before submitting.",
-      "unexpected_product_line": "Company-tier requests must not include a product line."
+      "unexpected_product_line": "Company-tier requests must not include a product line.",
+      "extension_not_official": "This extension isn't Official, nothing to revoke."
     }
   },
   "cliAuth": {

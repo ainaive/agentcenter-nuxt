@@ -9,6 +9,7 @@ vi.mock("~~/server/repositories/approvals", () => ({
   applyDecision: vi.fn(),
   applyWithdraw: vi.fn(),
   setExtensionOfficialTier: vi.fn(),
+  applyRevocation: vi.fn(),
   isReviewerForCell: vi.fn(),
 }))
 vi.mock("~~/server/repositories/reviewers", () => ({
@@ -39,6 +40,7 @@ const {
   decideRequest,
   withdrawRequest,
   listReviewerQueue,
+  revokeTier,
   ApprovalError,
 } = await import("./approvals")
 
@@ -505,6 +507,91 @@ describe("listReviewerQueue", () => {
     const result = await listReviewerQueue("u-noone")
     expect(result).toEqual([])
     expect(approvalsRepo.listPendingForCells).toHaveBeenCalledWith(DB, [])
+  })
+})
+
+describe("revokeTier", () => {
+  const EXT_OFFICIAL = {
+    id: "ext-1",
+    publisherUserId: "u-pub",
+    visibility: "published" as const,
+    officialTier: "company" as const,
+    productLineId: null as string | null,
+  }
+
+  beforeEach(() => {
+    vi.mocked(extensionsRepo.findById).mockResolvedValue(EXT_OFFICIAL as never)
+    vi.mocked(approvalsRepo.applyRevocation).mockResolvedValue(1)
+  })
+
+  it("clears tier + writes the audit trio via applyRevocation, then emits tier.revoked", async () => {
+    const result = await revokeTier({
+      extensionId: "ext-1",
+      superAdminUserId: "u-super",
+      note: "approved by mistake",
+    })
+
+    expect(approvalsRepo.applyRevocation).toHaveBeenCalledWith(
+      TX,
+      "ext-1",
+      expect.objectContaining({
+        revokedByUserId: "u-super",
+        revocationNote: "approved by mistake",
+      }),
+    )
+    expect(sendEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "extension/tier.revoked",
+        data: expect.objectContaining({
+          extensionId: "ext-1",
+          revokedByUserId: "u-super",
+          note: "approved by mistake",
+        }),
+      }),
+    )
+    expect(result.extensionId).toBe("ext-1")
+    expect(result.revokedAt).toBeInstanceOf(Date)
+  })
+
+  it("throws extension_not_found when the row is missing", async () => {
+    vi.mocked(extensionsRepo.findById).mockResolvedValue(null)
+    await expect(
+      revokeTier({
+        extensionId: "ext-x",
+        superAdminUserId: "u-super",
+        note: "policy",
+      }),
+    ).rejects.toMatchObject({ code: "extension_not_found" })
+    expect(DB.transaction).not.toHaveBeenCalled()
+  })
+
+  it("throws extension_not_official when the extension is already Unofficial", async () => {
+    vi.mocked(extensionsRepo.findById).mockResolvedValue({
+      ...EXT_OFFICIAL,
+      officialTier: null,
+    } as never)
+    await expect(
+      revokeTier({
+        extensionId: "ext-1",
+        superAdminUserId: "u-super",
+        note: "redundant",
+      }),
+    ).rejects.toMatchObject({ code: "extension_not_official" })
+    expect(DB.transaction).not.toHaveBeenCalled()
+  })
+
+  it("throws extension_not_official when the race-lost CAS returns 0 affected rows", async () => {
+    vi.mocked(approvalsRepo.applyRevocation).mockResolvedValue(0)
+    await expect(
+      revokeTier({
+        extensionId: "ext-1",
+        superAdminUserId: "u-super",
+        note: "race",
+      }),
+    ).rejects.toMatchObject({ code: "extension_not_official" })
+    // We did get into the transaction, but no Inngest event should fire
+    // because the row didn't actually transition.
+    expect(sendEvent).not.toHaveBeenCalled()
   })
 })
 
