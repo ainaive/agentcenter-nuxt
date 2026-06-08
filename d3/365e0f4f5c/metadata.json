@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "d3365e0f4f5c",
+  "strategy": "manual-commit",
+  "branch": "feat/p9-queue-filtering",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "server/api/internal/admin/me.get.ts",
+    "server/utils/approvals.test.ts",
+    "server/utils/approvals.ts",
+    "shared/validators/approvals.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/d3/365e0f4f5c/0/metadata.json",
+      "transcript": "/d3/365e0f4f5c/0/full.jsonl",
+      "content_hash": "/d3/365e0f4f5c/0/content_hash.txt",
+      "prompt": "/d3/365e0f4f5c/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 633,
+    "cache_creation_tokens": 1719846,
+    "cache_read_tokens": 204321466,
+    "output_tokens": 326438,
+    "api_call_count": 528
+  }
+}
