@@ -310,7 +310,9 @@
       "signIn": "Sign in",
       "signOut": "Sign out",
       "settings": "Settings",
-      "profile": "Profile"
+      "profile": "Profile",
+      "adminApprovals": "Approval queue",
+      "adminReviewers": "Reviewer matrix"
     }
   },
   "publish": {
