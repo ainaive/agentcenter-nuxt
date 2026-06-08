@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "dce2c6ab4c89",
+  "strategy": "manual-commit",
+  "branch": "feat/p9-admin-entry",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/components/layout/UserButton.nuxt.test.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/dc/e2c6ab4c89/0/metadata.json",
+      "transcript": "/dc/e2c6ab4c89/0/full.jsonl",
+      "content_hash": "/dc/e2c6ab4c89/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 109,
+    "cache_creation_tokens": 230956,
+    "cache_read_tokens": 7411871,
+    "output_tokens": 51193,
+    "api_call_count": 74
+  }
+}
