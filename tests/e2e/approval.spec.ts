@@ -72,21 +72,28 @@ test.describe("approval workflow", () => {
 // Walks the full flow: publisher submits a request, reviewer approves,
 // publisher sees the tier badge on the detail page.
 //
-// Gated on RUN_FULL_E2E so it stays out of the per-PR signal. Run with:
+// Gated on RUN_FULL_E2E=1 so it stays out of the per-PR signal. Run with:
 //
-//   bun run db:seed && RUN_FULL_E2E=1 bun run test:e2e tests/e2e/approval.spec.ts
+//   SEED_PASSWORD=dev-only bun run db:seed
+//   SEED_PASSWORD=dev-only RUN_FULL_E2E=1 bun run test:e2e tests/e2e/approval.spec.ts
 //
 // The seed plants Better-Auth credential rows for every CREATOR using
-// SEED_PASSWORD (default `agentcenter-dev-password`), so the sign-in
-// steps below Just Work after a fresh `bun run db:seed`.
+// SEED_PASSWORD, so the sign-in steps below sign in with that same value.
 test.describe("approval workflow — multi-actor golden path", () => {
   test.beforeAll(() => {
-    test.skip(!process.env.RUN_FULL_E2E, "Gated on RUN_FULL_E2E")
+    // Strict comparison so RUN_FULL_E2E=0 / RUN_FULL_E2E=false don't
+    // accidentally enable the slow suite.
+    test.skip(process.env.RUN_FULL_E2E !== "1", "Gated on RUN_FULL_E2E=1")
+    if (!process.env.SEED_PASSWORD) {
+      throw new Error(
+        "SEED_PASSWORD must be set to the same value used by the most recent `bun run db:seed`",
+      )
+    }
   })
 
   const PUBLISHER = "ben@agentcenter.dev"
   const REVIEWER = "eli@agentcenter.dev"
-  const PASSWORD = process.env.SEED_PASSWORD ?? "agentcenter-dev-password"
+  const PASSWORD = process.env.SEED_PASSWORD!
   // Pick an unofficial extension owned by ben that lands on a cell where
   // eli is the assigned reviewer. From the seed: ben owns /translate
   // (ext-8, subCat=docs); productLine × docs → eli per

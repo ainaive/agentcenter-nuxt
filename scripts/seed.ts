@@ -172,9 +172,15 @@ async function main() {
   //   providerId="credential", accountId=userId, password=hashed scrypt.
   // Deterministic id + onConflictDoUpdate makes re-running the seed safe
   // and lets `SEED_PASSWORD=newvalue bun run db:seed` rotate the password.
-  // Default matches the e2e fixture in tests/e2e/approval.spec.ts.
-  const seedPassword =
-    process.env.SEED_PASSWORD ?? "agentcenter-dev-password"
+  // SEED_PASSWORD is required — we deliberately do NOT ship a default so a
+  // misconfigured environment can't quietly hand out predictable credentials.
+  const seedPassword = process.env.SEED_PASSWORD
+  if (!seedPassword) {
+    throw new Error(
+      "seed: SEED_PASSWORD env var is required to plant credential accounts " +
+        "(e.g. SEED_PASSWORD=dev-only-password bun run db:seed)",
+    )
+  }
   const passwordHash = await hashPassword(seedPassword)
   const accountRows = CREATORS.map((u) => ({
     id: `acc-credential-${u.id}`,
