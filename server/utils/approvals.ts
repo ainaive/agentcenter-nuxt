@@ -177,6 +177,7 @@ export async function decideRequest(
   const updated = await approvalsRepo.findById(db, params.requestId)
   if (!updated) throw new Error("approval request vanished mid-decide")
 
+  // Best-effort notification after commit; see submitRequest for rationale.
   await safeSend({
     name: "extension/approval.decided",
     data: {
@@ -263,6 +264,7 @@ export async function revokeTier(
   })
   if (affected === 0) throw new ApprovalError("extension_not_official")
 
+  // Best-effort notification after commit; see submitRequest for rationale.
   await safeSend({
     name: "extension/tier.revoked",
     data: {
