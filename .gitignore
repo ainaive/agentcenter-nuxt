@@ -35,3 +35,4 @@ playwright/.cache
 # TypeScript
 *.tsbuildinfo
 .claude/scheduled_tasks.lock
+.env*.local
