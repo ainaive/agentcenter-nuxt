@@ -12,9 +12,12 @@ type AdminMe = { isSuperAdmin: boolean; isReviewer: boolean }
 
 export default defineNuxtRouteMiddleware(async () => {
   const localePath = useLocalePath()
-  const ssrFetch = import.meta.server ? useRequestFetch() : $fetch
   try {
-    const me = await ssrFetch<AdminMe>("/api/internal/admin/me")
+    // Cast to (url) => Promise<unknown> sidesteps Nuxt's route-discriminated
+    // $fetch type inference, which trips "excessive stack depth" when
+    // useRequestFetch()'s return type is a union with the global $fetch.
+    const fetchAny = useRequestFetch() as (url: string) => Promise<unknown>
+    const me = (await fetchAny("/api/internal/admin/me")) as AdminMe
     if (!me.isReviewer) {
       return navigateTo(localePath("/"))
     }

@@ -9,6 +9,18 @@
 // middleware can branch on the user shape instead of catching errors.
 
 export default defineEventHandler(async (event) => {
+  const rawCookie = getRequestHeader(event, "cookie")
+  console.log("[DEBUG-a4f2] me handler entered", {
+    hasCookieHeader: typeof rawCookie === "string" && rawCookie.length > 0,
+    cookieHeaderLen: rawCookie?.length ?? 0,
+    cookieNames:
+      typeof rawCookie === "string"
+        ? rawCookie.split(";").map((c) => c.trim().split("=")[0])
+        : [],
+  })
   const user = await getSessionUser(event)
+  console.log("[DEBUG-a4f2] me handler result", {
+    userId: user?.id ?? null,
+  })
   return { user: user ?? null }
 })

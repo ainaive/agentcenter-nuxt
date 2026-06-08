@@ -9,9 +9,10 @@ type AdminMe = { isSuperAdmin: boolean }
 
 export default defineNuxtRouteMiddleware(async () => {
   const localePath = useLocalePath()
-  const ssrFetch = import.meta.server ? useRequestFetch() : $fetch
   try {
-    const me = await ssrFetch<AdminMe>("/api/internal/admin/me")
+    // See require-reviewer.ts for why the cast is needed.
+    const fetchAny = useRequestFetch() as (url: string) => Promise<unknown>
+    const me = (await fetchAny("/api/internal/admin/me")) as AdminMe
     if (!me.isSuperAdmin) {
       return navigateTo(localePath("/"))
     }

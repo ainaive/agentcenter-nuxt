@@ -15,12 +15,21 @@ export default defineNuxtRouteMiddleware(async (to) => {
   let hasUser = false
 
   if (import.meta.server) {
+    const ssrFetch = useRequestFetch()
+    console.log("[DEBUG-a4f2] require-auth ssr branch", {
+      to: to.fullPath,
+      requestFetchIsGlobalFallback: ssrFetch === globalThis.$fetch,
+    })
     try {
-      const { user } = await useRequestFetch()<MeResponse>(
-        "/api/internal/auth/me",
-      )
-      hasUser = !!user
-    } catch {
+      const res = await ssrFetch<MeResponse>("/api/internal/auth/me")
+      console.log("[DEBUG-a4f2] require-auth ssr got", {
+        userId: res?.user?.id ?? null,
+      })
+      hasUser = !!res?.user
+    } catch (err) {
+      console.log("[DEBUG-a4f2] require-auth ssr threw", {
+        err: err instanceof Error ? err.message : String(err),
+      })
       hasUser = false
     }
   } else {
