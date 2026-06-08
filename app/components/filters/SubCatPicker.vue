@@ -22,13 +22,23 @@ const { filters, update } = useFilters()
 
 const open = ref(false)
 
-const options = computed(() =>
-  props.allowedSubCats && props.allowedSubCats.length > 0
-    ? SUB_CAT_KEY_LIST.filter((k) =>
-        props.allowedSubCats!.includes(k),
-      )
-    : SUB_CAT_KEY_LIST,
-)
+const options = computed(() => {
+  // Explicit on the three states so an empty array (viewer covers zero
+  // subCats) doesn't silently fall through to "show everything":
+  //   undefined → unbounded (super-admin case): full taxonomy
+  //   []        → bounded to nothing: empty list (picker disables itself)
+  //   non-empty → bounded subset
+  if (props.allowedSubCats === undefined) return SUB_CAT_KEY_LIST
+  if (props.allowedSubCats.length === 0) return []
+  const allowed = props.allowedSubCats
+  return SUB_CAT_KEY_LIST.filter((k) => allowed.includes(k))
+})
+
+// Disable the trigger entirely when there are no valid options.
+// require-reviewer middleware already keeps zero-cell users off the
+// queue page, so this is mostly a defensive correctness move — but
+// the picker should still mean what it shows on its own terms.
+const disabled = computed(() => options.value.length === 0)
 
 const activeSubCat = computed<string | undefined>(() => filters.value.subCat)
 const hasNarrow = computed(() => !!activeSubCat.value)
@@ -47,11 +57,14 @@ function selectSubCat(subCat: string | undefined) {
 <template>
   <Popover v-model:open="open">
     <PopoverTrigger
+      :disabled="disabled"
       :class="[
         'inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 text-[12px] transition-colors',
-        hasNarrow
-          ? 'border-(--color-ink)/20 bg-(--color-card) text-(--color-ink) font-semibold'
-          : 'border-(--color-border) bg-(--color-card) text-(--color-ink-muted) hover:text-(--color-ink)',
+        disabled
+          ? 'border-(--color-border) bg-(--color-card) text-(--color-ink-muted)/60 cursor-not-allowed'
+          : hasNarrow
+            ? 'border-(--color-ink)/20 bg-(--color-card) text-(--color-ink) font-semibold'
+            : 'border-(--color-border) bg-(--color-card) text-(--color-ink-muted) hover:text-(--color-ink)',
       ]"
     >
       <span class="truncate max-w-[140px]">{{ triggerLabel }}</span>
