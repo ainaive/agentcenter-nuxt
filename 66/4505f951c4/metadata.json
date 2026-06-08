@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "664505f951c4",
+  "strategy": "manual-commit",
+  "branch": "fix/p6-auth-ssr-baseurl",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/middleware/require-auth.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/66/4505f951c4/0/metadata.json",
+      "transcript": "/66/4505f951c4/0/full.jsonl",
+      "content_hash": "/66/4505f951c4/0/content_hash.txt",
+      "prompt": "/66/4505f951c4/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 249,
+    "cache_creation_tokens": 365465,
+    "cache_read_tokens": 27022529,
+    "output_tokens": 141911,
+    "api_call_count": 155
+  }
+}

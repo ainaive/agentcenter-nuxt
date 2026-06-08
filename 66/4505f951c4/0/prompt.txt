@@ -1,0 +1,68 @@
+check about the code reviews on the pr
+
+---
+
+the pr is clean, let's merge it
+
+---
+
+when I entering some page, like http://localhost:3000/en/admin/approvals, then I refresh the page, it shows error: {
+  "statusCode": 500,
+  "stack": [
+    "Failed to parse URL from /api/auth/get-session",
+    "at Failed to parse URL from /api/auth/get-session (:undefined:undefined)",
+    "at at Failed to parse URL from /api/auth/get-session :undefined:undefined:undefined:undefined)",
+    "at at at TypeError: Failed to parse URL from /api/auth/get-session:undefined:undefined:undefined:undefined:undefined:undefined)"
+  ]
+} the console shows:  ERROR  Cannot read properties of undefined (reading 'replace')                                          10:11:34 p.m.
+
+    at #getRelativeFileName (node_modules/youch/build/src/templates/error_stack/main.js:21:19)
+    at #getEditorLink (node_modules/youch/build/src/templates/error_stack/main.js:33:35)
+    at #renderFrameLocation (node_modules/youch/build/src/templates/error_stack/main.js:37:45)
+    at #renderStackFrame (node_modules/youch/build/src/templates/error_stack/main.js:58:36)
+    at node_modules/youch/build/src/templates/error_stack/main.js:114:33
+    at Array.map (<anonymous>)
+    at ErrorStack.toHTML (node_modules/youch/build/src/templates/error_stack/main.js:113:59)
+    at #tmplToHTML (node_modules/youch/build/index.js:83:20)
+    at async Object.children (node_modules/youch/build/index.js:106:102)
+    at async Layout.toHTML (node_modules/youch/build/src/templates/layout/main.js:17:13)
+ ERROR  Cannot read properties of undefined (reading 'replace')                                          10:11:34 p.m.
+
+    at #getRelativeFileName (node_modules/youch/build/src/templates/error_stack/main.js:21:19)
+    at #getEditorLink (node_modules/youch/build/src/templates/error_stack/main.js:33:35)
+    at #renderFrameLocation (node_modules/youch/build/src/templates/error_stack/main.js:37:45)
+    at #renderStackFrame (node_modules/youch/build/src/templates/error_stack/main.js:58:36)
+    at node_modules/youch/build/src/templates/error_stack/main.js:114:33
+    at Array.map (<anonymous>)
+    at ErrorStack.toHTML (node_modules/youch/build/src/templates/error_stack/main.js:113:59)
+    at #tmplToHTML (node_modules/youch/build/index.js:83:20)
+    at async Object.children (node_modules/youch/build/index.js:106:102)
+    at async Layout.toHTML (node_modules/youch/build/src/templates/layout/main.js:17:13)
+
+---
+
+check about the code reviews on the pr
+
+---
+
+check about the code reviews on the pr
+
+---
+
+now the 500 error is gone, but there is another problem, when I refresh the page, it need to me to login again
+
+---
+
+the problem seems still exists, when I click some page like http://localhost:3000/en/publish, it is ok, then I refresh this page on browser, it shows the sign in window to let me sign in.
+
+---
+
+the problem stills exists, in some page, like: publish, profile, approval queue, reviewer matrix.
+
+---
+
+commit, no push, let me verify first
+
+---
+
+same problem, you have try to fix for several times, no success, please try hard
