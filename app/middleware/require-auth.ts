@@ -33,8 +33,27 @@ export default defineNuxtRouteMiddleware(async (to) => {
       hasUser = false
     }
   } else {
-    const session = useAuth().useSession()
-    hasUser = !!session.value.data?.user
+    // After SSR rehydration / client-side nav, Nuxt re-runs route
+    // middleware on the client. better-auth's `useSession()` is a
+    // reactive nanostore that fetches *asynchronously on mount*, so on
+    // first read it's still `{ data: null, isPending: true }` and a
+    // synchronous check would falsely conclude "no user" and bounce to
+    // sign-in. `getSession()` is the imperative form — it awaits the
+    // actual /api/auth/get-session call and returns the resolved data.
+    const auth = useAuth()
+    try {
+      const result = await auth.getSession()
+      hasUser = !!result?.data?.user
+      console.log("[DEBUG-a4f2] require-auth client", {
+        hasUser,
+        userId: result?.data?.user?.id ?? null,
+      })
+    } catch (err) {
+      console.log("[DEBUG-a4f2] require-auth client threw", {
+        err: err instanceof Error ? err.message : String(err),
+      })
+      hasUser = false
+    }
   }
 
   if (!hasUser) {

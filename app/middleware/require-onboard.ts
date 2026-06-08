@@ -18,8 +18,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
       rawUser = null
     }
   } else {
-    const session = useAuth().useSession()
-    rawUser = (session.value.data?.user as UserShape | undefined) ?? null
+    // See require-auth.ts: `useSession()` is empty on first mount. Use
+    // the imperative `getSession()` so the middleware actually waits
+    // for the session to resolve.
+    try {
+      const result = await useAuth().getSession()
+      rawUser = (result?.data?.user as UserShape | undefined) ?? null
+    } catch {
+      rawUser = null
+    }
   }
 
   if (!rawUser) return
