@@ -181,6 +181,9 @@
       "productLine": "Product-Line",
       "company": "Company"
     },
+    "tierPicker": {
+      "triggerLabel": "Official"
+    },
     "chips": {
       "all": "All",
       "trending": "Trending",

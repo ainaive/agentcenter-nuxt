@@ -181,6 +181,9 @@
       "productLine": "产品线",
       "company": "公司"
     },
+    "tierPicker": {
+      "triggerLabel": "官方"
+    },
     "chips": {
       "all": "全部",
       "trending": "热门",

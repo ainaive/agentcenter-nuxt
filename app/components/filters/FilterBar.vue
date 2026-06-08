@@ -11,8 +11,7 @@ defineProps<{
 <template>
   <div class="mb-6 flex flex-wrap items-center gap-2">
     <ScopePills />
-    <OfficialTierPill />
-    <ProductLinePill />
+    <OfficialTierPicker />
     <DeptPicker />
     <CreatorPicker v-if="creators" :creators="creators" />
     <PublisherPicker v-if="publishers" :publishers="publishers" />

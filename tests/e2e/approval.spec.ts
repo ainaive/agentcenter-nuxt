@@ -6,26 +6,23 @@ import { expect, test } from "@playwright/test"
 // publisher → reviewer → badge-appears against a freshly-seeded dev DB.
 
 test.describe("approval workflow", () => {
-  test("filter rail renders the official-tier pill on /en/extensions", async ({
+  test("filter rail renders the OfficialTierPicker trigger on /en/extensions", async ({
     request,
   }) => {
     const response = await request.get("/en/extensions")
     expect(response.status()).toBe(200)
     const html = await response.text()
-    // OfficialTierPill labels — proves the filter component is in the SSR
-    // tree alongside the existing scope pills (single-row decision #3).
-    expect(html).toContain("Official tier")
-    expect(html).toContain("Product-Line")
-    expect(html).toContain("Company")
+    // Trigger label encodes the entire (tier, productLine) filter state in
+    // one place. At the default tier=all it reads "Official: All tiers".
+    expect(html).toContain("Official: All tiers")
   })
 
-  test("/zh filter rail uses zh wording for the tier pill", async ({
+  test("/zh filter rail uses zh wording for the OfficialTierPicker trigger", async ({
     request,
   }) => {
     const response = await request.get("/zh/extensions")
     const html = await response.text()
-    expect(html).toContain("官方级别")
-    expect(html).toContain("产品线")
+    expect(html).toContain("官方: 全部级别")
   })
 
   test("/en/admin/approvals redirects unauthenticated users away from the queue", async ({
@@ -45,44 +42,28 @@ test.describe("approval workflow", () => {
     await expect(page).not.toHaveURL(/\/en\/admin\/reviewers$/)
   })
 
-  test("?tier=productLine survives the SSR round-trip", async ({ page }) => {
+  test("?tier=productLine round-trips the picker trigger label", async ({
+    page,
+  }) => {
     await page.goto("/en/extensions?tier=productLine")
     await expect(page).toHaveURL(/[?&]tier=productLine/)
-    // The pill renders with aria-pressed on the active value.
-    const active = page.getByRole("button", { name: "Product-Line", exact: true })
-    await expect(active).toHaveAttribute("aria-pressed", "true")
+    // With no productLineId set yet, the trigger collapses to the tier label.
+    await expect(
+      page.getByRole("button", { name: "Official: Product-Line" }),
+    ).toBeVisible()
   })
 
-  test("ProductLinePill rail is hidden when tier is not productLine", async ({
-    request,
-  }) => {
-    const response = await request.get("/en/extensions")
-    const html = await response.text()
-    // The rail's `aria-label="Product line"` only emits when tier=productLine
-    // (the rail's `v-if` guard). At default `tier=all` it should not appear.
-    expect(html).not.toContain('aria-label="Product line"')
-  })
-
-  test("?tier=productLine&productLineId=wireless round-trips both pills", async ({
+  test("?tier=productLine&productLineId=wireless surfaces the line label on the trigger", async ({
     page,
   }) => {
     await page.goto("/en/extensions?tier=productLine&productLineId=wireless")
     await expect(page).toHaveURL(/[?&]tier=productLine/)
     await expect(page).toHaveURL(/[?&]productLineId=wireless/)
-    // Tier pill is aria-pressed on Product-Line.
-    const tierActive = page.getByRole("button", {
-      name: "Product-Line",
-      exact: true,
-    })
-    await expect(tierActive).toHaveAttribute("aria-pressed", "true")
-    // The product-line picker rail is now present, with Wireless aria-pressed.
-    const plRail = page.getByRole("group", { name: "Product line" })
-    await expect(plRail).toBeVisible()
-    const lineActive = plRail.getByRole("button", {
-      name: "Wireless",
-      exact: true,
-    })
-    await expect(lineActive).toHaveAttribute("aria-pressed", "true")
+    // Trigger reads "Official: Wireless" once productLines load (the
+    // line list lazy-fetches; resolved-label rendering follows hydration).
+    await expect(
+      page.getByRole("button", { name: "Official: Wireless" }),
+    ).toBeVisible()
   })
 })
 
