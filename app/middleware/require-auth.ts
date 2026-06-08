@@ -15,21 +15,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
   let hasUser = false
 
   if (import.meta.server) {
-    const ssrFetch = useRequestFetch()
-    console.log("[DEBUG-a4f2] require-auth ssr branch", {
-      to: to.fullPath,
-      requestFetchIsGlobalFallback: ssrFetch === globalThis.$fetch,
-    })
     try {
-      const res = await ssrFetch<MeResponse>("/api/internal/auth/me")
-      console.log("[DEBUG-a4f2] require-auth ssr got", {
-        userId: res?.user?.id ?? null,
-      })
+      const res = await useRequestFetch()<MeResponse>(
+        "/api/internal/auth/me",
+      )
       hasUser = !!res?.user
-    } catch (err) {
-      console.log("[DEBUG-a4f2] require-auth ssr threw", {
-        err: err instanceof Error ? err.message : String(err),
-      })
+    } catch {
       hasUser = false
     }
   } else {
@@ -40,18 +31,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
     // synchronous check would falsely conclude "no user" and bounce to
     // sign-in. `getSession()` is the imperative form — it awaits the
     // actual /api/auth/get-session call and returns the resolved data.
-    const auth = useAuth()
     try {
-      const result = await auth.getSession()
+      const result = await useAuth().getSession()
       hasUser = !!result?.data?.user
-      console.log("[DEBUG-a4f2] require-auth client", {
-        hasUser,
-        userId: result?.data?.user?.id ?? null,
-      })
-    } catch (err) {
-      console.log("[DEBUG-a4f2] require-auth client threw", {
-        err: err instanceof Error ? err.message : String(err),
-      })
+    } catch {
       hasUser = false
     }
   }
