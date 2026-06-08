@@ -1,9 +1,11 @@
 import { and, desc, eq } from "drizzle-orm"
+import { alias } from "drizzle-orm/pg-core"
 import {
   extensions,
   extensionVersions,
   extensionTags,
   files,
+  users,
 } from "~~/shared/db/schema"
 import {
   ManifestFormSchema,
@@ -373,6 +375,10 @@ export async function submitForReview(
 
 export async function getMyExtensions(userId: string) {
   const db = useDb()
+  // Aliased join against `users` so we can pull the display name for whoever
+  // revoked the extension (if anyone) without colliding with the publisher's
+  // own user row downstream.
+  const revoker = alias(users, "revoker")
   const rows = await db
     .select({
       id: extensions.id,
@@ -382,6 +388,11 @@ export async function getMyExtensions(userId: string) {
       visibility: extensions.visibility,
       subCat: extensions.subCat,
       officialTier: extensions.officialTier,
+      revokedAt: extensions.revokedAt,
+      revokedByUserId: extensions.revokedByUserId,
+      revocationNote: extensions.revocationNote,
+      revokedByName: revoker.name,
+      revokedByEmail: revoker.email,
       createdAt: extensions.createdAt,
       latestVersionId: extensionVersions.id,
       latestVersion: extensionVersions.version,
@@ -393,6 +404,7 @@ export async function getMyExtensions(userId: string) {
       extensionVersions,
       eq(extensionVersions.extensionId, extensions.id),
     )
+    .leftJoin(revoker, eq(revoker.id, extensions.revokedByUserId))
     .where(eq(extensions.publisherUserId, userId))
     .orderBy(desc(extensions.createdAt), desc(extensionVersions.createdAt))
 

@@ -41,6 +41,24 @@ function canApply(item: Item): boolean {
     item.pendingRequest === null
   )
 }
+
+// Tier revocation annotation. Renders when a super-admin previously
+// revoked the extension and it has not been re-elevated since (the
+// repo clears revokedAt on the next setExtensionOfficialTier call).
+function formatRevokedAt(value: string | Date | null): string {
+  if (!value) return ""
+  return new Date(value).toLocaleDateString()
+}
+function revokedByDisplay(item: Item): string {
+  return item.revokedByName?.trim() || item.revokedByEmail || ""
+}
+function showRevocation(item: Item): boolean {
+  return (
+    item.officialTier === null &&
+    !!item.revokedAt &&
+    !!item.revocationNote
+  )
+}
 </script>
 
 <template>
@@ -92,6 +110,18 @@ function canApply(item: Item): boolean {
               {{ t("approvals.pendingFor", { tier: tierLabel(item.pendingRequest.requestedTier) }) }}
             </span>
           </div>
+          <p
+            v-if="showRevocation(item)"
+            class="mt-1 text-xs text-(--color-ink-muted)"
+          >
+            {{
+              t("approvals.revokedAnnotation", {
+                date: formatRevokedAt(item.revokedAt),
+                admin: revokedByDisplay(item),
+                note: item.revocationNote,
+              })
+            }}
+          </p>
         </div>
 
         <NuxtLink
