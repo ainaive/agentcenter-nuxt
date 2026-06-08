@@ -1,0 +1,46 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "17fc84a25abd",
+  "session_id": "9a6b310b-3c05-4985-b43f-cf9b10b8bedc",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-08T04:02:19.906052Z",
+  "branch": "feat/p9-tier-revocation",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "shared/db/schema/extension.ts"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "ed5ab322ba9a",
+  "token_usage": {
+    "input_tokens": 494,
+    "cache_creation_tokens": 1611575,
+    "cache_read_tokens": 133285000,
+    "output_tokens": 265855,
+    "api_call_count": 414
+  },
+  "session_metrics": {
+    "turn_count": 13
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-08T04:02:19.830423Z",
+    "agent_lines": 4,
+    "agent_removed": 2,
+    "human_added": 2943,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 2947,
+    "total_lines_changed": 2949,
+    "agent_percentage": 0.20345879959308238,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}
