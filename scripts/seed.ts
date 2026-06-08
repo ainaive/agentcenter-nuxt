@@ -116,12 +116,35 @@ ${ext.tags.map((t) => `\`${t}\``).join(" · ")}
 `
 }
 
+// Hostnames that count as "this developer's machine" and don't need
+// the SEED_ALLOW_REMOTE opt-in. Empty hostname catches Unix-socket
+// connection strings like postgresql:///dbname?host=/var/run/postgresql.
+const LOCAL_DB_HOSTS = new Set(["localhost", "127.0.0.1", "::1", ""])
+
 async function main() {
   const url = process.env.DATABASE_URL
   if (!url) {
     console.error("seed: DATABASE_URL is not set")
     process.exit(1)
   }
+
+  // This script TRUNCATEs organizations/tags/approval_reviewers (CASCADE
+  // through extensions, approvals, memberships, departments, …). Safe
+  // against a dev DB; catastrophic against a populated remote one. Bail
+  // unless the operator opts in explicitly, so a typo (sourced wrong
+  // env file, copied a stale prod connection string) can't quietly nuke
+  // a real database.
+  const host = new URL(url).hostname
+  if (!LOCAL_DB_HOSTS.has(host) && process.env.SEED_ALLOW_REMOTE !== "1") {
+    console.error(
+      `seed: refusing to run against remote host "${host}" without SEED_ALLOW_REMOTE=1`,
+    )
+    console.error(
+      "seed: this script TRUNCATEs catalog tables — set SEED_ALLOW_REMOTE=1 only if you mean to wipe and re-seed the target DB.",
+    )
+    process.exit(1)
+  }
+
   const client = postgres(url)
   const db = drizzle(client, { schema, casing: "snake_case" })
 

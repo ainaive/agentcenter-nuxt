@@ -3,7 +3,7 @@
 AgentCenter (Nuxt) ships as a standalone Node server, with Postgres + an object store + Inngest behind it. Three deploy targets are supported:
 
 - **Node** (default) — `nitro: { preset: "node-server" }`. Runs anywhere Node 22+ runs: bare metal, container, PaaS.
-- **Vercel** (auto-detected) — Nitro picks `preset: "vercel"` when `process.env.VERCEL` is set. The `vercel-build` script in `package.json` chains `drizzle-kit migrate && bun scripts/seed-mcp-landscape.ts && nuxt build`, so every deploy: (1) applies pending migrations against `DATABASE_URL`, then (2) upserts the static MCP panorama landscape (taxonomy + tool rows + marketplace stubs) idempotently, then (3) builds. Aborts the deploy if either step fails (prevents code shipping against a stale or empty schema). The destructive `db:seed` script (demo users + sample extensions) is **not** in the build path — that stays a one-shot manual operation.
+- **Vercel** (auto-detected) — Nitro picks `preset: "vercel"` when `process.env.VERCEL` is set. The `vercel-build` script in `package.json` chains `drizzle-kit migrate && bun scripts/seed-mcp-landscape.ts && bun scripts/seed-editorial-collections.ts && bun scripts/seed-catalog.ts && nuxt build`, so every deploy: (1) applies pending migrations against `DATABASE_URL`, then (2) idempotently upserts the static MCP panorama landscape, editorial collections, and catalog marketplace stubs, then (3) builds. Aborts the deploy if any step fails (prevents code shipping against a stale or empty schema). The destructive `db:seed` script (demo users + sample extensions) is **not** in the build path — that stays a one-shot manual operation.
 - **Cloudflare** (stretch) — `nitro: { preset: "cloudflare_module" }`. Workers + R2 binding. Not maintained alongside primary; expect bundle-size + driver tweaks.
 
 This guide covers the Node path. Vercel needs only the `DATABASE_URL` env var set in the project (Build & Runtime). The Cloudflare path is a config flip plus a storage driver swap.
@@ -54,6 +54,77 @@ has at least one assigned reviewer on a fresh DB.
 `db:seed` is destructive (TRUNCATE … CASCADE on orgs and tags) and
 is the "reset to demo state" command. Production deploys use only
 the idempotent seeds in the `vercel-build` chain.
+
+To prevent typos from wiping real data, `db:seed` refuses to run
+against a non-localhost `DATABASE_URL` unless `SEED_ALLOW_REMOTE=1`
+is set. See the staging workflow below; **do not set this flag
+against a production environment**.
+
+### Seeding a staging Vercel environment for demos
+
+If your Vercel deployment is a staging / demo environment (separate
+project or separate database from real prod), you can plant the full
+demo dataset there so sign-in works and the admin surfaces are
+populated.
+
+1. **Link the local repo** to the Vercel project (one-time):
+
+   ```bash
+   vercel link
+   ```
+
+2. **Pull the staging env** into a local file:
+
+   ```bash
+   vercel env pull .env.staging --environment=preview
+   ```
+
+   Use `--environment=production` only if your staging deployment is
+   the production environment of a separate Vercel project. If a
+   single project hosts both staging and real prod, you almost
+   certainly want `preview`.
+
+3. **Export into the shell**:
+
+   ```bash
+   set -a; source .env.staging; set +a
+   ```
+
+4. **Confirm the target host** before the destructive step:
+
+   ```bash
+   echo "$DATABASE_URL" | grep -oE '@[^/]+'
+   ```
+
+   Read the hostname aloud. If it looks like prod, stop.
+
+5. **Run the seed**:
+
+   ```bash
+   SEED_PASSWORD=demo SEED_ALLOW_REMOTE=1 bun run db:seed
+   ```
+
+   `SEED_ALLOW_REMOTE=1` is the explicit acknowledgement that you
+   know the URL points somewhere remote. Without it, the script
+   bails before connecting.
+
+6. **Sign in** at `https://<your-staging-host>/sign-in` as
+   `amy@agentcenter.dev` with the password from step 5. The
+   UserButton dropdown will surface "Approval queue" and "Reviewer
+   matrix" entries (super-admin only).
+
+7. **Rotate the demo password** any time by re-running step 5 with
+   a different `SEED_PASSWORD`. The seed is idempotent — re-runs
+   reset the DB to a known demo state and rotate all 6 demo users'
+   passwords in one shot.
+
+8. **Don't commit `.env.staging`** — `.gitignore` already covers
+   `*.env*`, but `git status` after step 2 is a worthwhile habit.
+
+`vercel-build` runs on every subsequent deploy and only touches the
+idempotent seeds (mcp-landscape, editorial-collections, catalog) —
+the demo creators, extensions, and approval-reviewer matrix planted
+by step 5 survive across deploys.
 
 ## 2. Provision object storage
 
