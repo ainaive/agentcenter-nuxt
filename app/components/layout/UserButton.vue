@@ -13,25 +13,32 @@ const root = useTemplateRef<HTMLDivElement>("root")
 const user = computed(() => session.value.data?.user ?? null)
 
 // Admin entries surface on the dropdown for reviewers + super-admins.
-// The endpoint returns safe defaults for anonymous callers so the fetch
-// is harmless when no one is signed in. UserButton lives in the
-// persistent layout header, so we watch the session-user id and refresh
-// after sign-in / sign-out events that don't trigger a full nav.
-const { data: adminMe, refresh: refreshAdminMe } = await useFetch(
-  "/api/internal/admin/me",
-  {
-    default: () => ({
-      isSuperAdmin: false,
-      isReviewer: false,
-      cells: [] as unknown[],
-    }),
-  },
-)
+// Client-only probe: better-auth's useSession() never resolves a user
+// during SSR (see useAuth.ts), so an SSR fetch would always return the
+// anon default — we'd pay one round-trip per request for an answer
+// hydration would immediately invalidate. UserButton lives in the
+// persistent layout header, so we also watch the session-user id and
+// re-probe after sign-in / sign-out events that don't trigger a full
+// nav.
+type AdminMe = { isSuperAdmin: boolean; isReviewer: boolean; cells: unknown[] }
+const adminMe = ref<AdminMe>({
+  isSuperAdmin: false,
+  isReviewer: false,
+  cells: [],
+})
+
+async function refreshAdminMe() {
+  adminMe.value = await $fetch<AdminMe>("/api/internal/admin/me")
+}
+
+onMounted(() => {
+  void refreshAdminMe()
+})
 
 watch(
   () => session.value.data?.user?.id ?? null,
   (next, prev) => {
-    if (next !== prev) refreshAdminMe()
+    if (next !== prev) void refreshAdminMe()
   },
 )
 
