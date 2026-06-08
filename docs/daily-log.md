@@ -12,6 +12,22 @@ What changed each day. For the current capability list, see [features.md](./feat
 
 ## English
 
+### 2026-06-09
+
+**Briefing.** Closes the loudest open follow-up from ADR-0001: a super-admin can now revoke an Official extension back to Unofficial directly from its detail page. The publisher sees the reason on their dashboard.
+
+<details>
+<summary>Details</summary>
+
+- **Detail-page Revoke button** — Visible only to super-admins on Official extensions, sitting quietly next to the badge. Confirm dialog requires a reason note (mirroring the existing Reject flow); on submit the badge disappears in the same re-render — the page refreshes its useFetch rather than reloading.
+- **Publisher annotation** — `/publish` now shows a muted "Revoked on {date} by {admin}: {note}" line under any extension whose tier was revoked. The publisher can apply for elevation again immediately via the existing "Apply for official" button.
+- **Auto-clear on re-approval** — The orchestrator's `setExtensionOfficialTier` clears the revocation trio in the same UPDATE whenever a tier is stamped, so the publisher's annotation disappears the moment a reviewer approves their next request — no manual cleanup.
+- **`/api/v1` contract preserved** — Revoking nulls `officialTier`, so the public CLI sees the original `badge` value resurface (no longer "official"). No tier/productLine fields ever cross the boundary. (#NEW)
+
+</details>
+
+---
+
 ### 2026-06-08
 
 **Briefing.** The official-tier approval workflow gains a product-line dimension. Product-Line Official is now per-line — Wireless / Datacom / Terminals / Cloud each get their own reviewer pool inside every functional category — and Company-tier admins of a given subCat can pick the Product-Line reviewers for that same subCat without a super-admin in the loop.
@@ -149,6 +165,22 @@ What changed each day. For the current capability list, see [features.md](./feat
 ---
 
 ## 中文
+
+### 2026-06-09
+
+**简报。** 关闭 ADR-0001 中最显眼的开放跟进项：超级管理员现在可以直接在详情页将官方扩展撤回为非官方。发布者会在工作台上看到撤销理由。
+
+<details>
+<summary>详情</summary>
+
+- **详情页撤销按钮** —— 仅超级管理员在官方扩展上可见，安静地位于徽章旁。确认弹窗强制填写理由（沿用驳回流程的规则）；提交后徽章在同一渲染中消失 —— 页面通过刷新 useFetch 实现，无需整页重载。
+- **发布者标注** —— `/publish` 现在会在被撤销的扩展条目下方显示一条淡色提示："于 {date} 被 {admin} 撤销：{note}"。发布者可立即通过现有的"申请官方认证"按钮重新申请。
+- **重新通过即自动清除** —— 编排器的 `setExtensionOfficialTier` 在写入级别时会在同一 UPDATE 中清空撤销三元组，所以一旦审核员批准下一次申请，撤销标注立即消失，无需手动收尾。
+- **`/api/v1` 契约不变** —— 撤销会将 `officialTier` 置 null，公共 CLI 看到的 `badge` 自然回到原始值（不再是 "official"）。级别与产品线字段始终不跨越公共边界。 (#NEW)
+
+</details>
+
+---
 
 ### 2026-06-08
 

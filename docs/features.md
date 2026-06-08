@@ -74,7 +74,8 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **Configurable matrix with delegation** — `/admin/reviewers` is now tabbed by tier: Company-tier cells stay super-admin-only; the Product-Line grid lets each Company-tier admin of subCat X manage Product-Line reviewers for subCat X (any line), while greying out cells outside their scope. Super-admins still edit anywhere.
 - **Tier badges & filter** — Approved extensions wear a Product-Line or Company chip on cards, hero, and related-lists. The browse filter rail surfaces a single "Official" picker that owns both the tier and the product-line narrows: pick a tier, and when "Product-Line" is chosen, the same popover reveals a row of product-line options for narrowing the catalog further. Keeps the rail to a single row on a typical viewport.
 - **Requests tab** — `/profile?section=requests` tracks the publisher's submitted applications and shows the reviewer's note on rejections; pending requests can be withdrawn.
-- **CLI contract preserved** — The `/api/v1` `badge` field is derived from the new tier so existing CLI installs see no change; `productLineId` stays internal. See [ADR-0001](./adr/0001-official-tier-approval-workflow.md) (with the 2026-06-08 product-line addendum) for the full rationale.
+- **Tier revocation** — A super-admin viewing an Official extension's detail page sees a small "Revoke" button next to the badge. The confirm dialog requires a reason note; the publisher's dashboard then shows a "Revoked on {date} by {admin}: {note}" line under the extension. The publisher can apply for elevation again immediately; on next approval the revocation annotation clears automatically.
+- **CLI contract preserved** — The `/api/v1` `badge` field is derived from the new tier so existing CLI installs see no change; `productLineId` stays internal. See [ADR-0001](./adr/0001-official-tier-approval-workflow.md) (with the 2026-06-08 and 2026-06-09 addenda) for the full rationale.
 
 ### Accounts & sign-in
 
@@ -192,7 +193,8 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **可配置矩阵与代理授权** —— `/admin/reviewers` 按级别分页：公司级单元仅超级管理员可管理；产品线网格中，公司级管理员可管理自己 subCat 下的所有产品线单元，其他单元只读。超级管理员仍可全局编辑。
 - **级别徽章与筛选** ——通过审核的扩展在卡片、详情页、关联列表上展示产品线 / 公司徽章。浏览页过滤条中只保留一个"官方"选择器，同时承载级别和产品线两个维度：选择级别后，若选中"产品线"，同一个弹层中会显示产品线选项。整条过滤条在常规视口宽度下保持单行。
 - **申请记录** —— `/profile?section=requests` 展示发布者提交过的申请，驳回时显示审核员备注；待审请求可撤回。
-- **CLI 契约不变** —— `/api/v1` 的 `badge` 字段从新的官方级别派生，`productLineId` 也保留为内部字段，CLI 行为不变。详细决策见 [ADR-0001](./adr/0001-official-tier-approval-workflow.md)（含 2026-06-08 产品线补遗）。
+- **官方撤销** —— 超级管理员浏览官方扩展详情页时，徽章旁会出现"撤销"按钮。确认弹窗强制填写撤销理由；发布者的工作台随后会在该扩展下方显示"于 {date} 被 {admin} 撤销：{note}"。发布者可立即重新申请认证，下次通过审核后撤销标注会自动清除。
+- **CLI 契约不变** —— `/api/v1` 的 `badge` 字段从新的官方级别派生，`productLineId` 也保留为内部字段，CLI 行为不变。详细决策见 [ADR-0001](./adr/0001-official-tier-approval-workflow.md)（含 2026-06-08 及 2026-06-09 补遗）。
 
 ### 账号与登录
 
