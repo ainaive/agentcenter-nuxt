@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "7660856b682d",
+  "strategy": "manual-commit",
+  "branch": "fix/p9-approvals-inngest-tolerance",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "server/utils/approvals.test.ts",
+    "server/utils/approvals.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/76/60856b682d/0/metadata.json",
+      "transcript": "/76/60856b682d/0/full.jsonl",
+      "content_hash": "/76/60856b682d/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 7,
+    "cache_creation_tokens": 9115,
+    "cache_read_tokens": 652079,
+    "output_tokens": 4877,
+    "api_call_count": 7
+  }
+}
