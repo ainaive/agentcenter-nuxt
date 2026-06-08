@@ -49,6 +49,7 @@ Nuxt-specific technical decisions (deployment target, auth choice, DB driver, st
 - Always work on a feature branch and open a PR — never commit to `main` directly.
 - When a binding decision changes, update `docs/plan.md` in the same commit as the code change.
 - **No agent-attribution noise in commits or PRs.** Do not add a `Co-Authored-By:` trailer (e.g. `Co-Authored-By: Claude …`) to commit messages, and do not append the "🤖 Generated with Claude Code" footer to PR descriptions. The branch already records authorship and the content speaks for itself.
+- **Dev sign-in.** `bun run db:seed` plants six demo users on `*@agentcenter.dev` (`amy` = super-admin, the rest publishers / reviewers — see `scripts/seed.ts:CREATORS`). The shared password comes from `SEED_PASSWORD`, default `"agentcenter-dev-password"`. Rotate by re-running the seed with a new env value; the deterministic credential row id makes it idempotent.
 
 ## Project structure
 

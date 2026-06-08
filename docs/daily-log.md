@@ -23,6 +23,7 @@ What changed each day. For the current capability list, see [features.md](./feat
 - **Delegated matrix edits** — Company-tier admins of subCat X can now manage the Product-Line reviewers for subCat X across every line, without escalating to a super-admin. Cells outside their subCat render greyed and read-only. Company-tier cells stay super-admin-only. (#43)
 - **Product-line filter on the browse rail** — Both the tier filter and the product-line narrow live behind a single "Official" picker on the rail. The popover shows the four tiers; when Product-Line is selected it reveals a product-line row inside the same popover. `?tier=productLine&productLineId=wireless` round-trips through SSR; the trigger reads "Official: Wireless". (#43)
 - **`/api/v1` contract preserved** — Tier and product line are intentionally suppressed at the public-CLI boundary; `badge: "official"` still derives from `officialTier != null`. ADR-0001 picks up a dated addendum capturing the rationale for partial-unique indexes and the delegation rule. (#43)
+- **Demo accounts can sign in** — `bun run db:seed` now plants Better-Auth credential rows alongside the six demo users on `*@agentcenter.dev`. Password comes from `SEED_PASSWORD`, default `"agentcenter-dev-password"`. Click around the approval flow as amy (super-admin) or dao (company admin for `cloud`) without signing up a fresh account. (#43)
 
 </details>
 
@@ -160,6 +161,7 @@ What changed each day. For the current capability list, see [features.md](./feat
 - **代理矩阵编辑** —— subCat X 的公司级管理员现在可直接管理该 subCat 下所有产品线的审核员，无需超级管理员介入。其他 subCat 的单元呈灰色只读。公司级单元仍仅超级管理员可改。 (#43)
 - **浏览页加入产品线筛选** —— 浏览页过滤条上只保留一个"官方"选择器，同时承载级别和产品线两个维度。弹层中先展示四个级别，选中"产品线"后再在同一弹层中显示产品线选项。`?tier=productLine&productLineId=wireless` 可在 SSR 中完整往返，触发器文本显示为"官方: 无线"。 (#43)
 - **`/api/v1` 契约不变** —— 级别和产品线在公共 CLI 边界仍被刻意屏蔽，`badge: "official"` 仍由 `officialTier != null` 派生。ADR-0001 新增一则补遗，记录使用分区唯一索引（而非 `NULLS NOT DISTINCT`）以及代理授权规则的取舍。 (#43)
+- **演示账号可登录** —— `bun run db:seed` 现在会为 6 个 `*@agentcenter.dev` 演示用户写入 Better-Auth 凭据行。密码来自 `SEED_PASSWORD`，默认为 `"agentcenter-dev-password"`。无需新注册账号即可以 amy（超级管理员）或 dao（`cloud` 公司级管理员）等身份体验完整审核流程。 (#43)
 
 </details>
 

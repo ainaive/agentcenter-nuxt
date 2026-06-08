@@ -69,32 +69,19 @@ test.describe("approval workflow", () => {
 
 // ───── Multi-actor golden path ──────────────────────────────────────────
 //
-// Walks the full flow: publisher signs up + submits a request, reviewer
-// signs up + super-admin assigns them to the cell + reviewer approves,
+// Walks the full flow: publisher submits a request, reviewer approves,
 // publisher sees the tier badge on the detail page.
 //
 // Gated on RUN_FULL_E2E so it stays out of the per-PR signal. Run with:
 //
-//   RUN_FULL_E2E=1 bun run test:e2e tests/e2e/approval.spec.ts
+//   bun run db:seed && RUN_FULL_E2E=1 bun run test:e2e tests/e2e/approval.spec.ts
 //
-// Prerequisites (the test asserts these in beforeAll and skips if absent):
-//
-//   1. The dev DB has been freshly seeded (`bun run db:seed`) so the
-//      reviewer matrix exists and amy@agentcenter.dev is a super-admin.
-//   2. The seed has been extended to set Better-Auth passwords on the
-//      `CREATORS` (e.g. via a `SEED_PASSWORD` env var). Today the seed
-//      only inserts the user row, so amy can't actually sign in via the
-//      sign-in page. When that infrastructure lands, this test runs
-//      green; until then it skips with a clear message.
-//
-// Until the password-seed lands, the structure is here as a
-// placeholder so the follow-up has a concrete shape to fill in.
+// The seed plants Better-Auth credential rows for every CREATOR using
+// SEED_PASSWORD (default `agentcenter-dev-password`), so the sign-in
+// steps below Just Work after a fresh `bun run db:seed`.
 test.describe("approval workflow — multi-actor golden path", () => {
   test.beforeAll(() => {
-    test.skip(
-      !process.env.RUN_FULL_E2E,
-      "Gated on RUN_FULL_E2E. Also requires seeded passwords on CREATORS — see comment above.",
-    )
+    test.skip(!process.env.RUN_FULL_E2E, "Gated on RUN_FULL_E2E")
   })
 
   const PUBLISHER = "ben@agentcenter.dev"

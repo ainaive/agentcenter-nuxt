@@ -1,3 +1,4 @@
+import { hashPassword } from "better-auth/crypto"
 import { sql } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
@@ -12,6 +13,7 @@ import { DEPARTMENTS } from "../shared/data/departments"
 import { EXTENSIONS } from "../shared/data/extensions"
 import * as schema from "../shared/db/schema"
 import {
+  accounts,
   approvalRequests,
   approvalReviewers,
   collectionItems,
@@ -163,6 +165,34 @@ async function main() {
 
   console.log(`seed: upserting ${CREATORS.length} creator users`)
   await db.insert(users).values(CREATORS).onConflictDoNothing()
+
+  // Plant Better-Auth credential rows so the demo identities can actually
+  // sign in via /sign-in. Matches what Better-Auth itself writes during
+  // /sign-up/email (see node_modules/better-auth/dist/api/routes/sign-up.mjs):
+  //   providerId="credential", accountId=userId, password=hashed scrypt.
+  // Deterministic id + onConflictDoUpdate makes re-running the seed safe
+  // and lets `SEED_PASSWORD=newvalue bun run db:seed` rotate the password.
+  // Default matches the e2e fixture in tests/e2e/approval.spec.ts.
+  const seedPassword =
+    process.env.SEED_PASSWORD ?? "agentcenter-dev-password"
+  const passwordHash = await hashPassword(seedPassword)
+  const accountRows = CREATORS.map((u) => ({
+    id: `acc-credential-${u.id}`,
+    userId: u.id,
+    accountId: u.id,
+    providerId: "credential",
+    password: passwordHash,
+  }))
+  console.log(
+    `seed: planting ${accountRows.length} credential accounts (password from SEED_PASSWORD or default)`,
+  )
+  await db
+    .insert(accounts)
+    .values(accountRows)
+    .onConflictDoUpdate({
+      target: accounts.id,
+      set: { password: passwordHash, updatedAt: new Date() },
+    })
 
   const flatDepts = flattenDepts(DEPARTMENTS)
   console.log(`seed: inserting ${flatDepts.length} departments`)
