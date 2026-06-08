@@ -3,7 +3,7 @@ import { Plus } from "lucide-vue-next"
 
 definePageMeta({ middleware: ["require-auth", "require-onboard"] })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
 const { data, refresh, pending } = await useFetch("/api/internal/publish/my-extensions", {
@@ -45,9 +45,19 @@ function canApply(item: Item): boolean {
 // Tier revocation annotation. Renders when a super-admin previously
 // revoked the extension and it has not been re-elevated since (the
 // repo clears revokedAt on the next setExtensionOfficialTier call).
+//
+// Explicit locale + UTC timezone so SSR and hydration render the same
+// string — `toLocaleDateString()` without arguments would pick up the
+// server's locale/timezone on first paint and the browser's on hydrate,
+// producing a mismatch warning whenever they differ.
 function formatRevokedAt(value: string | Date | null): string {
   if (!value) return ""
-  return new Date(value).toLocaleDateString()
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return ""
+  return new Intl.DateTimeFormat(locale.value, {
+    dateStyle: "medium",
+    timeZone: "UTC",
+  }).format(d)
 }
 function revokedByDisplay(item: Item): string {
   return item.revokedByName?.trim() || item.revokedByEmail || ""
