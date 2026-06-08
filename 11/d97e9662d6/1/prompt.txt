@@ -1,0 +1,457 @@
+let's continue to enhance the official-tier approval feature (pr #41): The company consists of multiple product lines, such as Wireless, Datacom, Terminals, and Cloud, and we need to differentiate between them. Furthermore, each functional category within each product line must have a distinct administrator assigned for reviews. Administrators at the product-line level can be configured by the company-level administrator of that same category.
+
+---
+
+check about the code reviews on the pr
+
+---
+
+in list page, when choose "product-line", it seems only can choose "all lines", I can not select the specific product line. what do you think?
+
+---
+
+error on the console:  ERROR  [request error] [unhandled] [GET] http://localhost/api/internal/product-lines                     9:05:56 a.m.
+
+
+ℹ Error: Failed query: select "id", "label_en", "label_zh", "sort_order" from "product_lines" order by "product_lines"."sort_order" asc, "product_lines"."id" asc
+params:
+
+ ⁃ at PostgresJsPreparedQuery.queryWithCache (node_modules/drizzle-orm/pg-core/session.js:41:15)
+ ⁃ at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+ ⁃ (async file://node_modules/drizzle-orm/postgres-js/session.js:37:20)
+ ⁃ at async Object.handler (server/api/internal/product-lines/index.get.ts:12:0)
+
+    4 ┃  // publish dialog's productLine picker, the admin matrix UI, AND the
+    5 ┃  // listing-page product-line pill — and the listing page renders for
+    6 ┃  // anonymous browsers. The list itself is non-sensitive (it's the same
+    7 ┃  // company-wide labels the badge text already exposes on every detail
+    8 ┃  // page), so we drop the auth gate; the trade-off is a tiny extra
+    9 ┃  // surface for an unauthenticated caller to enumerate at most four
+   10 ┃  // kebab-case ids, which is not a leak worth gating.
+   11 ┃  export default defineEventHandler(async () => {
+ ❯ 12 ┃    return { ok: true, productLines: await listAllProductLines(useDb()) }
+   13 ┃  })
+   14 ┃
+
+ ⁃ (async file://node_modules/h3/dist/index.mjs:2017:19)
+ ⁃ at async Object.callAsync (node_modules/unctx/dist/index.mjs:72:16)
+ ⁃ at async toNodeHandle (node_modules/h3/dist/index.mjs:2316:7)
+ ⁃ at async b (node_modules/node-mock-http/dist/index.mjs:1:6876)
+ ⁃ at async C (node_modules/node-mock-http/dist/index.mjs:1:7159)
+ ⁃ at async $fetchRaw2 (node_modules/ofetch/dist/shared/ofetch.CWycOUEr.mjs:274:26)
+
+[CAUSE]
+PostgresError {
+  stack: 'relation "product_lines" does not exist\n' +
+  'at ErrorResponse (./node_modules/postgres/src/connection.js:815:30)\n' +
+  'at handle (./node_modules/postgres/src/connection.js:489:6)\n' +
+  'at Socket.data (./node_modules/postgres/src/connection.js:324:9)\n' +
+  '    at Socket.emit (node:events:509:20)\n' +
+  '    at addChunk (node:internal/streams/readable:564:12)\n' +
+  '    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)\n' +
+  '    at Readable.push (node:internal/streams/readable:395:5)\n' +
+  '    at TCP.onStreamRead (node:internal/stream_base_commons:189:23)',
+  message: 'relation "product_lines" does not exist',
+  name: 'PostgresError',
+  severity_local: 'ERROR',
+  severity: 'ERROR',
+  code: '42P01',
+  position: '56',
+  file: 'parse_relation.c',
+  line: '1469',
+  routine: 'parserOpenTable',
+  query: 'select "id", "label_en", "label_zh", "sort_order" from
+  "product_lines" order by "product_lines"."sort_order" asc,
+  "product_lines"."id" asc',
+  parameters: [
+  ],
+  args: [
+  ],
+  types: [
+  ],
+}
+ ERROR  [request error] [unhandled] [GET] http://localhost/api/internal/product-lines                     9:05:56 a.m.
+
+
+ℹ Error: Failed query: select "id", "label_en", "label_zh", "sort_order" from "product_lines" order by "product_lines"."sort_order" asc, "product_lines"."id" asc
+params:
+
+ ⁃ at PostgresJsPreparedQuery.queryWithCache (node_modules/drizzle-orm/pg-core/session.js:41:15)
+ ⁃ at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+ ⁃ (async file://node_modules/drizzle-orm/postgres-js/session.js:37:20)
+ ⁃ at async Object.handler (server/api/internal/product-lines/index.get.ts:12:0)
+
+    4 ┃  // publish dialog's productLine picker, the admin matrix UI, AND the
+    5 ┃  // listing-page product-line pill — and the listing page renders for
+    6 ┃  // anonymous browsers. The list itself is non-sensitive (it's the same
+    7 ┃  // company-wide labels the badge text already exposes on every detail
+    8 ┃  // page), so we drop the auth gate; the trade-off is a tiny extra
+    9 ┃  // surface for an unauthenticated caller to enumerate at most four
+   10 ┃  // kebab-case ids, which is not a leak worth gating.
+   11 ┃  export default defineEventHandler(async () => {
+ ❯ 12 ┃    return { ok: true, productLines: await listAllProductLines(useDb()) }
+   13 ┃  })
+   14 ┃
+
+ ⁃ (async file://node_modules/h3/dist/index.mjs:2017:19)
+ ⁃ at async Object.callAsync (node_modules/unctx/dist/index.mjs:72:16)
+ ⁃ at async toNodeHandle (node_modules/h3/dist/index.mjs:2316:7)
+ ⁃ at async b (node_modules/node-mock-http/dist/index.mjs:1:6876)
+ ⁃ at async C (node_modules/node-mock-http/dist/index.mjs:1:7159)
+ ⁃ at async $fetchRaw2 (node_modules/ofetch/dist/shared/ofetch.CWycOUEr.mjs:274:26)
+
+[CAUSE]
+PostgresError {
+  stack: 'relation "product_lines" does not exist\n' +
+  'at ErrorResponse (./node_modules/postgres/src/connection.js:815:30)\n' +
+  'at handle (./node_modules/postgres/src/connection.js:489:6)\n' +
+  'at Socket.data (./node_modules/postgres/src/connection.js:324:9)\n' +
+  '    at Socket.emit (node:events:509:20)\n' +
+  '    at addChunk (node:internal/streams/readable:564:12)\n' +
+  '    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)\n' +
+  '    at Readable.push (node:internal/streams/readable:395:5)\n' +
+  '    at TCP.onStreamRead (node:internal/stream_base_commons:189:23)',
+  message: 'relation "product_lines" does not exist',
+  name: 'PostgresError',
+  severity_local: 'ERROR',
+  severity: 'ERROR',
+  code: '42P01',
+  position: '56',
+  file: 'parse_relation.c',
+  line: '1469',
+  routine: 'parserOpenTable',
+  query: 'select "id", "label_en", "label_zh", "sort_order" from
+  "product_lines" order by "product_lines"."sort_order" asc,
+  "product_lines"."id" asc',
+  parameters: [
+  ],
+  args: [
+  ],
+  types: [
+  ],
+}
+ ERROR  [filters] failed to load product lines [GET] "/api/internal/product-lines": 500 Server Error      9:05:56 a.m.
+
+    at async $fetchRaw2 (node_modules/ofetch/dist/shared/ofetch.CWycOUEr.mjs:327:14)
+    at async $fetch2 (node_modules/ofetch/dist/shared/ofetch.CWycOUEr.mjs:332:15)
+    at async load (app/components/filters/ProductLinePill.vue:26:21)
+ ERROR  [request error] [unhandled] [GET] http://localhost:3000/api/internal/product-lines                9:06:01 a.m.
+
+
+ℹ Error: Failed query: select "id", "label_en", "label_zh", "sort_order" from "product_lines" order by "product_lines"."sort_order" asc, "product_lines"."id" asc
+params:
+
+ ⁃ at PostgresJsPreparedQuery.queryWithCache (node_modules/drizzle-orm/pg-core/session.js:41:15)
+ ⁃ at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+ ⁃ (async file://node_modules/drizzle-orm/postgres-js/session.js:37:20)
+ ⁃ at async Object.handler (server/api/internal/product-lines/index.get.ts:12:0)
+
+    4 ┃  // publish dialog's productLine picker, the admin matrix UI, AND the
+    5 ┃  // listing-page product-line pill — and the listing page renders for
+    6 ┃  // anonymous browsers. The list itself is non-sensitive (it's the same
+    7 ┃  // company-wide labels the badge text already exposes on every detail
+    8 ┃  // page), so we drop the auth gate; the trade-off is a tiny extra
+    9 ┃  // surface for an unauthenticated caller to enumerate at most four
+   10 ┃  // kebab-case ids, which is not a leak worth gating.
+   11 ┃  export default defineEventHandler(async () => {
+ ❯ 12 ┃    return { ok: true, productLines: await listAllProductLines(useDb()) }
+   13 ┃  })
+   14 ┃
+
+ ⁃ (async file://node_modules/h3/dist/index.mjs:2017:19)
+ ⁃ at async Object.callAsync (node_modules/unctx/dist/index.mjs:72:16)
+ ⁃ at async Server.toNodeHandle (node_modules/h3/dist/index.mjs:2316:7)
+
+[CAUSE]
+PostgresError {
+  stack: 'relation "product_lines" does not exist\n' +
+  'at ErrorResponse (./node_modules/postgres/src/connection.js:815:30)\n' +
+  'at handle (./node_modules/postgres/src/connection.js:489:6)\n' +
+  'at Socket.data (./node_modules/postgres/src/connection.js:324:9)\n' +
+  '    at Socket.emit (node:events:509:20)\n' +
+  '    at addChunk (node:internal/streams/readable:564:12)\n' +
+  '    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)\n' +
+  '    at Readable.push (node:internal/streams/readable:395:5)\n' +
+  '    at TCP.onStreamRead (node:internal/stream_base_commons:189:23)',
+  message: 'relation "product_lines" does not exist',
+  name: 'PostgresError',
+  severity_local: 'ERROR',
+  severity: 'ERROR',
+  code: '42P01',
+  position: '56',
+  file: 'parse_relation.c',
+  line: '1469',
+  routine: 'parserOpenTable',
+  query: 'select "id", "label_en", "label_zh", "sort_order" from
+  "product_lines" order by "product_lines"."sort_order" asc,
+  "product_lines"."id" asc',
+  parameters: [
+  ],
+  args: [
+  ],
+  types: [
+  ],
+}
+ ERROR  [request error] [unhandled] [GET] http://localhost:3000/api/internal/product-lines                9:06:01 a.m.
+
+
+ℹ Error: Failed query: select "id", "label_en", "label_zh", "sort_order" from "product_lines" order by "product_lines"."sort_order" asc, "product_lines"."id" asc
+params:
+
+ ⁃ at PostgresJsPreparedQuery.queryWithCache (node_modules/drizzle-orm/pg-core/session.js:41:15)
+ ⁃ at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+ ⁃ (async file://node_modules/drizzle-orm/postgres-js/session.js:37:20)
+ ⁃ at async Object.handler (server/api/internal/product-lines/index.get.ts:12:0)
+
+    4 ┃  // publish dialog's productLine picker, the admin matrix UI, AND the
+    5 ┃  // listing-page product-line pill — and the listing page renders for
+    6 ┃  // anonymous browsers. The list itself is non-sensitive (it's the same
+    7 ┃  // company-wide labels the badge text already exposes on every detail
+    8 ┃  // page), so we drop the auth gate; the trade-off is a tiny extra
+    9 ┃  // surface for an unauthenticated caller to enumerate at most four
+   10 ┃  // kebab-case ids, which is not a leak worth gating.
+   11 ┃  export default defineEventHandler(async () => {
+ ❯ 12 ┃    return { ok: true, productLines: await listAllProductLines(useDb()) }
+   13 ┃  })
+   14 ┃
+
+ ⁃ (async file://node_modules/h3/dist/index.mjs:2017:19)
+ ⁃ at async Object.callAsync (node_modules/unctx/dist/index.mjs:72:16)
+ ⁃ at async Server.toNodeHandle (node_modules/h3/dist/index.mjs:2316:7)
+
+[CAUSE]
+PostgresError {
+  stack: 'relation "product_lines" does not exist\n' +
+  'at ErrorResponse (./node_modules/postgres/src/connection.js:815:30)\n' +
+  'at handle (./node_modules/postgres/src/connection.js:489:6)\n' +
+  'at Socket.data (./node_modules/postgres/src/connection.js:324:9)\n' +
+  '    at Socket.emit (node:events:509:20)\n' +
+  '    at addChunk (node:internal/streams/readable:564:12)\n' +
+  '    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)\n' +
+  '    at Readable.push (node:internal/streams/readable:395:5)\n' +
+  '    at TCP.onStreamRead (node:internal/stream_base_commons:189:23)',
+  message: 'relation "product_lines" does not exist',
+  name: 'PostgresError',
+  severity_local: 'ERROR',
+  severity: 'ERROR',
+  code: '42P01',
+  position: '56',
+  file: 'parse_relation.c',
+  line: '1469',
+  routine: 'parserOpenTable',
+  query: 'select "id", "label_en", "label_zh", "sort_order" from
+  "product_lines" order by "product_lines"."sort_order" asc,
+  "product_lines"."id" asc',
+  parameters: [
+  ],
+  args: [
+  ],
+  types: [
+  ],
+}
+ ERROR  [request error] [unhandled] [GET] http://localhost:3000/api/internal/product-lines                9:07:27 a.m.
+
+
+ℹ Error: Failed query: select "id", "label_en", "label_zh", "sort_order" from "product_lines" order by "product_lines"."sort_order" asc, "product_lines"."id" asc
+params:
+
+ ⁃ at PostgresJsPreparedQuery.queryWithCache (node_modules/drizzle-orm/pg-core/session.js:41:15)
+ ⁃ at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+ ⁃ (async file://node_modules/drizzle-orm/postgres-js/session.js:37:20)
+ ⁃ at async Object.handler (server/api/internal/product-lines/index.get.ts:12:0)
+
+    4 ┃  // publish dialog's productLine picker, the admin matrix UI, AND the
+    5 ┃  // listing-page product-line pill — and the listing page renders for
+    6 ┃  // anonymous browsers. The list itself is non-sensitive (it's the same
+    7 ┃  // company-wide labels the badge text already exposes on every detail
+    8 ┃  // page), so we drop the auth gate; the trade-off is a tiny extra
+    9 ┃  // surface for an unauthenticated caller to enumerate at most four
+   10 ┃  // kebab-case ids, which is not a leak worth gating.
+   11 ┃  export default defineEventHandler(async () => {
+ ❯ 12 ┃    return { ok: true, productLines: await listAllProductLines(useDb()) }
+   13 ┃  })
+   14 ┃
+
+ ⁃ (async file://node_modules/h3/dist/index.mjs:2017:19)
+ ⁃ at async Object.callAsync (node_modules/unctx/dist/index.mjs:72:16)
+ ⁃ at async Server.toNodeHandle (node_modules/h3/dist/index.mjs:2316:7)
+
+[CAUSE]
+PostgresError {
+  stack: 'relation "product_lines" does not exist\n' +
+  'at ErrorResponse (./node_modules/postgres/src/connection.js:815:30)\n' +
+  'at handle (./node_modules/postgres/src/connection.js:489:6)\n' +
+  'at Socket.data (./node_modules/postgres/src/connection.js:324:9)\n' +
+  '    at Socket.emit (node:events:509:20)\n' +
+  '    at addChunk (node:internal/streams/readable:564:12)\n' +
+  '    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)\n' +
+  '    at Readable.push (node:internal/streams/readable:395:5)\n' +
+  '    at TCP.onStreamRead (node:internal/stream_base_commons:189:23)',
+  message: 'relation "product_lines" does not exist',
+  name: 'PostgresError',
+  severity_local: 'ERROR',
+  severity: 'ERROR',
+  code: '42P01',
+  position: '56',
+  file: 'parse_relation.c',
+  line: '1469',
+  routine: 'parserOpenTable',
+  query: 'select "id", "label_en", "label_zh", "sort_order" from
+  "product_lines" order by "product_lines"."sort_order" asc,
+  "product_lines"."id" asc',
+  parameters: [
+  ],
+  args: [
+  ],
+  types: [
+  ],
+}
+ ERROR  [request error] [unhandled] [GET] http://localhost:3000/api/internal/product-lines                9:07:27 a.m.
+
+
+ℹ Error: Failed query: select "id", "label_en", "label_zh", "sort_order" from "product_lines" order by "product_lines"."sort_order" asc, "product_lines"."id" asc
+params:
+
+ ⁃ at PostgresJsPreparedQuery.queryWithCache (node_modules/drizzle-orm/pg-core/session.js:41:15)
+ ⁃ at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+ ⁃ (async file://node_modules/drizzle-orm/postgres-js/session.js:37:20)
+ ⁃ at async Object.handler (server/api/internal/product-lines/index.get.ts:12:0)
+
+    4 ┃  // publish dialog's productLine picker, the admin matrix UI, AND the
+    5 ┃  // listing-page product-line pill — and the listing page renders for
+    6 ┃  // anonymous browsers. The list itself is non-sensitive (it's the same
+    7 ┃  // company-wide labels the badge text already exposes on every detail
+    8 ┃  // page), so we drop the auth gate; the trade-off is a tiny extra
+    9 ┃  // surface for an unauthenticated caller to enumerate at most four
+   10 ┃  // kebab-case ids, which is not a leak worth gating.
+   11 ┃  export default defineEventHandler(async () => {
+ ❯ 12 ┃    return { ok: true, productLines: await listAllProductLines(useDb()) }
+   13 ┃  })
+   14 ┃
+
+ ⁃ (async file://node_modules/h3/dist/index.mjs:2017:19)
+ ⁃ at async Object.callAsync (node_modules/unctx/dist/index.mjs:72:16)
+ ⁃ at async Server.toNodeHandle (node_modules/h3/dist/index.mjs:2316:7)
+
+[CAUSE]
+PostgresError {
+  stack: 'relation "product_lines" does not exist\n' +
+  'at ErrorResponse (./node_modules/postgres/src/connection.js:815:30)\n' +
+  'at handle (./node_modules/postgres/src/connection.js:489:6)\n' +
+  'at Socket.data (./node_modules/postgres/src/connection.js:324:9)\n' +
+  '    at Socket.emit (node:events:509:20)\n' +
+  '    at addChunk (node:internal/streams/readable:564:12)\n' +
+  '    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)\n' +
+  '    at Readable.push (node:internal/streams/readable:395:5)\n' +
+  '    at TCP.onStreamRead (node:internal/stream_base_commons:189:23)',
+  message: 'relation "product_lines" does not exist',
+  name: 'PostgresError',
+  severity_local: 'ERROR',
+  severity: 'ERROR',
+  code: '42P01',
+  position: '56',
+  file: 'parse_relation.c',
+  line: '1469',
+  routine: 'parserOpenTable',
+  query: 'select "id", "label_en", "label_zh", "sort_order" from
+  "product_lines" order by "product_lines"."sort_order" asc,
+  "product_lines"."id" asc',
+  parameters: [
+  ],
+  args: [
+  ],
+  types: [
+  ],
+}
+
+---
+
+The filtering options on the current extension list page look a bit cluttered. Please optimize the page layout to streamline the experience.
+
+---
+
+push it
+
+---
+
+now how to manage the extension for official or unofficial, is there a process?
+
+---
+
+have we seed some admin/uploader's data ?
+
+---
+
+have we seed some admin/uploader's data ?
+
+---
+
+push it
+
+---
+
+check the code reviews on the pr
+
+---
+
+merge the pr
+
+---
+
+delete the local and remote branch
+
+---
+
+what's next?
+
+---
+
+plan tier revocation
+
+---
+
+push it and open the pr
+
+---
+
+check the code reviews on the pr
+
+---
+
+merge the pr
+
+---
+
+what's next?
+
+---
+
+plan approvals queue filtering
+
+---
+
+push and open the pr
+
+---
+
+check the code reviews on the pr
+
+---
+
+merge the pr
+
+---
+
+what's next?
+
+---
+
+I think we need an administrator configuration matrix page to assign approval administrators across functional categories, corporate levels, and product lines, configured separately by extension type. what do you think?
+
+---
+
+this session seems has too much context, do we need clear and new a session?
+
+---
+
+ok, go ahead
