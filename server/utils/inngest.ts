@@ -6,6 +6,23 @@ export const inngest = new Inngest({
   isDev: process.env.NODE_ENV !== "production",
 })
 
+// Best-effort wrapper for notification-style events whose underlying write
+// has already committed. Loses the event on transport failure rather than
+// failing the user's action. Use `inngest.send` directly when the caller
+// wants the failure to surface (e.g. publish.ts's rollback path).
+export async function safeSend(
+  event: Parameters<typeof inngest.send>[0],
+): Promise<void> {
+  try {
+    await inngest.send(event)
+  } catch (error) {
+    const name = Array.isArray(event)
+      ? event.map((e) => e.name).join(",")
+      : event.name
+    console.error("[inngest] safeSend failed", { name, error })
+  }
+}
+
 // Lazy-loaded function refs to avoid pulling fflate / smol-toml into every
 // server module that imports the inngest client.
 let _functions: ReturnType<typeof loadFunctions> | undefined
