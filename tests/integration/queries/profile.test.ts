@@ -112,6 +112,7 @@ describe("getRequestsForUser", () => {
       extensionId: "ext-a",
       requestedTier: "productLine",
       subCat: "softDev",
+      productLineId: "wireless",
       requestedByUserId: "u-pub",
       status: "pending",
     })

@@ -19,6 +19,37 @@ const SubCatKey = z.string().refine((v) => SUB_CAT_KEYS.has(v), {
   message: "must be a key from FUNC_TAXONOMY",
 })
 
+// Product-line ids are seeded text PKs in kebab-case (wireless, datacom,
+// terminals, cloud as of 0009). Validate the shape here; the DB FK + CHECK
+// constraint enforces membership and the iff-rule against the actual tier.
+export const ProductLineId = z
+  .string()
+  .trim()
+  .min(1)
+  .max(40)
+  .regex(/^[a-z][a-z0-9-]*$/, {
+    message: "must be a kebab-case product-line id",
+  })
+export type ProductLineId = z.infer<typeof ProductLineId>
+
+// iff-rule helpers — the DB CHECK is the source of truth, but surfacing
+// the rule at the validator layer turns a bad request into a typed Zod
+// error instead of a generic 23514 from Postgres.
+const requireProductLineIff = <T extends {
+  tier?: OfficialTier
+  requestedTier?: OfficialTier
+  productLineId?: string | undefined
+}>(
+  v: T,
+  tierKey: "tier" | "requestedTier",
+): boolean => {
+  const tier = v[tierKey]
+  const hasPl = !!v.productLineId
+  if (tier === "productLine") return hasPl
+  if (tier === "company") return !hasPl
+  return true
+}
+
 export const APPROVAL_REASON_MAX = 500
 export const APPROVAL_NOTE_MAX = 500
 
@@ -30,12 +61,18 @@ const optionalText = (max: number) =>
     .optional()
     .transform((v) => (v && v.length > 0 ? v : undefined))
 
-export const SubmitApprovalSchema = z.object({
-  extensionId: z.string().trim().min(1),
-  requestedTier: OfficialTier,
-  subCat: SubCatKey,
-  reason: optionalText(APPROVAL_REASON_MAX),
-})
+export const SubmitApprovalSchema = z
+  .object({
+    extensionId: z.string().trim().min(1),
+    requestedTier: OfficialTier,
+    subCat: SubCatKey,
+    productLineId: ProductLineId.optional(),
+    reason: optionalText(APPROVAL_REASON_MAX),
+  })
+  .refine((v) => requireProductLineIff(v, "requestedTier"), {
+    path: ["productLineId"],
+    message: "productLineId is required iff requestedTier=productLine",
+  })
 export type SubmitApprovalInput = z.infer<typeof SubmitApprovalSchema>
 
 // Discriminated union: a reviewer note only makes sense on a rejection.
@@ -60,11 +97,17 @@ export const WithdrawApprovalSchema = z.object({
 })
 export type WithdrawApprovalInput = z.infer<typeof WithdrawApprovalSchema>
 
-export const AssignReviewerSchema = z.object({
-  tier: OfficialTier,
-  subCat: SubCatKey,
-  userId: z.string().trim().min(1),
-})
+export const AssignReviewerSchema = z
+  .object({
+    tier: OfficialTier,
+    subCat: SubCatKey,
+    productLineId: ProductLineId.optional(),
+    userId: z.string().trim().min(1),
+  })
+  .refine((v) => requireProductLineIff(v, "tier"), {
+    path: ["productLineId"],
+    message: "productLineId is required iff tier=productLine",
+  })
 export type AssignReviewerInput = z.infer<typeof AssignReviewerSchema>
 
 export const UnassignReviewerSchema = z.object({

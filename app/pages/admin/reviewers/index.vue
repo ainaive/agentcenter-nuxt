@@ -1,6 +1,10 @@
 <script setup lang="ts">
+// The page guard widens to `require-reviewer` because company-tier admins
+// can now manage productLine reviewers in their own subCats. Per-cell
+// authorisation still happens server-side; the UI only uses the viewer
+// metadata to grey non-editable cells.
 definePageMeta({
-  middleware: ["require-auth", "require-super-admin"],
+  middleware: ["require-auth", "require-reviewer"],
 })
 
 const { t } = useI18n()
@@ -8,11 +12,18 @@ const { t } = useI18n()
 const { data, refresh, pending } = await useFetch(
   "/api/internal/admin/reviewers",
   {
-    default: () => ({ ok: true, reviewers: [] }),
+    default: () => ({
+      ok: true,
+      reviewers: [],
+      productLines: [],
+      viewer: { isSuperAdmin: false, companySubCats: [] },
+    }),
   },
 )
 
 const reviewers = computed(() => data.value.reviewers)
+const productLines = computed(() => data.value.productLines)
+const viewer = computed(() => data.value.viewer)
 </script>
 
 <template>
@@ -32,6 +43,8 @@ const reviewers = computed(() => data.value.reviewers)
     <ReviewerMatrix
       v-else
       :reviewers="reviewers"
+      :product-lines="productLines"
+      :viewer="viewer"
       @refresh="refresh"
     />
   </div>

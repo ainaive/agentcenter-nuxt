@@ -46,12 +46,14 @@ describe("reviewers repository", () => {
         id: "rev-1",
         tier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         userId: "u-alice",
       })
       await reviewersRepo.insertReviewer(db, {
         id: "rev-2",
         tier: "company",
         subCat: "docs",
+        productLineId: null,
         userId: "u-bob",
       })
 
@@ -60,49 +62,55 @@ describe("reviewers repository", () => {
       const cells = matrix.map((r) => ({
         tier: r.tier,
         subCat: r.subCat,
+        productLineId: r.productLineId,
         userEmail: r.userEmail,
         userName: r.userName,
       }))
       expect(cells).toContainEqual({
         tier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         userEmail: "alice@example.com",
         userName: "Alice",
       })
       expect(cells).toContainEqual({
         tier: "company",
         subCat: "docs",
+        productLineId: null,
         userEmail: "bob@example.com",
         userName: "Bob",
       })
     })
 
-    it("orders by (tier, subCat, email)", async () => {
+    it("orders by (tier, subCat, productLineId, email)", async () => {
       await reviewersRepo.insertReviewer(db, {
         id: "rev-1",
         tier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         userId: "u-bob",
       })
       await reviewersRepo.insertReviewer(db, {
         id: "rev-2",
         tier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         userId: "u-alice",
       })
       const matrix = await reviewersRepo.listMatrix(db)
-      // Alice sorts before Bob within the same (tier, subCat) cell.
+      // Alice sorts before Bob within the same (tier, subCat, productLine) cell.
       expect(matrix.map((r) => r.userEmail)).toEqual([
         "alice@example.com",
         "bob@example.com",
       ])
     })
 
-    it("is a no-op on (tier, subCat, userId) conflict", async () => {
+    it("is a no-op on (tier, subCat, productLineId, userId) conflict for productLine cells", async () => {
       await reviewersRepo.insertReviewer(db, {
         id: "rev-1",
         tier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         userId: "u-alice",
       })
       // Same cell + user, different id — should be silently absorbed.
@@ -110,38 +118,69 @@ describe("reviewers repository", () => {
         id: "rev-2",
         tier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         userId: "u-alice",
       })
       const matrix = await reviewersRepo.listMatrix(db)
       expect(matrix).toHaveLength(1)
       expect(matrix[0]?.id).toBe("rev-1")
     })
-  })
 
-  describe("listCellsForUser", () => {
-    it("returns the (tier, subCat) cells the user covers", async () => {
+    it("treats (productLine, softDev, wireless) and (productLine, softDev, datacom) as distinct cells", async () => {
       await reviewersRepo.insertReviewer(db, {
         id: "rev-1",
         tier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
+        userId: "u-alice",
+      })
+      await reviewersRepo.insertReviewer(db, {
+        id: "rev-2",
+        tier: "productLine",
+        subCat: "softDev",
+        productLineId: "datacom",
+        userId: "u-alice",
+      })
+      const matrix = await reviewersRepo.listMatrix(db)
+      expect(matrix).toHaveLength(2)
+    })
+  })
+
+  describe("listCellsForUser", () => {
+    it("returns the (tier, subCat, productLineId) cells the user covers", async () => {
+      await reviewersRepo.insertReviewer(db, {
+        id: "rev-1",
+        tier: "productLine",
+        subCat: "softDev",
+        productLineId: "wireless",
         userId: "u-alice",
       })
       await reviewersRepo.insertReviewer(db, {
         id: "rev-2",
         tier: "company",
         subCat: "docs",
+        productLineId: null,
         userId: "u-alice",
       })
       await reviewersRepo.insertReviewer(db, {
         id: "rev-3",
         tier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         userId: "u-bob",
       })
       const cells = await reviewersRepo.listCellsForUser(db, "u-alice")
       expect(cells.length).toBe(2)
-      expect(cells).toContainEqual({ tier: "productLine", subCat: "softDev" })
-      expect(cells).toContainEqual({ tier: "company", subCat: "docs" })
+      expect(cells).toContainEqual({
+        tier: "productLine",
+        subCat: "softDev",
+        productLineId: "wireless",
+      })
+      expect(cells).toContainEqual({
+        tier: "company",
+        subCat: "docs",
+        productLineId: null,
+      })
     })
 
     it("returns empty for a user with no assignments", async () => {
@@ -150,30 +189,33 @@ describe("reviewers repository", () => {
   })
 
   describe("findReviewersFor", () => {
-    it("returns user ids assigned to a cell", async () => {
+    it("returns user ids assigned to a productLine cell", async () => {
       await reviewersRepo.insertReviewer(db, {
         id: "rev-1",
         tier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         userId: "u-alice",
       })
       await reviewersRepo.insertReviewer(db, {
         id: "rev-2",
         tier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         userId: "u-bob",
       })
       const ids = await reviewersRepo.findReviewersFor(
         db,
         "productLine",
         "softDev",
+        "wireless",
       )
       expect(ids.sort()).toEqual(["u-alice", "u-bob"])
     })
 
     it("returns empty when the cell has no reviewers", async () => {
       expect(
-        await reviewersRepo.findReviewersFor(db, "company", "softDev"),
+        await reviewersRepo.findReviewersFor(db, "company", "softDev", null),
       ).toEqual([])
     })
   })
@@ -184,6 +226,7 @@ describe("reviewers repository", () => {
         id: "rev-1",
         tier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         userId: "u-alice",
       })
       await reviewersRepo.deleteReviewer(db, "rev-1")

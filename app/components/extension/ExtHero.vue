@@ -10,6 +10,7 @@ const props = defineProps<{
   iconEmoji: string | null
   iconColor: string | null
   officialTier: "productLine" | "company" | null
+  productLineLabel: string | null
   starsAvg: string
   downloadsCount: number
   updatedAt: string | null
@@ -23,6 +24,20 @@ const TIER_CLASS = {
   productLine: "badge-product-line",
   company: "badge-company",
 } as const
+
+// Badge text differentiates a specific product-line endorsement
+// ("Wireless Official" / "无线官方") from the generic "Product-Line
+// Official" — the seed/detail loader hands us the resolved label.
+const tierBadgeText = computed(() => {
+  if (props.officialTier === "productLine" && props.productLineLabel) {
+    return t("extensions.officialTier.productLineWith", {
+      line: props.productLineLabel,
+    })
+  }
+  return props.officialTier
+    ? t(`extensions.officialTier.${props.officialTier}`)
+    : ""
+})
 
 const deptTrail = computed(() =>
   props.deptId ? deptPath(props.deptId, locale.value as Locale).join(" / ") : null,
@@ -75,7 +90,7 @@ const updatedRelative = computed(() => {
             class="rounded px-1.5 py-0.5 text-[11px] font-semibold"
             :class="TIER_CLASS[officialTier]"
           >
-            {{ t(`extensions.officialTier.${officialTier}`) }}
+            {{ tierBadgeText }}
           </span>
         </div>
         <p

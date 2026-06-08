@@ -64,6 +64,20 @@
       "when": 1780826724250,
       "tag": "0008_large_lizard",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1780870991163,
+      "tag": "0009_last_naoko",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1780879856804,
+      "tag": "0010_early_vargas",
+      "breakpoints": true
     }
   ]
 }

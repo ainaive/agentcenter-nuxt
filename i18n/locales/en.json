@@ -134,6 +134,7 @@
     "officialTier": {
       "unofficial": "Unofficial",
       "productLine": "Product-Line Official",
+      "productLineWith": "{line} Official",
       "company": "Company Official"
     }
   },
@@ -169,12 +170,19 @@
       "org": "Organization",
       "enterprise": "Enterprise"
     },
+    "productLineLabel": "Product line",
+    "productLine": {
+      "all": "All lines"
+    },
     "tierLabel": "Official tier",
     "tier": {
       "all": "All tiers",
       "unofficial": "Unofficial",
       "productLine": "Product-Line",
       "company": "Company"
+    },
+    "tierPicker": {
+      "triggerLabel": "Official"
     },
     "chips": {
       "all": "All",
@@ -552,20 +560,26 @@
     },
     "reviewers": {
       "title": "Reviewer matrix",
-      "subtitle": "Assign reviewers to each (tier × functional category) cell.",
+      "subtitle": "Assign reviewers to each (tier × functional category) cell. Product-Line cells also carry a product line.",
       "loading": "Loading matrix…",
       "matrix": {
         "subCatColumn": "Category",
         "add": "Add",
         "addTitle": "Add a reviewer",
         "addSubtitle": "Assign someone to review {tier} requests for {subCat}.",
+        "addSubtitleProductLine": "Assign someone to review Product-Line Official requests for {line} / {subCat}.",
         "emailLabel": "User email",
         "emailPlaceholder": "Email address",
         "noSuchUser": "No user with that email — ask them to sign in once before assigning.",
         "genericError": "Couldn't add the reviewer. Please try again.",
         "removeAria": "Remove {user}",
         "cancel": "Cancel",
-        "confirmAdd": "Add reviewer"
+        "confirmAdd": "Add reviewer",
+        "tabs": {
+          "company": "Company tier",
+          "productLine": "Product-Line tier"
+        },
+        "delegationNote": "You're viewing the matrix as a Company-tier reviewer. You can edit Product-Line cells in your own categories; other cells are read-only."
       }
     }
   },
@@ -593,6 +607,9 @@
       "tierLabel": "Target tier",
       "tierProductLineDesc": "Reviewed at the product line.",
       "tierCompanyDesc": "Reviewed at the company level.",
+      "productLineLabel": "Product line",
+      "productLinePlaceholder": "Pick a product line…",
+      "productLinesError": "Couldn't load product lines. Please try again.",
       "subCatLabel": "Functional category",
       "subCatPlaceholder": "Pick a category…",
       "subCatHint": "This extension has no category set yet — choose one for the reviewer.",
@@ -610,7 +627,9 @@
       "extension_not_found": "That extension no longer exists.",
       "not_publisher_owner": "Only the publisher can request elevation.",
       "extension_not_published": "Publish the extension before requesting elevation.",
-      "duplicate_pending_request": "You already have a pending request for this extension."
+      "duplicate_pending_request": "You already have a pending request for this extension.",
+      "missing_product_line": "Pick a product line before submitting.",
+      "unexpected_product_line": "Company-tier requests must not include a product line."
     }
   },
   "cliAuth": {

@@ -1,3 +1,4 @@
+import { hashPassword } from "better-auth/crypto"
 import { sql } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
@@ -12,6 +13,7 @@ import { DEPARTMENTS } from "../shared/data/departments"
 import { EXTENSIONS } from "../shared/data/extensions"
 import * as schema from "../shared/db/schema"
 import {
+  accounts,
   approvalRequests,
   approvalReviewers,
   collectionItems,
@@ -164,6 +166,40 @@ async function main() {
   console.log(`seed: upserting ${CREATORS.length} creator users`)
   await db.insert(users).values(CREATORS).onConflictDoNothing()
 
+  // Plant Better-Auth credential rows so the demo identities can actually
+  // sign in via /sign-in. Matches what Better-Auth itself writes during
+  // /sign-up/email (see node_modules/better-auth/dist/api/routes/sign-up.mjs):
+  //   providerId="credential", accountId=userId, password=hashed scrypt.
+  // Deterministic id + onConflictDoUpdate makes re-running the seed safe
+  // and lets `SEED_PASSWORD=newvalue bun run db:seed` rotate the password.
+  // SEED_PASSWORD is required — we deliberately do NOT ship a default so a
+  // misconfigured environment can't quietly hand out predictable credentials.
+  const seedPassword = process.env.SEED_PASSWORD
+  if (!seedPassword) {
+    throw new Error(
+      "seed: SEED_PASSWORD env var is required to plant credential accounts " +
+        "(e.g. SEED_PASSWORD=dev-only-password bun run db:seed)",
+    )
+  }
+  const passwordHash = await hashPassword(seedPassword)
+  const accountRows = CREATORS.map((u) => ({
+    id: `acc-credential-${u.id}`,
+    userId: u.id,
+    accountId: u.id,
+    providerId: "credential",
+    password: passwordHash,
+  }))
+  console.log(
+    `seed: planting ${accountRows.length} credential accounts (password from SEED_PASSWORD or default)`,
+  )
+  await db
+    .insert(accounts)
+    .values(accountRows)
+    .onConflictDoUpdate({
+      target: accounts.id,
+      set: { password: passwordHash, updatedAt: new Date() },
+    })
+
   const flatDepts = flattenDepts(DEPARTMENTS)
   console.log(`seed: inserting ${flatDepts.length} departments`)
   await db.insert(departments).values(flatDepts)
@@ -189,6 +225,12 @@ async function main() {
       // the approval workflow; the seed pre-stamps a handful so the new
       // badge styling and filter pill have visible coverage on a fresh DB.
       officialTier: e.officialTier ?? null,
+      // CHECK constraint: productLineId is required iff officialTier='productLine'.
+      // Default to 'wireless' for legacy seed rows that pre-date the dimension.
+      productLineId:
+        e.officialTier === "productLine"
+          ? (e.productLineId ?? "wireless")
+          : null,
       scope: e.scope,
       funcCat: e.funcCat,
       subCat: e.subCat,
@@ -252,9 +294,11 @@ async function main() {
   console.log(`seed: inserting ${membershipRows.length} memberships`)
   await db.insert(memberships).values(membershipRows)
 
-  // Reviewer matrix: every (tier, subCat) cell gets at least one
-  // assignment from APPROVAL_REVIEWERS. Emails that don't resolve to a
-  // creator are skipped with a warning so a typo doesn't break the seed.
+  // Reviewer matrix: every (tier, subCat[, productLineId]) cell gets at least
+  // one assignment from APPROVAL_REVIEWERS. Emails that don't resolve to a
+  // creator are skipped with a warning so a typo doesn't break the seed. The
+  // DB CHECK enforces productLineId presence per tier; we mirror it here so a
+  // bad shape in the seed file fails loudly instead of at INSERT time.
   const reviewerRows = APPROVAL_REVIEWERS.flatMap((r, i) => {
     const reviewer = CREATORS.find((u) => u.email === r.reviewerEmail)
     if (!reviewer) {
@@ -263,11 +307,25 @@ async function main() {
       )
       return []
     }
+    const requiresPl = r.tier === "productLine"
+    if (requiresPl && !r.productLineId) {
+      console.warn(
+        `seed: approval reviewer #${i} (${r.tier}/${r.subCat}) missing productLineId — skipping`,
+      )
+      return []
+    }
+    if (!requiresPl && r.productLineId) {
+      console.warn(
+        `seed: approval reviewer #${i} (${r.tier}/${r.subCat}) carries productLineId on a company-tier row — skipping`,
+      )
+      return []
+    }
     return [
       {
         id: `appr-rev-${i}`,
         tier: r.tier,
         subCat: r.subCat,
+        productLineId: r.productLineId ?? null,
         userId: reviewer.id,
       },
     ]
@@ -302,6 +360,7 @@ async function main() {
     extensionId: string
     requestedTier: "productLine" | "company"
     subCat: string
+    productLineId: string | null
     requestedByUserId: string
     reason: string | null
     status: "pending" | "approved" | "rejected"
@@ -309,7 +368,11 @@ async function main() {
     decidedAt: Date | null
     reviewerNote: string | null
   }[] = []
-  const officialTierStamps: { extensionId: string; tier: "productLine" | "company" }[] = []
+  const officialTierStamps: {
+    extensionId: string
+    tier: "productLine" | "company"
+    productLineId: string | null
+  }[] = []
   for (const [i, r] of APPROVAL_REQUESTS.entries()) {
     const extensionId = extIdBySlug.get(r.extensionSlug)
     if (!extensionId) {
@@ -352,11 +415,25 @@ async function main() {
       )
       continue
     }
+    const requiresPl = r.requestedTier === "productLine"
+    if (requiresPl && !r.productLineId) {
+      console.warn(
+        `seed: approval request #${i} (${r.requestedTier}/${r.subCat}) missing productLineId — skipping`,
+      )
+      continue
+    }
+    if (!requiresPl && r.productLineId) {
+      console.warn(
+        `seed: approval request #${i} carries productLineId on a company-tier row — skipping`,
+      )
+      continue
+    }
     approvalRequestRows.push({
       id: `appr-req-${i}`,
       extensionId,
       requestedTier: r.requestedTier,
       subCat: r.subCat,
+      productLineId: r.productLineId ?? null,
       requestedByUserId: publisherId,
       reason: r.reason ?? null,
       status: r.status,
@@ -365,7 +442,11 @@ async function main() {
       reviewerNote: r.reviewerNote ?? null,
     })
     if (r.status === "approved") {
-      officialTierStamps.push({ extensionId, tier: r.requestedTier })
+      officialTierStamps.push({
+        extensionId,
+        tier: r.requestedTier,
+        productLineId: r.productLineId ?? null,
+      })
     }
   }
   if (approvalRequestRows.length > 0) {
@@ -375,7 +456,7 @@ async function main() {
   for (const stamp of officialTierStamps) {
     await db
       .update(extensions)
-      .set({ officialTier: stamp.tier })
+      .set({ officialTier: stamp.tier, productLineId: stamp.productLineId })
       .where(sql`${extensions.id} = ${stamp.extensionId}`)
   }
   if (officialTierStamps.length > 0) {

@@ -25,6 +25,8 @@ export type ApprovalErrorCode =
   | "duplicate_pending_request"
   | "not_reviewer"
   | "not_requester"
+  | "missing_product_line"
+  | "unexpected_product_line"
 
 export class ApprovalError extends Error {
   readonly code: ApprovalErrorCode
@@ -39,6 +41,7 @@ export interface SubmitParams {
   extensionId: string
   requestedTier: OfficialTier
   subCat: string
+  productLineId: string | null
   userId: string
   reason: string | undefined
 }
@@ -46,6 +49,16 @@ export interface SubmitParams {
 export async function submitRequest(
   params: SubmitParams,
 ): Promise<approvalsRepo.ApprovalRequestRow> {
+  // Shape rule mirrors the DB CHECK: productLineId is present iff the
+  // requested tier is `productLine`. Surfacing both error codes lets the
+  // endpoint give a precise message instead of bouncing the raw 23514.
+  if (params.requestedTier === "productLine" && !params.productLineId) {
+    throw new ApprovalError("missing_product_line")
+  }
+  if (params.requestedTier === "company" && params.productLineId) {
+    throw new ApprovalError("unexpected_product_line")
+  }
+
   const db = useDb()
 
   const ext = await extensionsRepo.findById(db, params.extensionId)
@@ -73,6 +86,7 @@ export async function submitRequest(
       extensionId: params.extensionId,
       requestedTier: params.requestedTier,
       subCat: params.subCat,
+      productLineId: params.productLineId,
       requestedByUserId: params.userId,
       reason: params.reason ?? null,
     })
@@ -85,6 +99,7 @@ export async function submitRequest(
       extensionId: row.extensionId,
       requestedTier: row.requestedTier,
       subCat: row.subCat,
+      productLineId: row.productLineId,
       requesterUserId: row.requestedByUserId,
     },
   })
@@ -110,7 +125,8 @@ export async function decideRequest(
   }
 
   // Super-admins can decide on any cell; otherwise the reviewer must be
-  // assigned to (requestedTier, subCat) on this request.
+  // assigned to the exact (requestedTier, subCat, productLineId?) cell this
+  // request was filed against. Tier mismatches don't leak across cells.
   const allowed =
     (await reviewersRepo.isSuperAdmin(db, params.reviewerUserId)) ||
     (await approvalsRepo.isReviewerForCell(
@@ -118,6 +134,7 @@ export async function decideRequest(
       params.reviewerUserId,
       current.requestedTier,
       current.subCat,
+      current.productLineId,
     ))
   if (!allowed) throw new ApprovalError("not_reviewer")
 
@@ -147,6 +164,7 @@ export async function decideRequest(
         tx,
         current.extensionId,
         outcome.extension.officialTier,
+        current.productLineId,
       )
     }
   })
@@ -210,17 +228,25 @@ export async function listReviewerQueue(
 ): Promise<approvalsRepo.ApprovalRequestRow[]> {
   const db = useDb()
   if (await reviewersRepo.isSuperAdmin(db, userId)) {
-    // Treat super-admin as "assigned to every cell". Pulled from the
-    // matrix verbatim so an empty matrix still surfaces no rows — better
-    // than a silent firehose.
+    // Treat super-admin as "assigned to every cell". Pulled from the matrix
+    // verbatim so an empty matrix still surfaces no rows — better than a
+    // silent firehose. Productline IS NULL is encoded as the literal '∅' in
+    // the dedup key so a (company, cloud, null) cell doesn't collapse onto
+    // (productLine, cloud, '') by accident.
     const cells = await reviewersRepo
       .listMatrix(db)
       .then((rows) =>
         Array.from(
-          new Set(rows.map((r) => `${r.tier}:${r.subCat}`)),
+          new Set(
+            rows.map((r) => `${r.tier}:${r.subCat}:${r.productLineId ?? "∅"}`),
+          ),
         ).map((k) => {
-          const [tier, subCat] = k.split(":") as [OfficialTier, string]
-          return { tier, subCat }
+          const [tier, subCat, pl] = k.split(":") as [OfficialTier, string, string]
+          return {
+            tier,
+            subCat,
+            productLineId: pl === "∅" ? null : pl,
+          }
         }),
       )
     return approvalsRepo.listPendingForCells(db, cells)

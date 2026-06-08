@@ -47,6 +47,7 @@ const ROW = {
   extensionId: "ext-1",
   requestedTier: "productLine" as const,
   subCat: "softDev",
+  productLineId: "wireless" as string | null,
   requestedByUserId: "u-pub",
   reason: "Used by every team.",
   createdAt: "2026-06-01T10:00:00Z",

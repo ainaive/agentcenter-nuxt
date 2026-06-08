@@ -71,6 +71,14 @@ export function buildExtensionWhere(
     filters.tier === "company"
       ? eq(extensions.officialTier, "company")
       : undefined,
+    // Narrow to a specific endorsing product line. Composes with `tier` —
+    // e.g. ?tier=productLine&productLineId=wireless surfaces only the
+    // Wireless-Official extensions. Standalone (no `tier`), it still
+    // narrows because productLineId is only populated for productLine
+    // tier rows today.
+    filters.productLineId
+      ? eq(extensions.productLineId, filters.productLineId)
+      : undefined,
 
     filters.q
       ? or(

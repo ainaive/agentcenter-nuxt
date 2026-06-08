@@ -12,7 +12,7 @@
 
 import type { IconColor } from "./icon-colors"
 
-export interface CatalogEntry {
+interface CatalogEntryBase {
   slug: string
   category: "skills" | "slash" | "plugins"
   scope: "personal" | "org" | "enterprise"
@@ -29,14 +29,31 @@ export interface CatalogEntry {
   iconColor: IconColor
   tags: string[]
   badge?: "official" | "popular" | "new"
-  // Optional seed-side stamp. Lets the catalog ship a curated handful of
-  // already-elevated extensions so the tier badges and OfficialTierPill
-  // light up on a fresh DB. Production rows get this through the approval
-  // workflow; this field is the dev/demo lever only.
-  officialTier?: "productLine" | "company"
   downloadsCount: number
   starsAvg: string
 }
+
+// Discriminated union: a productLine-tier catalog row must declare its
+// product line at the type level. Without this, an entry that ships
+// `officialTier: "productLine"` without a line would silently land in
+// the DB as Wireless on the next deploy (because the catalog seed runs
+// on every build); the union makes that mistake a typecheck failure.
+type CatalogEntryUnofficial = CatalogEntryBase & {
+  officialTier?: undefined
+  productLineId?: undefined
+}
+type CatalogEntryCompany = CatalogEntryBase & {
+  officialTier: "company"
+  productLineId?: undefined
+}
+type CatalogEntryProductLine = CatalogEntryBase & {
+  officialTier: "productLine"
+  productLineId: "wireless" | "datacom" | "terminals" | "cloud"
+}
+export type CatalogEntry =
+  | CatalogEntryUnofficial
+  | CatalogEntryCompany
+  | CatalogEntryProductLine
 
 // Color rotation: indigo / amber / emerald / rose / slate (from icon-colors.ts).
 // No reuse of `--color-accent` — per CLAUDE.md §11, accent is reserved for CTAs.
@@ -47,6 +64,7 @@ const SKILLS: CatalogEntry[] = [
     slug: "user-story-writer",
     category: "skills",
     officialTier: "productLine",
+    productLineId: "wireless",
     scope: "personal",
     funcCat: "workTask",
     subCat: "systemDesign",
@@ -86,6 +104,7 @@ const SKILLS: CatalogEntry[] = [
     slug: "c4-diagrammer",
     category: "skills",
     officialTier: "productLine",
+    productLineId: "cloud",
     scope: "personal",
     funcCat: "workTask",
     subCat: "systemDesign",
@@ -188,6 +207,7 @@ const SKILLS: CatalogEntry[] = [
     slug: "react-hook-genie",
     category: "skills",
     officialTier: "productLine",
+    productLineId: "terminals",
     scope: "personal",
     funcCat: "workTask",
     subCat: "softDev",
@@ -290,6 +310,7 @@ const SKILLS: CatalogEntry[] = [
     slug: "vitest-case-writer",
     category: "skills",
     officialTier: "productLine",
+    productLineId: "datacom",
     scope: "personal",
     funcCat: "workTask",
     subCat: "testing",
@@ -349,6 +370,7 @@ const SKILLS: CatalogEntry[] = [
     slug: "contract-test-helper",
     category: "skills",
     officialTier: "productLine",
+    productLineId: "datacom",
     scope: "org",
     funcCat: "workTask",
     subCat: "testing",
@@ -448,6 +470,7 @@ const SKILLS: CatalogEntry[] = [
     slug: "mqtt-debugger",
     category: "skills",
     officialTier: "productLine",
+    productLineId: "wireless",
     scope: "personal",
     funcCat: "business",
     subCat: "network",
@@ -643,6 +666,7 @@ const SKILLS: CatalogEntry[] = [
     slug: "aws-iam-policy-helper",
     category: "skills",
     officialTier: "productLine",
+    productLineId: "cloud",
     scope: "org",
     funcCat: "business",
     subCat: "cloud",
@@ -763,6 +787,7 @@ const SKILLS: CatalogEntry[] = [
     slug: "markdown-linter",
     category: "skills",
     officialTier: "productLine",
+    productLineId: "terminals",
     scope: "personal",
     funcCat: "tools",
     subCat: "docs",
@@ -1040,6 +1065,7 @@ const SKILLS: CatalogEntry[] = [
     slug: "conventional-commit-helper",
     category: "skills",
     officialTier: "productLine",
+    productLineId: "datacom",
     scope: "personal",
     funcCat: "tools",
     subCat: "vcs",
@@ -1142,6 +1168,7 @@ const SLASH_COMMANDS: CatalogEntry[] = [
     slug: "explain-error",
     category: "slash",
     officialTier: "productLine",
+    productLineId: "wireless",
     scope: "personal",
     funcCat: "workTask",
     subCat: "softDev",
@@ -1242,6 +1269,7 @@ const PLUGINS: CatalogEntry[] = [
     slug: "linear-bridge",
     category: "plugins",
     officialTier: "productLine",
+    productLineId: "cloud",
     scope: "org",
     funcCat: "tools",
     subCat: "vcs",

@@ -14,6 +14,11 @@ export interface SeedApprovalRequest {
   publisherEmail: string
   requestedTier: "productLine" | "company"
   subCat: string
+  /**
+   * Required iff `requestedTier === "productLine"`. The DB CHECK constraint
+   * enforces the iff-rule; the seed script also guards against mismatches.
+   */
+  productLineId?: "wireless" | "datacom" | "terminals" | "cloud"
   status: "pending" | "approved" | "rejected"
   reason?: string
   decidedByEmail?: string
@@ -35,6 +40,7 @@ export const APPROVAL_REQUESTS: ReadonlyArray<SeedApprovalRequest> = [
     publisherEmail: "dao@agentcenter.dev",
     requestedTier: "productLine",
     subCat: "network",
+    productLineId: "wireless",
     status: "pending",
     reason: "Already used by every embedded squad in the IoT product line.",
   },

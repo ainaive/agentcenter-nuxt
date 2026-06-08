@@ -2,7 +2,12 @@ import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { createError, getRequestHeaders, type H3Event } from "h3"
 
-import { isSuperAdmin } from "~~/server/repositories/reviewers"
+import type { OfficialTier } from "~~/shared/approvals/state"
+
+import {
+  isCompanyAdminForSubCat,
+  isSuperAdmin,
+} from "~~/server/repositories/reviewers"
 import {
   accounts,
   sessions,
@@ -99,4 +104,29 @@ export async function requireSuperAdmin(event: H3Event): Promise<SessionUser> {
     throw createError({ statusCode: 403, statusMessage: "Forbidden" })
   }
   return user
+}
+
+// Cell-aware authorisation for matrix edits. Encodes the delegation rule
+// from ADR-0001 (2026-06-08 addendum):
+//   - super-admins can edit every cell;
+//   - company-tier admins of subCat X may manage productLine cells of
+//     subCat X (any productLine);
+//   - company-tier cells stay super-admin-only.
+// Callers pass the cell coordinates explicitly — for `unassign`, load the
+// target row first so the gate authorises against that row's coordinates
+// rather than the caller's request body.
+export async function requireCellAdmin(
+  event: H3Event,
+  cell: { tier: OfficialTier; subCat: string; productLineId: string | null },
+): Promise<SessionUser> {
+  const user = await requireUser(event)
+  const db = useDb()
+  if (await isSuperAdmin(db, user.id)) return user
+  if (
+    cell.tier === "productLine" &&
+    (await isCompanyAdminForSubCat(db, user.id, cell.subCat))
+  ) {
+    return user
+  }
+  throw createError({ statusCode: 403, statusMessage: "not_authorized" })
 }

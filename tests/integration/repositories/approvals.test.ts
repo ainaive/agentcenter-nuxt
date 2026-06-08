@@ -99,6 +99,7 @@ describe("approvals repository", () => {
         extensionId: "ext-a",
         requestedTier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         requestedByUserId: "u-pub",
         reason: null,
       })
@@ -118,6 +119,7 @@ describe("approvals repository", () => {
         extensionId: "ext-a",
         requestedTier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         requestedByUserId: "u-pub",
         reason: null,
       })
@@ -135,6 +137,7 @@ describe("approvals repository", () => {
         extensionId: "ext-a",
         requestedTier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         requestedByUserId: "u-pub",
         reason: null,
       })
@@ -150,6 +153,7 @@ describe("approvals repository", () => {
         extensionId: "ext-b",
         requestedTier: "company",
         subCat: "docs",
+        productLineId: null,
         requestedByUserId: "u-pub",
         reason: null,
       })
@@ -168,6 +172,7 @@ describe("approvals repository", () => {
         extensionId: "ext-a",
         requestedTier: "company",
         subCat: "softDev",
+        productLineId: null,
         requestedByUserId: "u-other",
         reason: null,
       })
@@ -183,6 +188,7 @@ describe("approvals repository", () => {
         extensionId: "ext-a",
         requestedTier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         requestedByUserId: "u-pub",
         reason: null,
       })
@@ -191,6 +197,7 @@ describe("approvals repository", () => {
         extensionId: "ext-b",
         requestedTier: "company",
         subCat: "docs",
+        productLineId: null,
         requestedByUserId: "u-pub",
         reason: null,
       })
@@ -200,6 +207,7 @@ describe("approvals repository", () => {
         extensionId: "ext-a",
         requestedTier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         requestedByUserId: "u-pub",
         reason: null,
       })
@@ -217,15 +225,15 @@ describe("approvals repository", () => {
 
     it("returns only pending requests in the matching cells", async () => {
       const rows = await approvalsRepo.listPendingForCells(db, [
-        { tier: "productLine", subCat: "softDev" },
+        { tier: "productLine", subCat: "softDev", productLineId: "wireless" },
       ])
       expect(rows.map((r) => r.id)).toEqual(["req-pl-softDev"])
     })
 
     it("matches multiple cells via an OR", async () => {
       const rows = await approvalsRepo.listPendingForCells(db, [
-        { tier: "productLine", subCat: "softDev" },
-        { tier: "company", subCat: "docs" },
+        { tier: "productLine", subCat: "softDev", productLineId: "wireless" },
+        { tier: "company", subCat: "docs", productLineId: null },
       ])
       expect(rows.map((r) => r.id).sort()).toEqual(
         ["req-co-docs", "req-pl-softDev"].sort(),
@@ -234,9 +242,26 @@ describe("approvals repository", () => {
 
     it("returns nothing when the cells don't match any pending requests", async () => {
       const rows = await approvalsRepo.listPendingForCells(db, [
-        { tier: "company", subCat: "softDev" },
+        { tier: "company", subCat: "softDev", productLineId: null },
       ])
       expect(rows).toHaveLength(0)
+    })
+
+    it("does not leak a productLine request to a same-subCat company cell", async () => {
+      const rows = await approvalsRepo.listPendingForCells(db, [
+        { tier: "company", subCat: "softDev", productLineId: null },
+      ])
+      // req-pl-softDev is productLine-tier; the company cell must not match it.
+      expect(rows.map((r) => r.id)).not.toContain("req-pl-softDev")
+    })
+
+    it("treats different product lines as distinct cells", async () => {
+      // The productLine-softDev fixture is in 'wireless'; a 'datacom' cell
+      // should not surface it.
+      const rows = await approvalsRepo.listPendingForCells(db, [
+        { tier: "productLine", subCat: "softDev", productLineId: "datacom" },
+      ])
+      expect(rows.map((r) => r.id)).not.toContain("req-pl-softDev")
     })
   })
 
@@ -247,6 +272,7 @@ describe("approvals repository", () => {
         extensionId: "ext-a",
         requestedTier: "company",
         subCat: "softDev",
+        productLineId: null,
         requestedByUserId: "u-pub",
         reason: null,
       })
@@ -269,6 +295,7 @@ describe("approvals repository", () => {
         extensionId: "ext-a",
         requestedTier: "company",
         subCat: "softDev",
+        productLineId: null,
         requestedByUserId: "u-pub",
         reason: null,
       })
@@ -289,6 +316,7 @@ describe("approvals repository", () => {
         extensionId: "ext-a",
         requestedTier: "company",
         subCat: "softDev",
+        productLineId: null,
         requestedByUserId: "u-pub",
         reason: null,
       })
@@ -324,6 +352,7 @@ describe("approvals repository", () => {
         extensionId: "ext-a",
         requestedTier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         requestedByUserId: "u-pub",
         reason: null,
       })
@@ -342,6 +371,7 @@ describe("approvals repository", () => {
         extensionId: "ext-a",
         requestedTier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         requestedByUserId: "u-pub",
         reason: null,
       })
@@ -362,7 +392,7 @@ describe("approvals repository", () => {
 
   describe("setExtensionOfficialTier + findTiersForExtensions", () => {
     it("stamps the tier on the extension", async () => {
-      await approvalsRepo.setExtensionOfficialTier(db, "ext-a", "company")
+      await approvalsRepo.setExtensionOfficialTier(db, "ext-a", "company", null)
       const [row] = await db
         .select({ officialTier: extensions.officialTier })
         .from(extensions)
@@ -370,8 +400,31 @@ describe("approvals repository", () => {
       expect(row?.officialTier).toBe("company")
     })
 
+    it("stamps tier + productLineId together for the productLine tier", async () => {
+      await approvalsRepo.setExtensionOfficialTier(
+        db,
+        "ext-a",
+        "productLine",
+        "wireless",
+      )
+      const [row] = await db
+        .select({
+          officialTier: extensions.officialTier,
+          productLineId: extensions.productLineId,
+        })
+        .from(extensions)
+        .where(eq(extensions.id, "ext-a"))
+      expect(row?.officialTier).toBe("productLine")
+      expect(row?.productLineId).toBe("wireless")
+    })
+
     it("returns a map of ext id → tier or null", async () => {
-      await approvalsRepo.setExtensionOfficialTier(db, "ext-a", "productLine")
+      await approvalsRepo.setExtensionOfficialTier(
+        db,
+        "ext-a",
+        "productLine",
+        "wireless",
+      )
       const map = await approvalsRepo.findTiersForExtensions(db, [
         "ext-a",
         "ext-b",
@@ -387,11 +440,12 @@ describe("approvals repository", () => {
   })
 
   describe("isReviewerForCell", () => {
-    it("returns true when the user is assigned to the cell", async () => {
+    it("returns true when the user is assigned to the productLine cell", async () => {
       await db.insert(approvalReviewers).values({
         id: "rev-1",
         tier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         userId: "u-rev",
       })
       expect(
@@ -400,15 +454,36 @@ describe("approvals repository", () => {
           "u-rev",
           "productLine",
           "softDev",
+          "wireless",
         ),
       ).toBe(true)
     })
 
-    it("returns false for a different cell", async () => {
+    it("returns false for a different productLine on the same subCat", async () => {
       await db.insert(approvalReviewers).values({
         id: "rev-1",
         tier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
+        userId: "u-rev",
+      })
+      expect(
+        await approvalsRepo.isReviewerForCell(
+          db,
+          "u-rev",
+          "productLine",
+          "softDev",
+          "datacom",
+        ),
+      ).toBe(false)
+    })
+
+    it("returns false for a company cell when the user is a productLine reviewer", async () => {
+      await db.insert(approvalReviewers).values({
+        id: "rev-1",
+        tier: "productLine",
+        subCat: "softDev",
+        productLineId: "wireless",
         userId: "u-rev",
       })
       expect(
@@ -417,6 +492,7 @@ describe("approvals repository", () => {
           "u-rev",
           "company",
           "softDev",
+          null,
         ),
       ).toBe(false)
     })

@@ -55,6 +55,7 @@ const PENDING_ROW = {
   extensionId: "ext-1",
   requestedTier: "company" as const,
   subCat: "softDev",
+  productLineId: null as string | null,
   requestedByUserId: "u-pub",
   reason: null,
   status: "pending" as const,
@@ -82,6 +83,7 @@ describe("submitRequest", () => {
       extensionId: "ext-1",
       requestedTier: "company",
       subCat: "softDev",
+      productLineId: null,
       userId: "u-pub",
       reason: "lots of usage",
     })
@@ -92,6 +94,7 @@ describe("submitRequest", () => {
         extensionId: "ext-1",
         requestedTier: "company",
         subCat: "softDev",
+        productLineId: null,
         requestedByUserId: "u-pub",
         reason: "lots of usage",
       }),
@@ -114,6 +117,7 @@ describe("submitRequest", () => {
       extensionId: "ext-1",
       requestedTier: "productLine",
       subCat: "docs",
+      productLineId: "wireless",
       userId: "u-pub",
       reason: undefined,
     })
@@ -123,6 +127,34 @@ describe("submitRequest", () => {
     )
   })
 
+  it("throws missing_product_line when productLine tier omits productLineId", async () => {
+    await expect(
+      submitRequest({
+        extensionId: "ext-1",
+        requestedTier: "productLine",
+        subCat: "docs",
+        productLineId: null,
+        userId: "u-pub",
+        reason: undefined,
+      }),
+    ).rejects.toMatchObject({ code: "missing_product_line" })
+    expect(DB.transaction).not.toHaveBeenCalled()
+  })
+
+  it("throws unexpected_product_line when company tier carries a productLineId", async () => {
+    await expect(
+      submitRequest({
+        extensionId: "ext-1",
+        requestedTier: "company",
+        subCat: "docs",
+        productLineId: "wireless",
+        userId: "u-pub",
+        reason: undefined,
+      }),
+    ).rejects.toMatchObject({ code: "unexpected_product_line" })
+    expect(DB.transaction).not.toHaveBeenCalled()
+  })
+
   it("throws extension_not_found when the extension is missing", async () => {
     vi.mocked(extensionsRepo.findById).mockResolvedValue(null)
     await expect(
@@ -130,6 +162,7 @@ describe("submitRequest", () => {
         extensionId: "ext-x",
         requestedTier: "company",
         subCat: "docs",
+        productLineId: null,
         userId: "u-pub",
         reason: undefined,
       }),
@@ -150,6 +183,7 @@ describe("submitRequest", () => {
         extensionId: "ext-1",
         requestedTier: "company",
         subCat: "docs",
+        productLineId: null,
         userId: "u-pub",
         reason: undefined,
       }),
@@ -166,6 +200,7 @@ describe("submitRequest", () => {
         extensionId: "ext-1",
         requestedTier: "company",
         subCat: "docs",
+        productLineId: null,
         userId: "u-pub",
         reason: undefined,
       }),
@@ -181,6 +216,7 @@ describe("submitRequest", () => {
         extensionId: "ext-1",
         requestedTier: "company",
         subCat: "docs",
+        productLineId: null,
         userId: "u-pub",
         reason: undefined,
       }),
@@ -197,6 +233,7 @@ describe("submitRequest", () => {
       extensionId: "ext-1",
       requestedTier: "company",
       subCat: "docs",
+      productLineId: null,
       userId: "u-pub",
       reason: undefined,
     })
@@ -237,6 +274,7 @@ describe("decideRequest", () => {
       TX,
       "ext-1",
       "company",
+      null,
     )
     expect(sendEvent).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -397,13 +435,13 @@ describe("listReviewerQueue", () => {
   it("uses the user's assigned cells when not a super-admin", async () => {
     vi.mocked(reviewersRepo.isSuperAdmin).mockResolvedValue(false)
     vi.mocked(reviewersRepo.listCellsForUser).mockResolvedValue([
-      { tier: "productLine", subCat: "softDev" },
+      { tier: "productLine", subCat: "softDev", productLineId: "wireless" },
     ])
     vi.mocked(approvalsRepo.listPendingForCells).mockResolvedValue([])
 
     await listReviewerQueue("u-rev")
     expect(approvalsRepo.listPendingForCells).toHaveBeenCalledWith(DB, [
-      { tier: "productLine", subCat: "softDev" },
+      { tier: "productLine", subCat: "softDev", productLineId: "wireless" },
     ])
   })
 
@@ -414,6 +452,7 @@ describe("listReviewerQueue", () => {
         id: "rev-1",
         tier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         userId: "u-a",
         userEmail: "a@x",
         userName: null,
@@ -423,6 +462,7 @@ describe("listReviewerQueue", () => {
         id: "rev-2",
         tier: "company",
         subCat: "docs",
+        productLineId: null,
         userId: "u-b",
         userEmail: "b@x",
         userName: null,
@@ -433,6 +473,7 @@ describe("listReviewerQueue", () => {
         id: "rev-3",
         tier: "productLine",
         subCat: "softDev",
+        productLineId: "wireless",
         userId: "u-c",
         userEmail: "c@x",
         userName: null,
@@ -443,10 +484,17 @@ describe("listReviewerQueue", () => {
 
     await listReviewerQueue("u-super")
     const args = vi.mocked(approvalsRepo.listPendingForCells).mock.calls[0]
-    const passed = (args![1] as Array<{ tier: string; subCat: string }>)
-      .map((c) => `${c.tier}:${c.subCat}`)
+    const passed = (args![1] as Array<{
+      tier: string
+      subCat: string
+      productLineId: string | null
+    }>)
+      .map((c) => `${c.tier}:${c.subCat}:${c.productLineId ?? "∅"}`)
       .sort()
-    expect(passed).toEqual(["company:docs", "productLine:softDev"])
+    expect(passed).toEqual([
+      "company:docs:∅",
+      "productLine:softDev:wireless",
+    ])
   })
 
   it("returns an empty array for a user with no cells (and not super-admin)", async () => {

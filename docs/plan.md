@@ -232,12 +232,13 @@ Critical indexing notes — unchanged from the original:
 - `(funcCat, subCat, l2)` covers drill-down.
 - Sort indexes are separate (`downloadsCount DESC`, `starsAvg DESC`).
 
-### Additions for the approval workflow (shipped in PR #41)
+### Additions for the approval workflow (shipped in PR #41, refined in #43)
 
 The approval workflow added three load-bearing pieces — see
 `shared/db/schema/extension.ts`, `shared/db/schema/org.ts`, and
 `shared/db/schema/approval.ts` for the canonical definitions, and
-`docs/adr/0001-official-tier-approval-workflow.md` for the rationale.
+`docs/adr/0001-official-tier-approval-workflow.md` for the rationale
+(including the 2026-06-08 product-line addendum).
 
 - **`extensions.officialTier`** — nullable `extension_official_tier` enum
   (`productLine | company`). Null = "Unofficial" (the default for any
@@ -246,6 +247,15 @@ The approval workflow added three load-bearing pieces — see
   "official"` from `officialTier != null` so the frozen CLI shape is
   unchanged. App code only writes `officialTier`. Indexed as
   `idx_ext_official_tier`.
+- **`extensions.productLineId`** — nullable FK to `product_lines.id`.
+  Required iff `officialTier='productLine'` (a CHECK constraint
+  enforces the iff-rule). `ON DELETE SET NULL` so retiring a product
+  line doesn't orphan extension rows.
+- **`product_lines`** — seeded lookup table for the new dimension:
+  `id` (kebab-case text PK), `label_en`, `label_zh`, `sort_order`,
+  `created_at`. Seeded by `0009_*` with `wireless`, `datacom`,
+  `terminals`, `cloud`; adding a line is a content migration, not a
+  code release.
 - **`memberships.role`** — the `membership_role` enum gains a
   `superAdmin` value alongside `viewer | publisher | admin`. The
   migration uses `ALTER TYPE … ADD VALUE`; safe inside the same
@@ -254,19 +264,25 @@ The approval workflow added three load-bearing pieces — see
 - **`approval_requests`** — one row per submitted elevation request.
   Columns: id, extensionId (FK CASCADE), requestedTier
   (`extension_official_tier`), snapshotted subCat (text, validated
-  against `FUNC_TAXONOMY` l1 leaves at the orchestrator), requestedBy
-  user, reason, status (`approval_status` enum: pending | approved |
-  rejected | withdrawn), decidedBy user, decidedAt, reviewerNote,
-  timestamps. Indexes: `(status, subCat, requestedTier)` for the
-  reviewer queue; `(extensionId, status)` for the publisher view and
-  the at-most-one-pending guard the orchestrator enforces inside the
-  insert's transaction.
-- **`approval_reviewers`** — the configurable (tier × subCat) → user
-  matrix. Multiple reviewers per cell; first decision wins. Unique
-  on `(tier, subCat, userId)` to make `onConflictDoNothing` work.
-  Indexed on `(tier, subCat)` for fan-out lookups.
+  against `FUNC_TAXONOMY` l1 leaves at the orchestrator),
+  productLineId (text FK to `product_lines.id`, present iff
+  `requestedTier='productLine'`), requestedBy user, reason, status
+  (`approval_status` enum: pending | approved | rejected | withdrawn),
+  decidedBy user, decidedAt, reviewerNote, timestamps. Indexes:
+  `(status, subCat, requestedTier, productLineId)` for the reviewer
+  queue; `(extensionId, status)` for the publisher view and the
+  at-most-one-pending guard the orchestrator enforces inside the
+  insert's transaction. A CHECK enforces the productLineId iff-rule.
+- **`approval_reviewers`** — the configurable
+  `(tier × subCat × productLineId?)` → user matrix. Multiple reviewers
+  per cell; first decision wins. **Two partial unique indexes** —
+  `(tier, sub_cat, product_line_id, user_id) WHERE tier='productLine'`
+  and `(tier, sub_cat, user_id) WHERE tier='company'` — express the
+  different per-tier arities self-documentingly; preferred over
+  `NULLS NOT DISTINCT`. CHECK enforces the iff-rule.
 
-The complete shape sits in `drizzle/0008_large_lizard.sql`.
+The original shape shipped in `drizzle/0008_large_lizard.sql`; the
+product-line dimension is in `drizzle/0009_last_naoko.sql`.
 
 ---
 
@@ -495,6 +511,7 @@ Each phase ends with a commit on its branch and a PR back to `main`. CI mirrors 
   - **P19** — split the detail page into hero / about / tabs / related + InstallCommand / ShareButton / SaveButton (#12).
   - **P20** — `nuxt-og-image` for social previews + Playwright browse / detail / navigation specs (#12).
   - **P21** — Official-tier approval workflow: `extensions.officialTier` column, `approval_requests` and `approval_reviewers` tables, `superAdmin` membership role, publisher dialog, reviewer queue, super-admin matrix editor; `badge` derived in `/api/v1` mappers so the CLI contract is preserved. Shipped via PR #41 merged as `a392c16` on 2026-06-07. Rationale lives in `docs/adr/0001-official-tier-approval-workflow.md`; schema details in §3 above.
+  - **P21a** — Product-line dimension for the approval workflow: new seeded `product_lines` table (wireless / datacom / terminals / cloud), `productLineId` column on `approval_reviewers`, `approval_requests`, and `extensions` (required iff `tier='productLine'`, CHECK-enforced). Reviewer matrix gains a (subCat × productLine) grid; `requireCellAdmin` lets company-tier admins of subCat X manage productLine cells of subCat X. Detail-page badge becomes "Wireless Official" / "无线官方" via `extensions.officialTier.productLineWith`; listing rail collapses both the tier and product-line narrows behind a single `OfficialTierPicker` popover (the original `OfficialTierPill` + `ProductLinePill` are removed) so the rail stays a single row — see the ADR-0001 2026-06-08-b followup. `/api/v1` contract still frozen. Rationale: ADR-0001 2026-06-08 addendum.
 
 The "P14" label is reused intentionally — the original P14 (Deploy) never executed before the rewrite-completion track began, so P14a was named to avoid clashing with the unfinished P14 deploy work.
 

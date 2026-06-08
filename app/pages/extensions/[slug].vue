@@ -8,8 +8,12 @@ const requestUrl = useRequestURL()
 
 const slug = computed(() => String(route.params.slug ?? ""))
 
+// Pass the current i18n locale through so the server resolves the
+// productLineLabel against the right bilingual column without having to
+// parse the accept-language header (locked decision #5 makes locales
+// always-prefixed in URLs, so the page already knows the canonical one).
 const { data } = await useFetch("/api/internal/extension-detail", {
-  query: computed(() => ({ slug: slug.value })),
+  query: computed(() => ({ slug: slug.value, locale: locale.value })),
 })
 
 if (!data.value || !data.value.ext) {
@@ -66,6 +70,7 @@ defineOgImageComponent("Frame", {
           :icon-emoji="ext.iconEmoji"
           :icon-color="ext.iconColor"
           :official-tier="ext.officialTier"
+          :product-line-label="ext.productLineLabel ?? null"
           :stars-avg="ext.starsAvg"
           :downloads-count="ext.downloadsCount"
           :updated-at="updatedAt"

@@ -113,11 +113,15 @@ describe("RequestOfficialDialog", () => {
   })
 
   it("submit POSTs to /api/internal/approvals/submit with the form body and emits 'submitted' on success", async () => {
+    // Switch to Company tier so the dialog doesn't require a productLine
+    // (which would need its own picker selection); existing-form coverage.
     fetchMock.mockResolvedValueOnce({ ok: true })
     const wrapper = await mountSuspended(RequestOfficialDialog, {
       props: PROPS,
       global: { stubs },
     })
+    const radios = wrapper.findAll<HTMLInputElement>('input[type="radio"]')
+    await radios[1]!.setValue(true)
     // Type a reason so we can prove it's threaded through and trimmed.
     const textarea = wrapper.find<HTMLTextAreaElement>("textarea")
     await textarea.setValue("  Used by every team in the org.  ")
@@ -132,8 +136,9 @@ describe("RequestOfficialDialog", () => {
         method: "POST",
         body: {
           extensionId: "ext-1",
-          requestedTier: "productLine",
+          requestedTier: "company",
           subCat: "docs",
+          productLineId: undefined,
           reason: "Used by every team in the org.",
         },
       }),
@@ -147,6 +152,8 @@ describe("RequestOfficialDialog", () => {
       props: PROPS,
       global: { stubs },
     })
+    const radios = wrapper.findAll<HTMLInputElement>('input[type="radio"]')
+    await radios[1]!.setValue(true)
     await wrapper.find("form").trigger("submit")
     await nextTick()
     const body = fetchMock.mock.calls[0]![1].body as Record<string, unknown>
@@ -161,6 +168,8 @@ describe("RequestOfficialDialog", () => {
       props: PROPS,
       global: { stubs },
     })
+    const radios = wrapper.findAll<HTMLInputElement>('input[type="radio"]')
+    await radios[1]!.setValue(true)
     await wrapper.find("form").trigger("submit")
     await nextTick()
     await nextTick()
@@ -176,6 +185,8 @@ describe("RequestOfficialDialog", () => {
       props: PROPS,
       global: { stubs },
     })
+    const radios = wrapper.findAll<HTMLInputElement>('input[type="radio"]')
+    await radios[1]!.setValue(true)
     await wrapper.find("form").trigger("submit")
     await nextTick()
     await nextTick()
@@ -188,10 +199,25 @@ describe("RequestOfficialDialog", () => {
       props: { ...PROPS, currentSubCat: null },
       global: { stubs },
     })
+    const radios = wrapper.findAll<HTMLInputElement>('input[type="radio"]')
+    await radios[1]!.setValue(true)
     expect(wrapper.find("#approvals-subCat").element.getAttribute("value") ?? "").toBe("")
     const submitBtn = wrapper.find('button[type="submit"]')
     expect(submitBtn.attributes("disabled")).toBeDefined()
     // Trigger anyway — the handler's canSubmit guard should short-circuit.
+    await wrapper.find("form").trigger("submit")
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it("default productLine tier requires a productLine — submit is disabled until one is picked", async () => {
+    const wrapper = await mountSuspended(RequestOfficialDialog, {
+      props: PROPS,
+      global: { stubs },
+    })
+    // Default tier is productLine, currentSubCat='docs' satisfies subCat,
+    // but the productLine select is empty so the submit stays disabled.
+    const submitBtn = wrapper.find('button[type="submit"]')
+    expect(submitBtn.attributes("disabled")).toBeDefined()
     await wrapper.find("form").trigger("submit")
     expect(fetchMock).not.toHaveBeenCalled()
   })

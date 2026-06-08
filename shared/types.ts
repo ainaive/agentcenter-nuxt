@@ -43,6 +43,10 @@ export interface Extension {
   // fresh DB. Production rows pick this up from the approval workflow,
   // never from this field.
   officialTier?: "productLine" | "company" | null
+  // Required iff `officialTier === "productLine"` (the DB CHECK enforces
+  // the iff-rule). The seed defaults to "wireless" when unset to keep
+  // pre-existing rows visible without picking favourites.
+  productLineId?: "wireless" | "datacom" | "terminals" | "cloud" | null
   downloads: number
   stars: number
   color: string
