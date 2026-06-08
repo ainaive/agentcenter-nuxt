@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "9fa870788bd2",
+  "strategy": "manual-commit",
+  "branch": "feat/staging-seed-guardrail",
+  "checkpoints_count": 0,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/9f/a870788bd2/0/metadata.json",
+      "transcript": "/9f/a870788bd2/0/full.jsonl",
+      "content_hash": "/9f/a870788bd2/0/content_hash.txt",
+      "prompt": "/9f/a870788bd2/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 99,
+    "cache_creation_tokens": 264869,
+    "cache_read_tokens": 14158395,
+    "output_tokens": 53721,
+    "api_call_count": 69
+  }
+}
