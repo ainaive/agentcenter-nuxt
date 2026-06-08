@@ -1,0 +1,13 @@
+Let's optimize the Approval Administrator Matrix as follows:
+
+1. Separation by Extension Type: Configuration should be distinguished by extension types (e.g., MCP, CLI, and Skill as separate types). On the matrix settings page, users can toggle between different types via buttons to display and configure their respective tables.
+2. Consolidated Horizontal Axis: Merge the Company Level and Product Lines into the horizontal axis so they are displayed and configured within a single, unified table.
+3. Hierarchical Vertical Axis: Organize the vertical axis by categories with a multi-tiered hierarchy. The first tier is "All", the second tier represents "Macro-categories", and the third tier represents "Micro-categories" (e.g., All $\rightarrow$ System Design $\rightarrow$ Requirements Analysis).
+4. Hierarchical Permission Inheritance: Permissions for configuring administrators follow a top-down inheritance rule:Category Hierarchy: 
+    - Administrators of the "All" category can assign reviewers for all other sub-categories. Macro-category administrators can assign reviewers for their micro-categories (e.g., the System Design admin can configure the Requirements Analysis admin).
+    - Tier Hierarchy: Company-level administrators can configure product-line administrators. For instance, the Company-Level Admin for "All" can assign reviewers for all product lines (e.g., Wireless). The Company-Level Admin for "System Design" can configure System Design reviewers across all product lines (e.g., Wireless).
+    - Cross-Dimensional Rule: Similarly, the Wireless Admin for the "All" category has the authority to configure the Wireless System Design admin as well as admins for any other sub-categories within the Wireless product line.
+
+---
+
+ok, go ahead
