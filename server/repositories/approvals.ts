@@ -224,7 +224,9 @@ export async function applyWithdraw(
 // orchestrator is the only legitimate writer; keeping the call adjacent to
 // the request mutation makes that intent obvious. The DB CHECK enforces
 // productLineId is non-null iff tier='productLine', so a bad pair from a
-// caller is rejected at the boundary.
+// caller is rejected at the boundary. Also clears the revocation audit
+// fields in the same UPDATE — the invariant is "you're either currently
+// Official with no pending revocation explanation, or Unofficial".
 export async function setExtensionOfficialTier(
   db: Transactable,
   extensionId: string,
@@ -233,8 +235,51 @@ export async function setExtensionOfficialTier(
 ): Promise<void> {
   await db
     .update(extensions)
-    .set({ officialTier: tier, productLineId, updatedAt: new Date() })
+    .set({
+      officialTier: tier,
+      productLineId,
+      revokedAt: null,
+      revokedByUserId: null,
+      revocationNote: null,
+      updatedAt: new Date(),
+    })
     .where(eq(extensions.id, extensionId))
+}
+
+// Companion mutator for the revoke path — atomically clears
+// `officialTier` and `productLineId` while writing the audit trio
+// (`revokedAt`, `revokedByUserId`, `revocationNote`). The orchestrator's
+// pre-check already confirmed the row was Official; this method's
+// returned affected-row count is the race-safe equivalent of a CAS,
+// surfacing "someone else already revoked / re-approved" as a 0.
+export interface RevocationPatch {
+  revokedAt: Date
+  revokedByUserId: string
+  revocationNote: string
+}
+export async function applyRevocation(
+  db: Transactable,
+  extensionId: string,
+  patch: RevocationPatch,
+): Promise<number> {
+  const updated = await db
+    .update(extensions)
+    .set({
+      officialTier: null,
+      productLineId: null,
+      revokedAt: patch.revokedAt,
+      revokedByUserId: patch.revokedByUserId,
+      revocationNote: patch.revocationNote,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(extensions.id, extensionId),
+        sql`${extensions.officialTier} IS NOT NULL`,
+      ),
+    )
+    .returning({ id: extensions.id })
+  return updated.length
 }
 
 // Bulk lookup of `officialTier` for a set of extensions — used by the

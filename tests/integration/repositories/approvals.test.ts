@@ -437,6 +437,82 @@ describe("approvals repository", () => {
       const map = await approvalsRepo.findTiersForExtensions(db, [])
       expect(map.size).toBe(0)
     })
+
+    it("clears any prior revocation audit fields when re-stamping a tier", async () => {
+      // Simulate the cycle: extension was revoked, then publisher re-applied
+      // and a reviewer approves. The next setExtensionOfficialTier call must
+      // clear the revocation trio so the publisher dashboard's annotation
+      // disappears automatically.
+      const revokedAt = new Date("2026-06-09T10:00:00Z")
+      await db
+        .update(extensions)
+        .set({
+          revokedAt,
+          revokedByUserId: "u-rev",
+          revocationNote: "policy violation",
+        })
+        .where(eq(extensions.id, "ext-a"))
+
+      await approvalsRepo.setExtensionOfficialTier(db, "ext-a", "company", null)
+
+      const [row] = await db
+        .select({
+          officialTier: extensions.officialTier,
+          revokedAt: extensions.revokedAt,
+          revokedByUserId: extensions.revokedByUserId,
+          revocationNote: extensions.revocationNote,
+        })
+        .from(extensions)
+        .where(eq(extensions.id, "ext-a"))
+      expect(row?.officialTier).toBe("company")
+      expect(row?.revokedAt).toBeNull()
+      expect(row?.revokedByUserId).toBeNull()
+      expect(row?.revocationNote).toBeNull()
+    })
+  })
+
+  describe("applyRevocation", () => {
+    it("clears tier + productLineId and writes the audit trio", async () => {
+      await approvalsRepo.setExtensionOfficialTier(
+        db,
+        "ext-a",
+        "productLine",
+        "wireless",
+      )
+      const revokedAt = new Date("2026-06-09T12:00:00Z")
+      const affected = await approvalsRepo.applyRevocation(db, "ext-a", {
+        revokedAt,
+        revokedByUserId: "u-rev",
+        revocationNote: "approved by mistake",
+      })
+      expect(affected).toBe(1)
+
+      const [row] = await db
+        .select({
+          officialTier: extensions.officialTier,
+          productLineId: extensions.productLineId,
+          revokedAt: extensions.revokedAt,
+          revokedByUserId: extensions.revokedByUserId,
+          revocationNote: extensions.revocationNote,
+        })
+        .from(extensions)
+        .where(eq(extensions.id, "ext-a"))
+      expect(row?.officialTier).toBeNull()
+      expect(row?.productLineId).toBeNull()
+      expect(row?.revokedAt?.toISOString()).toBe(revokedAt.toISOString())
+      expect(row?.revokedByUserId).toBe("u-rev")
+      expect(row?.revocationNote).toBe("approved by mistake")
+    })
+
+    it("returns 0 affected rows when the extension is already Unofficial (race lost)", async () => {
+      // Extension starts Unofficial — no tier was ever set in beforeEach.
+      const affected = await approvalsRepo.applyRevocation(db, "ext-a", {
+        revokedAt: new Date(),
+        revokedByUserId: "u-rev",
+        revocationNote: "redundant",
+      })
+      expect(affected).toBe(0)
+    })
   })
 
   describe("isReviewerForCell", () => {
