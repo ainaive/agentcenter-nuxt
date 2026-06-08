@@ -12,6 +12,29 @@ const root = useTemplateRef<HTMLDivElement>("root")
 
 const user = computed(() => session.value.data?.user ?? null)
 
+// Admin entries surface on the dropdown for reviewers + super-admins.
+// The endpoint returns safe defaults for anonymous callers so the fetch
+// is harmless when no one is signed in. UserButton lives in the
+// persistent layout header, so we watch the session-user id and refresh
+// after sign-in / sign-out events that don't trigger a full nav.
+const { data: adminMe, refresh: refreshAdminMe } = await useFetch(
+  "/api/internal/admin/me",
+  {
+    default: () => ({
+      isSuperAdmin: false,
+      isReviewer: false,
+      cells: [] as unknown[],
+    }),
+  },
+)
+
+watch(
+  () => session.value.data?.user?.id ?? null,
+  (next, prev) => {
+    if (next !== prev) refreshAdminMe()
+  },
+)
+
 function close() {
   open.value = false
 }
@@ -78,6 +101,26 @@ async function handleSignOut() {
         >
           {{ t("auth.userMenu.profile") }}
         </NuxtLink>
+        <template v-if="adminMe.isReviewer">
+          <div class="my-1 border-t border-(--color-border)" role="separator" />
+          <NuxtLink
+            :to="localePath('/admin/approvals')"
+            class="block px-3 py-2 text-sm rounded text-(--color-ink) hover:bg-(--color-sidebar)"
+            role="menuitem"
+            @click="close"
+          >
+            {{ t("auth.userMenu.adminApprovals") }}
+          </NuxtLink>
+          <NuxtLink
+            :to="localePath('/admin/reviewers')"
+            class="block px-3 py-2 text-sm rounded text-(--color-ink) hover:bg-(--color-sidebar)"
+            role="menuitem"
+            @click="close"
+          >
+            {{ t("auth.userMenu.adminReviewers") }}
+          </NuxtLink>
+          <div class="my-1 border-t border-(--color-border)" role="separator" />
+        </template>
         <button
           type="button"
           class="flex w-full items-center gap-2 px-3 py-2 text-sm rounded text-(--color-ink) hover:bg-(--color-sidebar) text-left"
