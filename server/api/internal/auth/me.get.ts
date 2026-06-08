@@ -9,6 +9,11 @@
 // middleware can branch on the user shape instead of catching errors.
 
 export default defineEventHandler(async (event) => {
+  // Per-user, cookie-dependent payload — must not be cached by browsers,
+  // intermediary proxies, or the Vercel edge. `Vary: Cookie` defends
+  // against shared-cache cross-session bleed.
+  setResponseHeader(event, "Cache-Control", "private, no-store")
+  setResponseHeader(event, "Vary", "Cookie")
   const user = await getSessionUser(event)
   return { user: user ?? null }
 })
