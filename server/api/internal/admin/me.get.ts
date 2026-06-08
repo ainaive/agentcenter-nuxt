@@ -16,6 +16,10 @@ import {
 // bounded to what the viewer actually covers; an empty array means "no
 // cells" rather than "any cell allowed".
 export default defineEventHandler(async (event) => {
+  // Per-user, cookie-dependent payload — same caching contract as
+  // /api/internal/auth/me.
+  setResponseHeader(event, "Cache-Control", "private, no-store")
+  setResponseHeader(event, "Vary", "Cookie")
   const user = await getSessionUser(event)
   if (!user) {
     return { isSuperAdmin: false, isReviewer: false, cells: [] }

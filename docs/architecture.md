@@ -191,13 +191,19 @@ Browser ── POST /api/auth/sign-up/email ──▶ Nuxt
               ├─ Better Auth: hash, insert users row, mint session, Set-Cookie
               └─ 200 { user, session }
 
-(then) require-onboard middleware:
-  ├─ SSR branch:  auth.getSession({ headers: toFetchHeaders(useRequestHeaders(["cookie"])) })
-  └─ Client:      auth.useSession() reactive ref
-  if user.defaultDeptId is null → navigateTo(localePath("/onboard"))
+(then) require-auth + require-onboard middlewares:
+  ├─ SSR branch:    useRequestFetch()("/api/internal/auth/me")
+  │                 └─ handler calls getSessionUser(event) directly
+  └─ Client branch: await useAuth().getSession()       ← imperative, not useSession()
+  if !user                         → navigateTo("/sign-in?next=<path>")
+  if user.defaultDeptId is null    → navigateTo("/onboard")
 ```
 
-`require-auth` middleware redirects unauthenticated requests to `/sign-in?next=<originalPath>`. Both middleware are named, not global — pages opt in via `definePageMeta({ middleware: ["require-auth", "require-onboard"] })`.
+`require-auth` redirects unauthenticated requests to `/sign-in?next=<originalPath>`. `require-onboard` redirects users without a `defaultDeptId` to `/onboard`. Both are named, not global — pages opt in via `definePageMeta({ middleware: ["require-auth", "require-onboard"] })`.
+
+**Why `useRequestFetch()` on the server.** Plain `$fetch` does not auto-forward the inbound request's cookies into Nitro's local handler dispatch, so SSR session lookups would land at the `me` handler with no `Cookie` header and the user would look anonymous. `useRequestFetch()` returns `event.$fetch` (h3's `fetchWithEvent` wrapper) which merges the original request's headers — `cookie` included; it's not in h3's ignored-headers list — into the dispatched call. The middleware never round-trips through better-auth's `/api/auth/get-session` from SSR: we hit our own `/api/internal/auth/me`, which calls `getSessionUser(event)` in-process.
+
+**Why the imperative `auth.getSession()` on the client.** Nuxt re-runs route middleware on the client during hydration. Better Auth's `auth.useSession()` is a *reactive nanostore* — initialized to `{ data: null, isPending: true }` and only fetches `/api/auth/get-session` asynchronously on mount. A middleware reading the store synchronously sees `data: null`, concludes "no user", and bounces to `/sign-in` *despite the user being signed in*. The imperative `auth.getSession()` awaits the actual fetch and resolves with the session data, so the middleware can decide correctly. `useSession()` remains the right tool for components that can re-render when the atom resolves (e.g. `UserButton.vue`).
 
 ### Auth (CLI device-code)
 

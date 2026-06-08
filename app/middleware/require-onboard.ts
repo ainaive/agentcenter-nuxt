@@ -1,30 +1,36 @@
-type UserShape = { defaultDeptId?: string | null }
+// SSR session lookup goes through `useRequestFetch()` against the
+// thin `/api/internal/auth/me` endpoint — see require-auth.ts for the
+// rationale.
 
-function toFetchHeaders(raw: Record<string, string | undefined>): Headers {
-  const headers = new Headers()
-  for (const [key, value] of Object.entries(raw)) {
-    if (value !== undefined) headers.append(key, value)
-  }
-  return headers
-}
+type UserShape = { id: string; defaultDeptId?: string | null }
+type MeResponse = { user: UserShape | null }
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  const auth = useAuth()
+  let rawUser: UserShape | null = null
 
-  let rawUser: unknown = null
   if (import.meta.server) {
-    const result = await auth.getSession({
-      fetchOptions: { headers: toFetchHeaders(useRequestHeaders(["cookie"])) },
-    })
-    rawUser = result.data?.user ?? null
+    try {
+      const { user } = await useRequestFetch()<MeResponse>(
+        "/api/internal/auth/me",
+      )
+      rawUser = user
+    } catch {
+      rawUser = null
+    }
   } else {
-    const session = auth.useSession()
-    rawUser = session.value.data?.user ?? null
+    // See require-auth.ts: `useSession()` is empty on first mount. Use
+    // the imperative `getSession()` so the middleware actually waits
+    // for the session to resolve.
+    try {
+      const result = await useAuth().getSession()
+      rawUser = (result?.data?.user as UserShape | undefined) ?? null
+    } catch {
+      rawUser = null
+    }
   }
 
   if (!rawUser) return
-  const user = rawUser as UserShape
-  if (user.defaultDeptId) return
+  if (rawUser.defaultDeptId) return
 
   const localePath = useLocalePath()
   if (to.path === localePath("/onboard")) return
