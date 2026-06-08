@@ -1,0 +1,41 @@
+push and open a pr
+
+---
+
+check about the code reviews on the pr
+
+---
+
+the pr is clean, let's merge it
+
+---
+
+update the main and delete used branches
+
+---
+
+update the main and delete unused branches
+
+---
+
+now I run "SEED_PASSWORD=PASSWORD bun run db:seed" to seed the user's passwords in dev mode, but how can I seed the data in production on vercel?
+
+---
+
+push and open a pr
+
+---
+
+check the code reviews on the pr
+
+---
+
+the pr is clean, let's merge it
+
+---
+
+delete the merged branches
+
+---
+
+I used the vercel' production env
