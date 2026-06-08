@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "760f79587881",
+  "strategy": "manual-commit",
+  "branch": "feat/p9-tier-revocation",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "server/utils/approvals.test.ts",
+    "server/utils/approvals.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/76/0f79587881/0/metadata.json",
+      "transcript": "/76/0f79587881/0/full.jsonl",
+      "content_hash": "/76/0f79587881/0/content_hash.txt",
+      "prompt": "/76/0f79587881/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 513,
+    "cache_creation_tokens": 1628641,
+    "cache_read_tokens": 144384435,
+    "output_tokens": 275510,
+    "api_call_count": 433
+  }
+}
