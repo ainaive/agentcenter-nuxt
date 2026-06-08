@@ -1,0 +1,35 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "3304bfd53ab7",
+  "session_id": "27220543-3bf3-4fc6-ab7b-7992e7d1f54b",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-08T13:13:12.740573Z",
+  "branch": "docs/clarify-vercel-env-selection",
+  "checkpoints_count": 1,
+  "files_touched": [],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "270f20874792",
+  "token_usage": {
+    "input_tokens": 277,
+    "cache_creation_tokens": 523107,
+    "cache_read_tokens": 32017490,
+    "output_tokens": 123072,
+    "api_call_count": 182
+  },
+  "session_metrics": {
+    "turn_count": 14
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 1,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".gitignore": 1
+      }
+    }
+  ]
+}

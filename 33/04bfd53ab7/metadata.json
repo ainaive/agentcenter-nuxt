@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "3304bfd53ab7",
+  "strategy": "manual-commit",
+  "branch": "docs/clarify-vercel-env-selection",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/33/04bfd53ab7/0/metadata.json",
+      "transcript": "/33/04bfd53ab7/0/full.jsonl",
+      "content_hash": "/33/04bfd53ab7/0/content_hash.txt",
+      "prompt": "/33/04bfd53ab7/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 277,
+    "cache_creation_tokens": 523107,
+    "cache_read_tokens": 32017490,
+    "output_tokens": 123072,
+    "api_call_count": 182
+  }
+}
