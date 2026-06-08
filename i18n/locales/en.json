@@ -184,6 +184,12 @@
     "tierPicker": {
       "triggerLabel": "Official"
     },
+    "subCatPicker": {
+      "triggerLabel": "Category"
+    },
+    "subCat": {
+      "all": "All categories"
+    },
     "chips": {
       "all": "All",
       "trending": "Trending",
