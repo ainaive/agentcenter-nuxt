@@ -10,13 +10,29 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { users } from "./auth";
-import { extensions, officialTierEnum, productLines } from "./extension";
+import {
+  extensionCategoryEnum,
+  extensions,
+  officialTierEnum,
+  productLines,
+} from "./extension";
 
 export const approvalStatusEnum = pgEnum("approval_status", [
   "pending",
   "approved",
   "rejected",
   "withdrawn",
+]);
+
+// Vertical-axis level of a matrix admin assignment.
+// `all` is the wildcard root (categoryKey='*'); `macro` is a FUNC_TAXONOMY
+// l1 key (9 entries); `micro` is an l2 key (27 entries). See
+// `shared/taxonomy.ts` for the keyspaces and the ancestor walk used by
+// the cell-admin gate and the routing fan-out.
+export const adminCategoryLevelEnum = pgEnum("admin_category_level", [
+  "all",
+  "macro",
+  "micro",
 ]);
 
 export const approvalRequests = pgTable(
@@ -26,14 +42,22 @@ export const approvalRequests = pgTable(
     extensionId: text()
       .notNull()
       .references(() => extensions.id, { onDelete: "cascade" }),
+    // Snapshot of the extension's category at submission time. Drives the
+    // per-type matrix toggle and is part of the cell key, so we freeze it
+    // here rather than joining `extensions` on every queue scan.
+    extensionCategory: extensionCategoryEnum().notNull(),
     requestedTier: officialTierEnum().notNull(),
-    // Snapshot of the functional subCat at submission time. Source of truth is
-    // FUNC_TAXONOMY in shared/taxonomy.ts; validated against the flattened l1
-    // key set at the validator layer.
+    // Snapshot of the functional subCat (FUNC_TAXONOMY l1 key) at
+    // submission. Validator layer enforces membership; storing as text
+    // means a taxonomy edit doesn't require a migration.
     subCat: text().notNull(),
+    // Snapshot of the l2 key (FUNC_TAXONOMY l2). Nullable because not
+    // every extension classifies down to l2; routing fan-out simply
+    // omits the `micro` candidate when l2 is null.
+    l2: text(),
     // Product line snapshot — required iff requestedTier='productLine'.
-    // RESTRICT on delete keeps the audit trail honest: a product line cannot
-    // disappear while requests still reference it.
+    // RESTRICT on delete keeps the audit trail honest: a product line
+    // cannot disappear while requests still reference it.
     productLineId: text().references(() => productLines.id, {
       onDelete: "restrict",
     }),
@@ -51,17 +75,28 @@ export const approvalRequests = pgTable(
     updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
-    // Reviewer queue: pending rows in a given cell, ordered by createdAt.
-    // productLineId trails so company-tier rows (productLineId IS NULL) still
-    // collapse onto the same prefix; productLine-tier scans use the full key.
+    // Reviewer queue: pending rows in a given cell. Extension category
+    // leads since the matrix toggles on it; l2 trails so company-tier
+    // rows still collapse onto the same prefix.
     index("idx_approval_status_cell").on(
       t.status,
+      t.extensionCategory,
       t.subCat,
       t.requestedTier,
       t.productLineId,
+      t.l2,
     ),
-    // Publisher "my requests" view and the at-most-one-pending guard.
+    // Publisher "my requests" view.
     index("idx_approval_ext_status").on(t.extensionId, t.status),
+    // At-most-one-pending invariant: the orchestrator's read+CAS
+    // pattern still applies on the happy path, but two concurrent
+    // `submitRequest` calls can both observe "no pending" before
+    // either commits. The partial unique index closes that race at
+    // the DB layer — the second insert hits 23505 and the
+    // orchestrator translates it back to `duplicate_pending_request`.
+    uniqueIndex("approval_requests_one_pending_uq")
+      .on(t.extensionId)
+      .where(sql`status = 'pending'`),
     // Shape invariant: productLineId is present iff requestedTier='productLine'.
     check(
       "approval_requests_pl_shape_chk",
@@ -71,45 +106,90 @@ export const approvalRequests = pgTable(
   ],
 );
 
-export const approvalReviewers = pgTable(
-  "approval_reviewers",
+// Matrix admin cells. A row in this table grants both (a) admin authority
+// over its covered shadow (descendant cells on either the tier-column or
+// category-level axis) and (b) the duty to decide approval requests routed
+// into that shadow. Replaces the pre-redesign `approval_reviewers` (which
+// had a flat 3-coord cell key); see ADR-0001's "Update 2026-06-09b" entry
+// for the rationale.
+//
+// Cell key (5-dim):
+//   (extensionCategory, tier, productLineId?, categoryLevel, categoryKey).
+//
+// Shape invariants (mirroring the iff-pattern used elsewhere):
+//   - productLineId is present iff tier='productLine'.
+//   - categoryKey = '*' iff categoryLevel='all'.
+//
+// Routing fan-out happens at the JOIN — `listPendingForUser` in
+// `server/repositories/approvals.ts` joins approval_admins to
+// approval_requests on the cover relation in one SQL clause.
+export const approvalAdmins = pgTable(
+  "approval_admins",
   {
     id: text().primaryKey(),
+    extensionCategory: extensionCategoryEnum().notNull(),
     tier: officialTierEnum().notNull(),
-    // Same FUNC_TAXONOMY l1 key as approvalRequests.subCat — text rather
-    // than enum so adding a taxonomy leaf doesn't require a migration.
-    subCat: text().notNull(),
-    // Product line this reviewer is scoped to. Required iff tier='productLine',
-    // null when tier='company'. CHECK enforces the shape; the unique behaviour
-    // for each tier is expressed below as two partial indexes.
     productLineId: text().references(() => productLines.id, {
       onDelete: "restrict",
     }),
+    categoryLevel: adminCategoryLevelEnum().notNull(),
+    // '*' when categoryLevel='all', otherwise an l1 (macro) or l2 (micro)
+    // key from FUNC_TAXONOMY. Membership in the right keyspace is enforced
+    // at the validator layer — same as approval_requests.subCat — so
+    // adding a taxonomy leaf stays a code-only change.
+    categoryKey: text().notNull(),
     userId: text()
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
-    // Tier-aware uniqueness. ProductLine cells include productLineId in the
-    // key; company cells do not. Two partial indexes are clearer than relying
-    // on NULLS NOT DISTINCT and let each tier's arity stand on its own.
-    uniqueIndex("approval_reviewers_pl_cell_user_uq")
-      .on(t.tier, t.subCat, t.productLineId, t.userId)
+    // Tier-aware uniqueness. ProductLine cells include productLineId in
+    // the key; company cells do not. Two partial indexes are clearer than
+    // relying on NULLS NOT DISTINCT and let each tier's arity stand on
+    // its own in `\d`.
+    uniqueIndex("approval_admins_pl_uq")
+      .on(
+        t.extensionCategory,
+        t.tier,
+        t.productLineId,
+        t.categoryLevel,
+        t.categoryKey,
+        t.userId,
+      )
       .where(sql`tier = 'productLine'`),
-    uniqueIndex("approval_reviewers_co_cell_user_uq")
-      .on(t.tier, t.subCat, t.userId)
+    uniqueIndex("approval_admins_co_uq")
+      .on(
+        t.extensionCategory,
+        t.tier,
+        t.categoryLevel,
+        t.categoryKey,
+        t.userId,
+      )
       .where(sql`tier = 'company'`),
-    index("idx_approval_reviewers_cell").on(
+    // Routing fan-out scan: queue lookups OR over (≤6) candidate cells
+    // with the extensionCategory + tier-column prefix.
+    index("idx_admins_cell").on(
+      t.extensionCategory,
       t.tier,
-      t.subCat,
       t.productLineId,
+      t.categoryLevel,
+      t.categoryKey,
     ),
-    // Shape invariant: productLineId is present iff tier='productLine'.
+    // Covering-row probe for `requireCellAdmin`: starts at (userId) and
+    // narrows to the ≤6 candidate cells.
+    index("idx_admins_user").on(t.userId),
+    // Column-tier shape (same as approval_requests).
     check(
-      "approval_reviewers_pl_shape_chk",
+      "approval_admins_pl_shape_chk",
       sql`(tier = 'productLine' AND product_line_id IS NOT NULL)
         OR (tier = 'company' AND product_line_id IS NULL)`,
+    ),
+    // Category-level shape: '*' iff level='all'.
+    check(
+      "approval_admins_level_shape_chk",
+      sql`(category_level = 'all' AND category_key = '*')
+        OR (category_level <> 'all' AND category_key <> '*')`,
     ),
   ],
 );

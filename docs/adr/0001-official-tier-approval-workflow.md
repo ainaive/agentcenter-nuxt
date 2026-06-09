@@ -223,6 +223,119 @@ applied filters, unchanged. Cross-references for the followup:
   reusing the existing `filters.tierLabel` / `filters.productLineLabel`
   keys as popover section headers.
 
+## Update 2026-06-09b — matrix redesign (ext-type × 3-tier × column)
+
+The 2026-06-08 + revocation updates left the matrix at 45 cells —
+`9 subCats × (Company + 4 ProductLines)` — with a flat one-level
+category axis (FUNC_TAXONOMY l1 only) and exact-match routing. Two
+limitations surfaced in practice:
+
+1. **No per-extension-type split**. A Skills reviewer and an MCP
+   reviewer overlap if they care about the same subCat, but they
+   review fundamentally different artifacts. The matrix had no way
+   to route them separately.
+2. **Category granularity was either too coarse (l1 only) or
+   inexpressive (l2 was stored on the extension but ignored by
+   routing)**. A reviewer who only knows `reqAnalysis` couldn't sign
+   up just for that leaf; they had to take the whole `systemDesign`.
+
+Refinements (do not revoke the four locked decisions; they remain
+accurate):
+
+- **Decision #1 widens to 5 coordinates**: routing key is now
+  `(extensionCategory × tier × productLineId? × categoryLevel × categoryKey)`.
+  `extensionCategory` reuses the existing `extension_category` enum
+  (`skills | mcp | slash | plugins`); `categoryLevel` is a new
+  `admin_category_level` enum (`all | macro | micro`); `categoryKey`
+  is `'*'` at the `all` level, an l1 leaf at `macro`, an l2 leaf at
+  `micro`. The reviewer table is renamed `approval_admins` because a
+  row now grants both review duty AND admin authority over its
+  covered shadow — see the cover relation below.
+- **Decision #4 widens via a 2-D cover relation**. Matrix edits are
+  gated by `requireCellAdmin(event, cell)` which returns true iff
+  the caller holds an admin row whose covered shadow includes the
+  target cell:
+    - **Column-tier dim** — `(company, null) ⊇ (productLine, X)` for
+      any X. A company admin can configure product-line admins. A
+      PL admin can only configure same-PL cells.
+    - **Category dim** — `(all, '*')` covers everything; `(macro, l1)`
+      covers itself + its 3 l2 children; `(micro, l2)` covers only
+      itself.
+  Cross-extensionCategory authority does NOT exist — each ext-type
+  matrix is independent. Super-admins still bypass the gate.
+- **Routing is fan-out on the category dim, EXACT on column-tier**.
+  A pending request at `(E, T, C, l1, l2)` routes to any admin whose
+  `(extensionCategory, tier, productLineId)` matches exactly AND
+  whose `(categoryLevel, categoryKey)` covers the request's
+  `(macro=l1, micro=l2)` via the ancestor walk. Crucially, a Company
+  admin does NOT review Product-Line requests — the company →
+  product-line widening applies to admin authority only. Routing is
+  implemented as a single JOIN in
+  `approvalsRepo.listPendingForUser`; super-admins read
+  `listAllPending` instead. Request rows snapshot `extensionCategory`
+  and `l2` at submission time so the JOIN doesn't need a hop through
+  `extensions`.
+- **`approval_requests` columns added**: `extension_category` (NOT
+  NULL, mirrors `extensions.category` at submission time) and `l2`
+  (nullable — extensions without an l2 classification still submit;
+  routing fan-out simply omits the `micro` candidate for those).
+  Updated `idx_approval_status_cell` carries both.
+
+Implementation notes:
+
+- **Clean replacement migration** (`0012_matrix_redesign.sql`): drops
+  `approval_reviewers` and `approval_requests`, recreates both under
+  the new shape. Pre-launch product per CLAUDE.md — current cells
+  are seed data, so no backfill story is owed.
+- **Partial unique indexes on `approval_admins`**: two indexes, one
+  per tier (`approval_admins_pl_uq` and `approval_admins_co_uq`),
+  each carrying exactly the columns that participate. Same pattern
+  as the 2026-06-08 indexes, just widened to the 5-coord key.
+- **`/api/v1` contract is unchanged.** The CLI still sees `badge:
+  "official"` derived from `officialTier != null`; extensionCategory
+  is already exposed on extension rows; l2 is not surfaced. A future
+  v2 break could expose the new fields; until then the CLI sees
+  nothing new.
+- **Auth gate single-query**: `findCoveringAdmin` builds the cover
+  relation in code (≤2 column shapes × ≤3 category shapes = ≤6 cell
+  candidates), then ORs them into one indexed probe on
+  `idx_admins_user`. Same approach as `isAdminCoveringRequest` for
+  the decide-path gate, so coverage logic lives in one place.
+- **JOIN-driven queue**: `listPendingForUser` is a single SQL
+  statement that expresses the cover relation directly. `DISTINCT`
+  on `r.id` de-dupes when the same user holds two admin rows that
+  both cover a request — the same dedup pattern as today's
+  `listReviewerQueue` Set, just promoted into SQL.
+
+What we gave up:
+
+- The l2 keyspace doubles the row count of any admin who wants
+  micro-level granularity. We accept this — the matrix UI groups
+  micros under their macros (`shared/taxonomy.ts:l2KeysFor`) so a
+  full Skills × Wireless reviewer at the l2 level is 27 explicit
+  rows, not the implicit 1.
+- Routing's exact-match on column-tier means a Company admin who
+  also wants to be in the PL request queue must hold both an admin
+  row at Company AND one at each PL they care about. We accept this
+  because the alternative — implicit Company → PL routing — would
+  silently aggregate company admins into every PL queue, which read
+  worse in early prototyping than the explicit assignment.
+
+Cross-references for this update:
+
+- Migration: `drizzle/0012_matrix_redesign.sql`
+- Schema: `shared/db/schema/approval.ts` (approvalAdmins,
+  approvalRequests with extensionCategory + l2),
+  `shared/taxonomy.ts` (l1/l2 helpers + `categoryAncestors`)
+- Repository rename: `server/repositories/admins.ts` (was `reviewers.ts`)
+- Auth: `server/utils/auth.ts:requireCellAdmin` (5-coord)
+- Orchestrator: `server/utils/approvals.ts` (submit snapshots
+  category + l2; decide path uses `isAdminCoveringRequest`; queue
+  uses `listPendingForUser`/`listAllPending`)
+- Validators: `shared/validators/approvals.ts:AssignAdminSchema`
+- UI: `app/components/approvals/ReviewerMatrix.vue` (unified table
+  with ext-type toggle + 3-tier rows — lands in the follow-up commit)
+
 ## Update 2026-06-09 — tier revocation
 
 The original ADR called out tier revocation as the most load-bearing

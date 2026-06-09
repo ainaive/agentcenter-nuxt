@@ -2,7 +2,7 @@
 // state the publisher and reviewer UIs render, so a freshly-seeded dev
 // DB lights up `/admin/approvals`, the publisher dashboard's "Awaiting
 // review" pill, and `/profile?section=requests` without any manual
-// submit/decide cycle. Mirrors `approval-reviewers.ts`'s shape: emails
+// submit/decide cycle. Mirrors `approval-admins.ts`'s shape: emails
 // and slugs are resolved by `scripts/seed.ts` against the rows it just
 // inserted, with warnings for any reference that doesn't match.
 //

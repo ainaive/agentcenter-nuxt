@@ -5,15 +5,17 @@ import { createError, getRequestHeaders, type H3Event } from "h3"
 import type { OfficialTier } from "~~/shared/approvals/state"
 
 import {
-  isCompanyAdminForSubCat,
+  findCoveringAdmin,
   isSuperAdmin,
-} from "~~/server/repositories/reviewers"
+} from "~~/server/repositories/admins"
 import {
   accounts,
   sessions,
   users,
   verifications,
 } from "~~/shared/db/schema/auth"
+import type { CategoryLevel } from "~~/shared/taxonomy"
+import type { ExtensionCategory } from "~~/shared/types"
 
 import { useDb } from "./db"
 
@@ -96,8 +98,8 @@ export async function requireUser(event: H3Event): Promise<SessionUser> {
 // Super-admin gate for the reviewer-matrix admin surface. Returns the
 // session user when they hold any membership with role='superAdmin';
 // throws 401 when unauthenticated and 403 otherwise. The membership
-// lookup goes through the reviewers repo so the policy lives in one
-// place — see `server/repositories/reviewers.ts`.
+// lookup goes through the admins repo so the policy lives in one
+// place — see `server/repositories/admins.ts`.
 export async function requireSuperAdmin(event: H3Event): Promise<SessionUser> {
   const user = await requireUser(event)
   if (!(await isSuperAdmin(useDb(), user.id))) {
@@ -106,27 +108,30 @@ export async function requireSuperAdmin(event: H3Event): Promise<SessionUser> {
   return user
 }
 
-// Cell-aware authorisation for matrix edits. Encodes the delegation rule
-// from ADR-0001 (2026-06-08 addendum):
+// Cell-aware authorisation for matrix edits, redesigned around the
+// 5-coord cell key. Encodes ADR-0001's 2026-06-09b redesign:
 //   - super-admins can edit every cell;
-//   - company-tier admins of subCat X may manage productLine cells of
-//     subCat X (any productLine);
-//   - company-tier cells stay super-admin-only.
-// Callers pass the cell coordinates explicitly — for `unassign`, load the
+//   - any user who holds an admin row whose covered shadow includes
+//     the target cell can edit it. Coverage is the 2-dim cover
+//     relation: (T,C) ⊇ (T',C') AND (L,K) ⊇ (L',K'), where ⊇ on the
+//     column-tier axis is "company covers all PLs (and itself)" and
+//     ⊇ on the category axis is the all → macro → micro ancestor walk.
+// Callers pass the target cell explicitly — for `unassign`, load the
 // target row first so the gate authorises against that row's coordinates
 // rather than the caller's request body.
 export async function requireCellAdmin(
   event: H3Event,
-  cell: { tier: OfficialTier; subCat: string; productLineId: string | null },
+  cell: {
+    extensionCategory: ExtensionCategory
+    tier: OfficialTier
+    productLineId: string | null
+    categoryLevel: CategoryLevel
+    categoryKey: string
+  },
 ): Promise<SessionUser> {
   const user = await requireUser(event)
   const db = useDb()
   if (await isSuperAdmin(db, user.id)) return user
-  if (
-    cell.tier === "productLine" &&
-    (await isCompanyAdminForSubCat(db, user.id, cell.subCat))
-  ) {
-    return user
-  }
+  if (await findCoveringAdmin(db, user.id, cell)) return user
   throw createError({ statusCode: 403, statusMessage: "not_authorized" })
 }

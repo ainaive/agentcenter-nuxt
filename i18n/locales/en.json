@@ -567,27 +567,34 @@
       "rejectNotePlaceholder": "Reason shown to the publisher (optional)"
     },
     "reviewers": {
-      "title": "Reviewer matrix",
-      "subtitle": "Assign reviewers to each (tier × functional category) cell. Product-Line cells also carry a product line.",
+      "title": "Approval admin matrix",
+      "subtitle": "Pick an extension type, then assign admins to each (tier × category) cell. Cells with broader scope cover descendants automatically.",
       "loading": "Loading matrix…",
       "matrix": {
         "subCatColumn": "Category",
+        "categoryAxisLabel": "Extension type",
         "add": "Add",
-        "addTitle": "Add a reviewer",
-        "addSubtitle": "Assign someone to review {tier} requests for {subCat}.",
-        "addSubtitleProductLine": "Assign someone to review Product-Line Official requests for {line} / {subCat}.",
+        "addTitle": "Add an admin",
+        "addSubtitleUnified": "Assign someone as an admin of {cat} · {column} · {level}.",
         "emailLabel": "User email",
         "emailPlaceholder": "Email address",
         "noSuchUser": "No user with that email — ask them to sign in once before assigning.",
-        "genericError": "Couldn't add the reviewer. Please try again.",
+        "genericError": "Couldn't add the admin. Please try again.",
         "removeAria": "Remove {user}",
         "cancel": "Cancel",
-        "confirmAdd": "Add reviewer",
-        "tabs": {
-          "company": "Company tier",
-          "productLine": "Product-Line tier"
+        "confirmAdd": "Add admin",
+        "cat": {
+          "skills": "Skills",
+          "mcp": "MCP servers",
+          "slash": "Slash commands",
+          "plugins": "Plugins"
         },
-        "delegationNote": "You're viewing the matrix as a Company-tier reviewer. You can edit Product-Line cells in your own categories; other cells are read-only."
+        "level": {
+          "all": "All categories",
+          "macro": "Macro",
+          "micro": "Micro"
+        },
+        "delegationNote": "You're viewing the matrix as a non-super-admin. You can edit cells your admin shadow covers; other cells are read-only."
       }
     }
   },

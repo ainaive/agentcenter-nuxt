@@ -1,8 +1,9 @@
 <script setup lang="ts">
-// The page guard widens to `require-reviewer` because company-tier admins
-// can now manage productLine reviewers in their own subCats. Per-cell
-// authorisation still happens server-side; the UI only uses the viewer
-// metadata to grey non-editable cells.
+// Matrix admin surface. The 2026-06-09b redesign widens the gate to
+// `require-reviewer` so any matrix admin (not just super-admins) can
+// reach the page; per-cell authorisation still happens server-side.
+// `ReviewerMatrix.vue` is the single unified table — see
+// `app/components/approvals/ReviewerMatrix.vue`.
 definePageMeta({
   middleware: ["require-auth", "require-reviewer"],
 })
@@ -14,14 +15,14 @@ const { data, refresh, pending } = await useFetch(
   {
     default: () => ({
       ok: true,
-      reviewers: [],
+      admins: [],
       productLines: [],
-      viewer: { isSuperAdmin: false, companySubCats: [] },
+      viewer: { isSuperAdmin: false, coveringCells: [] },
     }),
   },
 )
 
-const reviewers = computed(() => data.value.reviewers)
+const admins = computed(() => data.value.admins)
 const productLines = computed(() => data.value.productLines)
 const viewer = computed(() => data.value.viewer)
 </script>
@@ -42,7 +43,7 @@ const viewer = computed(() => data.value.viewer)
     </p>
     <ReviewerMatrix
       v-else
-      :reviewers="reviewers"
+      :admins="admins"
       :product-lines="productLines"
       :viewer="viewer"
       @refresh="refresh"
