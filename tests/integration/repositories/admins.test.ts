@@ -348,7 +348,11 @@ describe("admins repository", () => {
       ).toBe(false)
     })
 
-    it("returns false when the user has no admin rows at all", async () => {
+    it("returns false when the user has admin rows but none for the requested extensionCategory", async () => {
+      // u-bob is seeded as a (skills, productLine, wireless, macro,
+      // softDev) admin in the suite's beforeEach — the probe asks
+      // about an MCP cell, which crosses an extensionCategory
+      // boundary and therefore does not match.
       expect(
         await adminsRepo.findCoveringAdmin(db, "u-bob", {
           extensionCategory: "mcp",

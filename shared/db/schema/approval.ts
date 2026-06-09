@@ -86,8 +86,17 @@ export const approvalRequests = pgTable(
       t.productLineId,
       t.l2,
     ),
-    // Publisher "my requests" view and the at-most-one-pending guard.
+    // Publisher "my requests" view.
     index("idx_approval_ext_status").on(t.extensionId, t.status),
+    // At-most-one-pending invariant: the orchestrator's read+CAS
+    // pattern still applies on the happy path, but two concurrent
+    // `submitRequest` calls can both observe "no pending" before
+    // either commits. The partial unique index closes that race at
+    // the DB layer — the second insert hits 23505 and the
+    // orchestrator translates it back to `duplicate_pending_request`.
+    uniqueIndex("approval_requests_one_pending_uq")
+      .on(t.extensionId)
+      .where(sql`status = 'pending'`),
     // Shape invariant: productLineId is present iff requestedTier='productLine'.
     check(
       "approval_requests_pl_shape_chk",

@@ -168,6 +168,13 @@ export async function findCoveringAdmin(
 // request's `l2` is optional — when null we only consider the
 // (all, '*') and (macro, subCat) candidates; a `micro` admin cell is
 // unreachable for an l2-less request, by construction.
+//
+// The candidate cells are built directly from the *persisted* snapshot
+// fields (subCat for the macro ancestor, l2 for the micro self) rather
+// than from `categoryAncestors(micro, l2)` — that helper would derive
+// the macro from live FUNC_TAXONOMY via `l1KeyFor(l2)`, which silently
+// drifts if the taxonomy is edited after the request was filed.
+// Authorization should follow the snapshot, not the current code.
 export async function isAdminCoveringRequest(
   db: Transactable,
   userId: string,
@@ -179,15 +186,45 @@ export async function isAdminCoveringRequest(
     l2: string | null
   },
 ): Promise<boolean> {
-  // Treat the request as a `micro` cell when it carries an l2 (and the
-  // ancestor walk reflows up to macro+all); otherwise treat as `macro`.
-  return findCoveringAdmin(db, userId, {
-    extensionCategory: request.extensionCategory,
-    tier: request.tier,
-    productLineId: request.productLineId,
-    categoryLevel: request.l2 ? "micro" : "macro",
-    categoryKey: request.l2 ?? request.subCat,
-  })
+  const colShapes = columnAncestors(request.tier, request.productLineId)
+  const catShapes: Array<{ level: CategoryLevel; key: string }> = [
+    { level: "all", key: "*" },
+    { level: "macro", key: request.subCat },
+    ...(request.l2 ? [{ level: "micro" as const, key: request.l2 }] : []),
+  ]
+
+  const colExpr = or(
+    ...colShapes.map((c) =>
+      c.productLineId === null
+        ? and(eq(approvalAdmins.tier, c.tier), isNull(approvalAdmins.productLineId))
+        : and(
+            eq(approvalAdmins.tier, c.tier),
+            eq(approvalAdmins.productLineId, c.productLineId),
+          ),
+    ),
+  )
+  const catExpr = or(
+    ...catShapes.map((k) =>
+      and(
+        eq(approvalAdmins.categoryLevel, k.level),
+        eq(approvalAdmins.categoryKey, k.key),
+      ),
+    ),
+  )
+
+  const [row] = await db
+    .select({ id: approvalAdmins.id })
+    .from(approvalAdmins)
+    .where(
+      and(
+        eq(approvalAdmins.userId, userId),
+        eq(approvalAdmins.extensionCategory, request.extensionCategory),
+        colExpr,
+        catExpr,
+      ),
+    )
+    .limit(1)
+  return !!row
 }
 
 export async function insertAdmin(

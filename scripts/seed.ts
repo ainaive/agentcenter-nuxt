@@ -27,6 +27,7 @@ import {
   users,
 } from "../shared/db/schema"
 import { TAG_LABELS } from "../shared/tags"
+import { isL1Key, isL2Key } from "../shared/taxonomy"
 import type { Department, ExtensionCategory } from "../shared/types"
 import { seedMcpLandscape } from "./seed-mcp-landscape"
 
@@ -356,6 +357,22 @@ async function main() {
       )
       return []
     }
+    // Taxonomy membership: catches a typo (e.g. categoryKey='softdev'
+    // instead of 'softDev') at seed time rather than at first
+    // approval-routing query, where the result would be a silently
+    // empty queue with no obvious cause.
+    if (r.categoryLevel === "macro" && !isL1Key(r.categoryKey)) {
+      console.warn(
+        `seed: approval admin #${i} categoryKey='${r.categoryKey}' is not an l1 key in FUNC_TAXONOMY — skipping`,
+      )
+      return []
+    }
+    if (r.categoryLevel === "micro" && !isL2Key(r.categoryKey)) {
+      console.warn(
+        `seed: approval admin #${i} categoryKey='${r.categoryKey}' is not an l2 key in FUNC_TAXONOMY — skipping`,
+      )
+      return []
+    }
     return [
       {
         id: `appr-adm-${i}`,
@@ -473,6 +490,14 @@ async function main() {
     if (!requiresPl && r.productLineId) {
       console.warn(
         `seed: approval request #${i} carries productLineId on a company-tier row — skipping`,
+      )
+      continue
+    }
+    // Same taxonomy guard as the admin block above — catches a typo in
+    // subCat before the row reaches the routing JOIN.
+    if (!isL1Key(r.subCat)) {
+      console.warn(
+        `seed: approval request #${i} subCat='${r.subCat}' is not an l1 key in FUNC_TAXONOMY — skipping`,
       )
       continue
     }

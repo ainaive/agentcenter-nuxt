@@ -98,6 +98,78 @@ describe("approvals repository", () => {
       expect(row.createdAt).toBeInstanceOf(Date)
     })
 
+    it("rejects a second pending insert for the same extension (partial unique index)", async () => {
+      // The `approval_requests_one_pending_uq` partial unique index
+      // catches the read+CAS race the orchestrator can't fully close on
+      // its own. A second pending row for the same extensionId fails at
+      // the DB layer with 23505.
+      await approvalsRepo.insertRequest(db, {
+        id: "req-1",
+        extensionId: "ext-a",
+        extensionCategory: "skills",
+        requestedTier: "company",
+        subCat: "softDev",
+        l2: null,
+        productLineId: null,
+        requestedByUserId: "u-pub",
+        reason: null,
+      })
+      // Drizzle wraps the PG error on `cause`; the orchestrator's
+      // submitRequest catch dereferences the same shape, so the test
+      // assertion mirrors it.
+      await expect(
+        approvalsRepo.insertRequest(db, {
+          id: "req-2",
+          extensionId: "ext-a",
+          extensionCategory: "skills",
+          requestedTier: "company",
+          subCat: "docs",
+          l2: null,
+          productLineId: null,
+          requestedByUserId: "u-pub",
+          reason: null,
+        }),
+      ).rejects.toMatchObject({ cause: { code: "23505" } })
+    })
+
+    it("allows a new pending row once the prior one is decided", async () => {
+      // Same scenario as the test fixture above: the cycle of (pending →
+      // approved/rejected/withdrawn → new pending) is legitimate, so the
+      // partial unique index must release the slot when status leaves
+      // 'pending'.
+      await approvalsRepo.insertRequest(db, {
+        id: "req-1",
+        extensionId: "ext-a",
+        extensionCategory: "skills",
+        requestedTier: "company",
+        subCat: "softDev",
+        l2: null,
+        productLineId: null,
+        requestedByUserId: "u-pub",
+        reason: null,
+      })
+      await approvalsRepo.applyDecision(db, "req-1", {
+        status: "rejected",
+        decidedByUserId: "u-rev",
+        decidedAt: new Date(),
+        reviewerNote: null,
+      })
+      // A second pending row now succeeds — the index only constrains
+      // rows where status='pending'.
+      const row = await approvalsRepo.insertRequest(db, {
+        id: "req-2",
+        extensionId: "ext-a",
+        extensionCategory: "skills",
+        requestedTier: "company",
+        subCat: "docs",
+        l2: null,
+        productLineId: null,
+        requestedByUserId: "u-pub",
+        reason: null,
+      })
+      expect(row.status).toBe("pending")
+    })
+
     it("accepts l2=null for extensions without an l2 classification", async () => {
       const row = await approvalsRepo.insertRequest(db, {
         id: "req-2",
@@ -215,8 +287,28 @@ describe("approvals repository", () => {
 
   describe("listPendingForUser", () => {
     // Fixtures: three requests on two extensions; one decided so it never
-    // belongs in the queue regardless of admin coverage.
+    // belongs in the queue regardless of admin coverage. The decided row
+    // is inserted + decided FIRST so the new
+    // `approval_requests_one_pending_uq` partial unique index doesn't
+    // reject the pending row on ext-a that follows.
     beforeEach(async () => {
+      await approvalsRepo.insertRequest(db, {
+        id: "req-decided",
+        extensionId: "ext-a",
+        extensionCategory: "skills",
+        requestedTier: "productLine",
+        subCat: "softDev",
+        l2: "backend",
+        productLineId: "wireless",
+        requestedByUserId: "u-pub",
+        reason: null,
+      })
+      await approvalsRepo.applyDecision(db, "req-decided", {
+        status: "approved",
+        decidedByUserId: "u-rev",
+        decidedAt: new Date(),
+        reviewerNote: null,
+      })
       await approvalsRepo.insertRequest(db, {
         id: "req-pl-softDev",
         extensionId: "ext-a",
@@ -238,24 +330,6 @@ describe("approvals repository", () => {
         productLineId: null,
         requestedByUserId: "u-pub",
         reason: null,
-      })
-      // A decided row should NOT be returned even if its cell matches.
-      await approvalsRepo.insertRequest(db, {
-        id: "req-decided",
-        extensionId: "ext-a",
-        extensionCategory: "skills",
-        requestedTier: "productLine",
-        subCat: "softDev",
-        l2: "backend",
-        productLineId: "wireless",
-        requestedByUserId: "u-pub",
-        reason: null,
-      })
-      await approvalsRepo.applyDecision(db, "req-decided", {
-        status: "approved",
-        decidedByUserId: "u-rev",
-        decidedAt: new Date(),
-        reviewerNote: null,
       })
     })
 

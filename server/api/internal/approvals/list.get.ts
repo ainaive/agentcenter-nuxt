@@ -21,6 +21,7 @@ export default defineEventHandler(async (event) => {
         tier: query.tier,
         subCat: query.subCat,
         productLineId: query.productLineId,
+        extensionCategory: query.extensionCategory,
       }),
     }
   }

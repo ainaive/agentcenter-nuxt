@@ -49,6 +49,7 @@ ALTER TABLE "approval_admins" ADD CONSTRAINT "approval_admins_product_line_id_pr
 ALTER TABLE "approval_admins" ADD CONSTRAINT "approval_admins_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "idx_approval_status_cell" ON "approval_requests" USING btree ("status","extension_category","sub_cat","requested_tier","product_line_id","l2");--> statement-breakpoint
 CREATE INDEX "idx_approval_ext_status" ON "approval_requests" USING btree ("extension_id","status");--> statement-breakpoint
+CREATE UNIQUE INDEX "approval_requests_one_pending_uq" ON "approval_requests" USING btree ("extension_id") WHERE status = 'pending';--> statement-breakpoint
 CREATE UNIQUE INDEX "approval_admins_pl_uq" ON "approval_admins" USING btree ("extension_category","tier","product_line_id","category_level","category_key","user_id") WHERE tier = 'productLine';--> statement-breakpoint
 CREATE UNIQUE INDEX "approval_admins_co_uq" ON "approval_admins" USING btree ("extension_category","tier","category_level","category_key","user_id") WHERE tier = 'company';--> statement-breakpoint
 CREATE INDEX "idx_admins_cell" ON "approval_admins" USING btree ("extension_category","tier","product_line_id","category_level","category_key");--> statement-breakpoint

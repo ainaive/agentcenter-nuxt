@@ -83,20 +83,47 @@ export async function submitRequest(
     )
     if (existing) throw new ApprovalError("duplicate_pending_request")
 
-    return approvalsRepo.insertRequest(tx, {
-      id: crypto.randomUUID(),
-      extensionId: params.extensionId,
-      // Snapshot the extension's category + l2 onto the request so
-      // routing fan-out doesn't have to join `extensions` and so the
-      // audit trail freezes them at submission time.
-      extensionCategory: ext.category as ExtensionCategory,
-      requestedTier: params.requestedTier,
-      subCat: params.subCat,
-      l2: ext.l2 ?? null,
-      productLineId: params.productLineId,
-      requestedByUserId: params.userId,
-      reason: params.reason ?? null,
-    })
+    // Re-load the extension inside the transaction so the snapshotted
+    // `extensionCategory` / `l2` reflect a tx-visible row. The
+    // pre-transaction load above is still useful for the ownership /
+    // visibility validation; using its values for the snapshot would
+    // race with a concurrent reclassification.
+    const extInTx = await extensionsRepo.findById(tx, params.extensionId)
+    if (!extInTx) throw new ApprovalError("extension_not_found")
+
+    try {
+      return await approvalsRepo.insertRequest(tx, {
+        id: crypto.randomUUID(),
+        extensionId: params.extensionId,
+        // Snapshot the extension's category + l2 onto the request so
+        // routing fan-out doesn't have to join `extensions` and so the
+        // audit trail freezes them at submission time.
+        extensionCategory: extInTx.category as ExtensionCategory,
+        requestedTier: params.requestedTier,
+        subCat: params.subCat,
+        l2: extInTx.l2 ?? null,
+        productLineId: params.productLineId,
+        requestedByUserId: params.userId,
+        reason: params.reason ?? null,
+      })
+    } catch (err) {
+      // Race backstop: the partial unique index
+      // `approval_requests_one_pending_uq` makes a concurrent second
+      // insert fail with PG code 23505 (Drizzle wraps the original PG
+      // error on `cause`). Translate to the same domain code the
+      // read-check above uses so the endpoint surfaces one stable error
+      // regardless of which side of the race lost.
+      if (
+        err instanceof Error &&
+        err.cause != null &&
+        typeof err.cause === "object" &&
+        "code" in err.cause &&
+        (err.cause as { code?: string }).code === "23505"
+      ) {
+        throw new ApprovalError("duplicate_pending_request")
+      }
+      throw err
+    }
   })
 
   // Best-effort: the request row is the source of truth and is already

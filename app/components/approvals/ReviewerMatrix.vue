@@ -61,7 +61,15 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{ (e: "refresh"): void }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+// Pick the matching label for the current locale. `labelEn` /
+// `labelZh` are both required on the productLines lookup table
+// (see shared/db/schema/extension.ts), so there's no need for a
+// generic fallback — Chinese locales get the Chinese label.
+function productLineLabel(pl: ProductLine): string {
+  return locale.value.startsWith("zh") ? pl.labelZh : pl.labelEn
+}
 
 const route = useRoute()
 const router = useRouter()
@@ -106,7 +114,7 @@ const columns = computed<Column[]>(() => {
       key: `pl:${pl.id}`,
       tier: "productLine" as const,
       productLineId: pl.id,
-      label: pl.labelEn === pl.labelZh ? pl.labelEn : pl.labelEn,
+      label: productLineLabel(pl),
     })),
   ]
 })
@@ -321,7 +329,7 @@ function dialogLevelLabel(cell: TargetCell): string {
 function dialogColumnLabel(cell: TargetCell): string {
   if (cell.tier === "company") return t("extensions.officialTier.company")
   const pl = props.productLines.find((p) => p.id === cell.productLineId)
-  return pl?.labelEn ?? cell.productLineId ?? ""
+  return pl ? productLineLabel(pl) : (cell.productLineId ?? "")
 }
 </script>
 
