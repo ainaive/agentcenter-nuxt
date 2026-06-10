@@ -1,0 +1,21 @@
+I am thinking of supporting a new extension type: CLI, what do you think?
+
+---
+
+I am thinking of supporting a new extension type: CLI, what do you think?
+
+---
+
+go ahead
+
+---
+
+check the code reviews on the pr
+
+---
+
+commit no push
+
+---
+
+do we need to seed some CLI data, so I can test?
