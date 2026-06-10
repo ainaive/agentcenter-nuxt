@@ -26,7 +26,7 @@ Any Postgres works — Supabase, Neon, AWS RDS, self-hosted. Apply migrations:
 bun install
 DATABASE_URL="postgresql://..." bun run db:migrate
 DATABASE_URL="postgresql://..." bun run db:apply-fts
-DATABASE_URL="postgresql://..." bun run db:seed   # optional: chains seed.ts + seed-catalog.ts (16 demo + 66 catalog)
+DATABASE_URL="postgresql://..." bun run db:seed   # optional: chains seed.ts + seed-catalog.ts (19 demo + 98 catalog)
 ```
 
 The `db:apply-fts` step requires `psql` on PATH. It runs `drizzle/0002_fts_search_vector.sql` against your DB (FTS column + trgm indexes).

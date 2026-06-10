@@ -1,6 +1,6 @@
 # AgentCenter (Nuxt)
 
-Marketplace for AI agent extensions (Skills, MCP servers, slash commands, plugins) with internal-enterprise features (departments, scope, tags, collections) and a companion CLI for actual machine-side install. Bilingual (EN/ZH) from day one.
+Marketplace for AI agent extensions (Skills, MCP servers, slash commands, plugins, CLI tools) with internal-enterprise features (departments, scope, tags, collections) and a companion CLI for actual machine-side install. Bilingual (EN/ZH) from day one.
 
 This is a rewrite of the original Next.js implementation in Nuxt 4. The product surface and the public `/api/v1` contract are preserved verbatim so the existing CLI keeps working.
 

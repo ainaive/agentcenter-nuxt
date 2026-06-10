@@ -8,11 +8,11 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 
 ## English
 
-**Overview.** A bilingual marketplace for AI agent extensions (Skills, MCP servers, slash commands, plugins). Users can browse and search a catalog with rich filters, view detail pages with READMEs and stats, publish their own extensions through a 4-step wizard with automated bundle scanning, save favorites, and authorize a CLI for installs. Open sign-up, EN/ZH UI and content, themes, and a public registry API. Multi-tenant schema with a single-tenant UI in v1.
+**Overview.** A bilingual marketplace for AI agent extensions (Skills, MCP servers, slash commands, plugins, CLI tools). Users can browse and search a catalog with rich filters, view detail pages with READMEs and stats, publish their own extensions through a 4-step wizard with automated bundle scanning, save favorites, and authorize a CLI for installs. Open sign-up, EN/ZH UI and content, themes, and a public registry API. Multi-tenant schema with a single-tenant UI in v1.
 
 ### Browse & discover
 
-- **Type-first browsing** — Browsing the marketplace starts by picking a type — Skills, MCP Servers, Slash Commands, or Plugins — from the Explore dropdown in the top bar. The unfiltered catalog stays reachable but isn't the default destination.
+- **Type-first browsing** — Browsing the marketplace starts by picking a type — Skills, MCP Servers, Slash Commands, Plugins, or CLI tools — from the Explore dropdown in the top bar. The unfiltered catalog stays reachable but isn't the default destination.
 - **Function-types sidebar** — A persistent sidebar tree exposes the three-level functional taxonomy (Work Task / Business / Tools, plus sub-categories and leaves). Selecting any node filters the catalog and survives URL sharing.
 - **Extension catalog** — Browse all published extensions in a paginated grid at `/extensions`.
 - **Search** — Search by any phrase, in English or Chinese, including short fragments.
@@ -25,7 +25,7 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **Shareable filter state** — Every filter combination is reflected in the URL, so any search can be bookmarked or shared.
 - **Active-filter chips** — Above the results grid, each applied filter (search term, scope, department, creator, publisher, every selected tag) renders as a removable chip — click × to drop one, or "Clear all" to clear them in a single tap.
 - **Home: featured spotlight** — A curated "Featured this week" extension anchors the home page with its name, tagline, install command, and a deep link to the detail page; falls back to a slim editorial card when no extension is marked featured.
-- **Home: trending row** — A cross-category mix of trending extensions (Skills, MCP servers, slash commands, plugins).
+- **Home: trending row** — A cross-category mix of trending extensions (Skills, MCP servers, slash commands, plugins, CLI tools).
 - **Whole-card click** — Click anywhere on an extension card to open it; Save / Install stay independently clickable.
 
 ### Detail page
@@ -121,17 +121,17 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **Agent-agnostic** — Designed to work with multiple agents; Claude is the default target.
 - **Distribution** — Ships as a Node JS bundle; cross-platform npm install ready.
 - **Reads** — Pulls from the public registry API; no auth required for installs.
-- **Installs Skills today** — MCP / slash command / plugin installers are on the roadmap.
+- **Installs Skills and CLI tools today** — Each lands in its own directory under `~/.claude/` (`skills/{slug}` and `cli/{slug}`). MCP / slash command / plugin installers are on the roadmap.
 
 ---
 
 ## 中文
 
-**概览。** 面向 AI Agent 扩展（Skill、MCP 服务器、斜杠命令、插件）的双语应用市场。用户可在带筛选的目录中浏览搜索、在详情页查看 README 与统计、通过 4 步向导发布自己的扩展（含自动扫描）、收藏喜欢的扩展，并授权 CLI 完成安装。开放注册、中英双语 UI 与内容、主题切换，以及对外的公共注册表 API。多租户 Schema，v1 UI 为单租户。
+**概览。** 面向 AI Agent 扩展（Skill、MCP 服务器、斜杠命令、插件、命令行工具）的双语应用市场。用户可在带筛选的目录中浏览搜索、在详情页查看 README 与统计、通过 4 步向导发布自己的扩展（含自动扫描）、收藏喜欢的扩展，并授权 CLI 完成安装。开放注册、中英双语 UI 与内容、主题切换，以及对外的公共注册表 API。多租户 Schema，v1 UI 为单租户。
 
 ### 浏览与发现
 
-- **先选类型的浏览方式** ——浏览市场始终从选定类型开始（Skill、MCP 服务器、斜杠命令、插件），通过顶部导航的 Explore 下拉菜单进入。未筛选的全量列表仍可访问，但不再是默认入口。
+- **先选类型的浏览方式** ——浏览市场始终从选定类型开始（Skill、MCP 服务器、斜杠命令、插件、命令行工具），通过顶部导航的 Explore 下拉菜单进入。未筛选的全量列表仍可访问，但不再是默认入口。
 - **侧边栏功能分类树** ——侧边栏常驻一棵三层功能分类树（工作任务 / 业务 / 工具，以及其下的子类和叶子节点）。选中任意节点即对目录进行筛选，选择反映在 URL 中，便于分享。
 - **扩展目录** ——在 `/extensions` 浏览所有已发布扩展，支持分页。
 - **搜索** ——任意短语搜索，支持中英文，含短片段查询。
@@ -144,7 +144,7 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **可分享的筛选状态** ——所有筛选条件都反映在 URL 中，可收藏或分享任意搜索。
 - **已生效筛选标签** ——结果网格上方为每个生效的筛选（搜索词、范围、部门、作者、发布商、每个选中标签）显示一个可移除的标签——点击 × 移除单项，或点击"Clear all"一次全清。
 - **首页：精选模块** ——首页顶部由一个真实的"本周精选"扩展担纲，展示其名称、宣传语、安装命令以及直达详情页的链接；若当前未标记任何精选，则回退到一张简洁的编辑卡片。
-- **首页：热门栏** ——跨类别混合展示热门扩展（Skill、MCP、斜杠命令、插件）。
+- **首页：热门栏** ——跨类别混合展示热门扩展（Skill、MCP、斜杠命令、插件、命令行工具）。
 - **整卡可点击** ——点击扩展卡片任意位置都能打开；Save / Install 仍可独立点击。
 
 ### 详情页
@@ -240,4 +240,4 @@ Source-of-truth list of what's shipped today, organized by capability area. For 
 - **与 Agent 无关** ——面向多 Agent 设计，默认面向 Claude。
 - **分发** ——以 Node JS bundle 形式分发，可跨平台 npm 安装。
 - **数据来源** ——调用公共注册表 API；安装无需登录。
-- **当前支持 Skill 安装** —— MCP / 斜杠命令 / 插件的安装器在路线图上。
+- **当前支持 Skill 与命令行工具安装** ——分别落到 `~/.claude/skills/{slug}` 与 `~/.claude/cli/{slug}`。MCP / 斜杠命令 / 插件的安装器在路线图上。
