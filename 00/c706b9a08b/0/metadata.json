@@ -1,0 +1,35 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "00c706b9a08b",
+  "session_id": "1f30557d-76d8-4ae7-9fc6-0a6eb6f565be",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-10T07:48:35.476573Z",
+  "branch": "feat/cli-extension-type",
+  "checkpoints_count": 0,
+  "files_touched": [],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "189caf205dda",
+  "token_usage": {
+    "input_tokens": 48,
+    "cache_creation_tokens": 214080,
+    "cache_read_tokens": 3142113,
+    "output_tokens": 30013,
+    "api_call_count": 34
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 4,
+      "user_lines_removed": 3,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        "docs/deploy.md": 4
+      },
+      "user_removed_per_file": {
+        "docs/deploy.md": 3
+      }
+    }
+  ]
+}
