@@ -4,10 +4,13 @@ import { homedir } from "os";
 import { dirname, join } from "path";
 import { unzipSync } from "fflate";
 
+import { assertValidSlug, resolveInside } from "./safe-paths";
+
 const SKILLS_DIR = join(homedir(), ".claude", "skills");
 
 export async function installSkill(slug: string, zipBuffer: ArrayBuffer): Promise<string> {
-  const destDir = join(SKILLS_DIR, slug);
+  assertValidSlug(slug);
+  const destDir = resolveInside(SKILLS_DIR, slug);
   if (!existsSync(SKILLS_DIR)) mkdirSync(SKILLS_DIR, { recursive: true });
   if (existsSync(destDir)) rmSync(destDir, { recursive: true, force: true });
   mkdirSync(destDir, { recursive: true });
@@ -16,7 +19,7 @@ export async function installSkill(slug: string, zipBuffer: ArrayBuffer): Promis
   try {
     for (const [entryPath, content] of Object.entries(files)) {
       if (entryPath.endsWith("/")) continue; // skip directory entries
-      const dest = join(destDir, entryPath);
+      const dest = resolveInside(destDir, entryPath);
       const parentDir = dirname(dest);
       if (!existsSync(parentDir)) mkdirSync(parentDir, { recursive: true });
       await writeFile(dest, content);
@@ -32,7 +35,8 @@ export async function installSkill(slug: string, zipBuffer: ArrayBuffer): Promis
 }
 
 export async function uninstallSkill(slug: string): Promise<boolean> {
-  const destDir = join(SKILLS_DIR, slug);
+  assertValidSlug(slug);
+  const destDir = resolveInside(SKILLS_DIR, slug);
   if (!existsSync(destDir)) return false;
   rmSync(destDir, { recursive: true, force: true });
   return true;

@@ -4,10 +4,13 @@ import { homedir } from "os";
 import { dirname, join } from "path";
 import { unzipSync } from "fflate";
 
+import { assertValidSlug, resolveInside } from "./safe-paths";
+
 const CLI_DIR = join(homedir(), ".claude", "cli");
 
 export async function installCli(slug: string, zipBuffer: ArrayBuffer): Promise<string> {
-  const destDir = join(CLI_DIR, slug);
+  assertValidSlug(slug);
+  const destDir = resolveInside(CLI_DIR, slug);
   if (!existsSync(CLI_DIR)) mkdirSync(CLI_DIR, { recursive: true });
   if (existsSync(destDir)) rmSync(destDir, { recursive: true, force: true });
   mkdirSync(destDir, { recursive: true });
@@ -16,7 +19,7 @@ export async function installCli(slug: string, zipBuffer: ArrayBuffer): Promise<
   try {
     for (const [entryPath, content] of Object.entries(files)) {
       if (entryPath.endsWith("/")) continue; // skip directory entries
-      const dest = join(destDir, entryPath);
+      const dest = resolveInside(destDir, entryPath);
       const parentDir = dirname(dest);
       if (!existsSync(parentDir)) mkdirSync(parentDir, { recursive: true });
       await writeFile(dest, content);
@@ -30,7 +33,8 @@ export async function installCli(slug: string, zipBuffer: ArrayBuffer): Promise<
 }
 
 export async function uninstallCli(slug: string): Promise<boolean> {
-  const destDir = join(CLI_DIR, slug);
+  assertValidSlug(slug);
+  const destDir = resolveInside(CLI_DIR, slug);
   if (!existsSync(destDir)) return false;
   rmSync(destDir, { recursive: true, force: true });
   return true;
