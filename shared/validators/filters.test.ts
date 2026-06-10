@@ -31,6 +31,16 @@ describe("filtersSchema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("accepts every shipped category", () => {
+    // Locked by ADR-0002 — the enum widened from 4 to 5 values; this
+    // guard catches any future drift between the schema and the docs.
+    for (const category of ["skills", "mcp", "slash", "plugins", "cli"] as const) {
+      const result = filtersSchema.safeParse({ category });
+      expect(result.success).toBe(true);
+      if (result.success) expect(result.data.category).toBe(category);
+    }
+  });
+
   it("coerces page from string", () => {
     const result = filtersSchema.safeParse({ page: "3" });
     expect(result.success).toBe(true);
