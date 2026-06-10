@@ -15,7 +15,7 @@ The manifest declares identity, discoverability, compatibility, and per-agent in
 | `name` | string | ✓ | Display name in English. |
 | `nameZh` | string | | Display name in Chinese (optional bilingual). |
 | `version` | string | ✓ | Semver (e.g. `1.0.0`). |
-| `category` | enum | ✓ | One of `skills`, `mcp`, `slash`, `plugins`. |
+| `category` | enum | ✓ | One of `skills`, `mcp`, `slash`, `plugins`, `cli`. |
 | `scope` | enum | ✓ | Audience: `personal`, `org`, `enterprise`. |
 | `license` | string | | SPDX identifier (e.g. `MIT`, `Apache-2.0`). Omit for proprietary. |
 | `description` | string | ✓ | Short description in English, max 280 chars. |

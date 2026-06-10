@@ -76,7 +76,7 @@ const route = useRoute()
 const router = useRouter()
 
 function hashToCategory(hash: string): ExtensionCategory {
-  const m = hash.match(/#cat=(skills|mcp|slash|plugins)/)
+  const m = hash.match(/#cat=(skills|mcp|slash|plugins|cli)/)
   return (m?.[1] as ExtensionCategory) ?? "skills"
 }
 
