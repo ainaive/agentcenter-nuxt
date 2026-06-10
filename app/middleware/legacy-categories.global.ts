@@ -3,6 +3,7 @@ const CATEGORY_REDIRECTS: Record<string, string> = {
   mcp: "/mcp",
   slash: "/commands",
   plugins: "/plugins",
+  cli: "/cli",
 }
 
 export default defineNuxtRouteMiddleware((to) => {

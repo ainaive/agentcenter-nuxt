@@ -28,6 +28,8 @@ function defaultClassification(category: ManifestFormValues["category"]): {
       return { funcCat: "tools", subCat: "integrations" }
     case "slash":
       return { funcCat: "tools", subCat: "commands" }
+    case "cli":
+      return { funcCat: "tools", subCat: "cli" }
     default:
       return { funcCat: "tools", subCat: "general" }
   }

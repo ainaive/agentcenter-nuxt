@@ -122,6 +122,10 @@
       "plugins": {
         "searchPlaceholder": "Search plugins…",
         "label": "plugins"
+      },
+      "cli": {
+        "searchPlaceholder": "Search CLI tools…",
+        "label": "CLI tools"
       }
     },
     "mcpPanoramaLink": "View the MCP Panorama",
@@ -146,6 +150,7 @@
     "mcpServers": "MCP Servers",
     "slashCommands": "Slash Commands",
     "plugins": "Plugins",
+    "cli": "CLI",
     "mcp": {
       "heading": "Browse MCP",
       "byTypes": "By function",
@@ -337,7 +342,8 @@
         "skills": "Skills",
         "mcp": "MCP",
         "slash": "Slash command",
-        "plugins": "Plugin"
+        "plugins": "Plugin",
+        "cli": "CLI"
       },
       "scope": {
         "personal": "Personal",
@@ -587,7 +593,8 @@
           "skills": "Skills",
           "mcp": "MCP servers",
           "slash": "Slash commands",
-          "plugins": "Plugins"
+          "plugins": "Plugins",
+          "cli": "CLI tools"
         },
         "level": {
           "all": "All categories",
