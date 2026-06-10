@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "5001db09f5ff",
+  "strategy": "manual-commit",
+  "branch": "feat/cli-extension-type",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "docs/adr/0002-cli-extension-type.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/50/01db09f5ff/0/metadata.json",
+      "transcript": "/50/01db09f5ff/0/full.jsonl",
+      "content_hash": "/50/01db09f5ff/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 45,
+    "cache_creation_tokens": 2277,
+    "cache_read_tokens": 539820,
+    "output_tokens": 3267,
+    "api_call_count": 2
+  }
+}
