@@ -83,6 +83,7 @@ const CATEGORY_LABELS = {
   mcp: "MCP server",
   slash: "slash command",
   plugins: "plugin",
+  cli: "CLI tool",
 } as const
 
 function generateReadme(ext: (typeof EXTENSIONS)[number]): string {
