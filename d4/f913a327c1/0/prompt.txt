@@ -1,0 +1,5 @@
+I am thinking of supporting a new extension type: CLI, what do you think?
+
+---
+
+I am thinking of supporting a new extension type: CLI, what do you think?
