@@ -22,7 +22,7 @@ export const SubCatKey = z.string().refine((v) => L1_KEY_SET.has(v), {
   message: "must be a key from FUNC_TAXONOMY",
 })
 
-export const ExtensionCategory = z.enum(["skills", "mcp", "slash", "plugins"])
+export const ExtensionCategory = z.enum(["skills", "mcp", "slash", "plugins", "cli"])
 export type ExtensionCategory = z.infer<typeof ExtensionCategory>
 
 export const AdminCategoryLevel = z.enum(["all", "macro", "micro"])

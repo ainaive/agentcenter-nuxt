@@ -1,0 +1,1 @@
+ALTER TYPE "public"."extension_category" ADD VALUE 'cli';

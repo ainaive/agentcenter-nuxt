@@ -73,7 +73,7 @@ List published extensions. No auth required.
 | Param | Type | Description |
 |---|---|---|
 | `q` | string | Free-text search (Postgres FTS + `pg_trgm`) |
-| `category` | `skills` \| `mcp` \| `slash` \| `plugins` | Filter by extension category |
+| `category` | `skills` \| `mcp` \| `slash` \| `plugins` \| `cli` | Filter by extension category |
 | `scope` | `personal` \| `org` \| `enterprise` | Filter by scope |
 | `funcCat` | `workTask` \| `business` \| `tools` | Filter by functional category |
 | `subCat` | string | Filter by L1 subcategory |

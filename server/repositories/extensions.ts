@@ -172,7 +172,7 @@ export async function findFeatured(db: Transactable) {
 export async function findRelated(
   db: Transactable,
   extensionId: string,
-  category: "skills" | "mcp" | "slash" | "plugins",
+  category: "skills" | "mcp" | "slash" | "plugins" | "cli",
 ) {
   return db
     .select(relatedSelect)

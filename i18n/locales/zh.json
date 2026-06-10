@@ -122,6 +122,10 @@
       "plugins": {
         "searchPlaceholder": "搜索插件…",
         "label": "插件"
+      },
+      "cli": {
+        "searchPlaceholder": "搜索命令行工具…",
+        "label": "命令行工具"
       }
     },
     "mcpPanoramaLink": "查看 MCP 全景图",
@@ -146,6 +150,7 @@
     "mcpServers": "MCP",
     "slashCommands": "斜杠命令",
     "plugins": "插件",
+    "cli": "命令行",
     "mcp": {
       "heading": "浏览 MCP",
       "byTypes": "按作业类型",
@@ -337,7 +342,8 @@
         "skills": "Skill",
         "mcp": "MCP",
         "slash": "斜杠命令",
-        "plugins": "插件"
+        "plugins": "插件",
+        "cli": "命令行工具"
       },
       "scope": {
         "personal": "个人",
@@ -587,7 +593,8 @@
           "skills": "技能",
           "mcp": "MCP 服务器",
           "slash": "斜杠命令",
-          "plugins": "插件"
+          "plugins": "插件",
+          "cli": "命令行工具"
         },
         "level": {
           "all": "全部分类",

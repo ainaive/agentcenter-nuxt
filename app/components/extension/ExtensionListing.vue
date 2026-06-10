@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ArrowUpRight, Search } from "lucide-vue-next"
 
-type CategoryProp = "all" | "skills" | "mcp" | "slash" | "plugins"
+type CategoryProp = "all" | "skills" | "mcp" | "slash" | "plugins" | "cli"
 
 const props = defineProps<{
   category: CategoryProp

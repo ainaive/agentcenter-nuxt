@@ -230,7 +230,7 @@ describe("AssignAdminSchema", () => {
   it("rejects an unknown extension category", () => {
     expect(() =>
       AssignAdminSchema.parse({
-        extensionCategory: "cli",
+        extensionCategory: "not-a-real-category",
         tier: "company",
         categoryLevel: "macro",
         categoryKey: "cloud",

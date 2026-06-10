@@ -31,6 +31,7 @@ export const extensionCategoryEnum = pgEnum("extension_category", [
   "mcp",
   "slash",
   "plugins",
+  "cli",
 ]);
 
 export const extensionScopeEnum = pgEnum("extension_scope", [

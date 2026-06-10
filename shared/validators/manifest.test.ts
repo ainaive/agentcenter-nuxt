@@ -122,6 +122,27 @@ describe("ExtensionManifestCore", () => {
       }
     });
   });
+
+  describe("category", () => {
+    // Locks the runtime contract for every category the API accepts so a
+    // future enum edit (add / rename / remove) can't slip past typecheck.
+    // ADR-0002 widened the enum from four to five values; this guard keeps
+    // the fifth from regressing silently.
+    it("accepts every shipped category", () => {
+      for (const category of ["skills", "mcp", "slash", "plugins", "cli"] as const) {
+        expect(
+          ExtensionManifestCore.safeParse({ ...VALID_CORE, category }).success,
+        ).toBe(true);
+      }
+    });
+
+    it("rejects unknown categories", () => {
+      expect(
+        ExtensionManifestCore.safeParse({ ...VALID_CORE, category: "not-a-real-category" })
+          .success,
+      ).toBe(false);
+    });
+  });
 });
 
 // ---------- Form-specific extras ----------

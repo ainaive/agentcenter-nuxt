@@ -40,7 +40,7 @@ const { data: adminMe } = await useFetch("/api/internal/admin/me", {
     isSuperAdmin: false,
     isReviewer: false,
     cells: [] as Array<{
-      extensionCategory: "skills" | "mcp" | "slash" | "plugins"
+      extensionCategory: "skills" | "mcp" | "slash" | "plugins" | "cli"
       tier: "productLine" | "company"
       productLineId: string | null
       categoryLevel: "all" | "macro" | "micro"

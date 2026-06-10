@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const CATEGORIES = ["skills", "mcp", "slash", "plugins"] as const;
+const CATEGORIES = ["skills", "mcp", "slash", "plugins", "cli"] as const;
 const SCOPES = ["personal", "org", "enterprise"] as const;
 const FUNC_CATS = ["workTask", "business", "tools"] as const;
 const FILTER_CHIPS = ["all", "trending", "new", "official", "free"] as const;

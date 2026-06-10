@@ -20,7 +20,7 @@ export const ExtensionManifestCore = z.object({
   name: z.string().min(2).max(80),
   nameZh: z.string().max(80).optional(),
   version: z.string().regex(SEMVER_PATTERN, "Must be semver (e.g. 1.0.0)"),
-  category: z.enum(["skills", "mcp", "slash", "plugins"]),
+  category: z.enum(["skills", "mcp", "slash", "plugins", "cli"]),
   scope: z.enum(["personal", "org", "enterprise"]),
   funcCat: z.enum(["workTask", "business", "tools"]),
   subCat: z.string().min(1).max(60),

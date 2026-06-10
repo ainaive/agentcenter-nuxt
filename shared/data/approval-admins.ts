@@ -19,7 +19,7 @@
 // `/admin/approvals` queue lights up under multiple personas.
 
 export type SeedProductLine = "wireless" | "datacom" | "terminals" | "cloud"
-export type SeedExtensionCategory = "skills" | "mcp" | "slash" | "plugins"
+export type SeedExtensionCategory = "skills" | "mcp" | "slash" | "plugins" | "cli"
 export type SeedAdminCategoryLevel = "all" | "macro" | "micro"
 
 export interface SeedApprovalAdmin {
@@ -42,6 +42,7 @@ export const APPROVAL_ADMINS: ReadonlyArray<SeedApprovalAdmin> = [
   { extensionCategory: "mcp",     tier: "company", categoryLevel: "all", categoryKey: "*", reviewerEmail: "amy@agentcenter.dev" },
   { extensionCategory: "slash",   tier: "company", categoryLevel: "all", categoryKey: "*", reviewerEmail: "amy@agentcenter.dev" },
   { extensionCategory: "plugins", tier: "company", categoryLevel: "all", categoryKey: "*", reviewerEmail: "amy@agentcenter.dev" },
+  { extensionCategory: "cli",     tier: "company", categoryLevel: "all", categoryKey: "*", reviewerEmail: "amy@agentcenter.dev" },
 
   // --- Skills tab: every macro covered ---
   // Three people split the nine macros along funcCat lines.
@@ -88,6 +89,13 @@ export const APPROVAL_ADMINS: ReadonlyArray<SeedApprovalAdmin> = [
   // matching admin the PL queue is empty for everyone but super-admins.
   { extensionCategory: "plugins", tier: "productLine", productLineId: "wireless", categoryLevel: "all", categoryKey: "*",      reviewerEmail: "dao@agentcenter.dev" },
   { extensionCategory: "plugins", tier: "company",     categoryLevel: "macro",    categoryKey: "data", reviewerEmail: "eli@agentcenter.dev" },
+
+  // --- CLI tab: enough rows so the new ext-type tab isn't empty ---
+  // Two company macros + one PL All so both column-tier shapes have a
+  // covering admin on a fresh seed.
+  { extensionCategory: "cli", tier: "company",     categoryLevel: "macro", categoryKey: "softDev", reviewerEmail: "ben@agentcenter.dev" },
+  { extensionCategory: "cli", tier: "company",     categoryLevel: "macro", categoryKey: "cloud",   reviewerEmail: "cory@agentcenter.dev" },
+  { extensionCategory: "cli", tier: "productLine", productLineId: "wireless", categoryLevel: "all", categoryKey: "*",   reviewerEmail: "dao@agentcenter.dev" },
 ]
 
 // First entry in `CREATORS` (amy) gets the super-admin membership unless

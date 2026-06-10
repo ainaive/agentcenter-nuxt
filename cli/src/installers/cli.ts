@@ -6,12 +6,12 @@ import { unzipSync } from "fflate";
 
 import { assertValidSlug, resolveInside } from "./safe-paths";
 
-const SKILLS_DIR = join(homedir(), ".claude", "skills");
+const CLI_DIR = join(homedir(), ".claude", "cli");
 
-export async function installSkill(slug: string, zipBuffer: ArrayBuffer): Promise<string> {
+export async function installCli(slug: string, zipBuffer: ArrayBuffer): Promise<string> {
   assertValidSlug(slug);
-  const destDir = resolveInside(SKILLS_DIR, slug);
-  if (!existsSync(SKILLS_DIR)) mkdirSync(SKILLS_DIR, { recursive: true });
+  const destDir = resolveInside(CLI_DIR, slug);
+  if (!existsSync(CLI_DIR)) mkdirSync(CLI_DIR, { recursive: true });
   if (existsSync(destDir)) rmSync(destDir, { recursive: true, force: true });
   mkdirSync(destDir, { recursive: true });
 
@@ -25,8 +25,6 @@ export async function installSkill(slug: string, zipBuffer: ArrayBuffer): Promis
       await writeFile(dest, content);
     }
   } catch (err) {
-    // Don't leave half-written skills on disk; the next install attempt will then
-    // start from a clean slate instead of merging onto a corrupt tree.
     rmSync(destDir, { recursive: true, force: true });
     throw err;
   }
@@ -34,17 +32,17 @@ export async function installSkill(slug: string, zipBuffer: ArrayBuffer): Promis
   return destDir;
 }
 
-export async function uninstallSkill(slug: string): Promise<boolean> {
+export async function uninstallCli(slug: string): Promise<boolean> {
   assertValidSlug(slug);
-  const destDir = resolveInside(SKILLS_DIR, slug);
+  const destDir = resolveInside(CLI_DIR, slug);
   if (!existsSync(destDir)) return false;
   rmSync(destDir, { recursive: true, force: true });
   return true;
 }
 
-export function listInstalledSlugs(): string[] {
-  if (!existsSync(SKILLS_DIR)) return [];
-  return readdirSync(SKILLS_DIR).filter((name: string) =>
-    statSync(join(SKILLS_DIR, name)).isDirectory()
+export function listInstalledCliSlugs(): string[] {
+  if (!existsSync(CLI_DIR)) return [];
+  return readdirSync(CLI_DIR).filter((name: string) =>
+    statSync(join(CLI_DIR, name)).isDirectory()
   );
 }
