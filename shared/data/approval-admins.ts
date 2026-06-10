@@ -19,7 +19,7 @@
 // `/admin/approvals` queue lights up under multiple personas.
 
 export type SeedProductLine = "wireless" | "datacom" | "terminals" | "cloud"
-export type SeedExtensionCategory = "skills" | "mcp" | "slash" | "plugins"
+export type SeedExtensionCategory = "skills" | "mcp" | "slash" | "plugins" | "cli"
 export type SeedAdminCategoryLevel = "all" | "macro" | "micro"
 
 export interface SeedApprovalAdmin {

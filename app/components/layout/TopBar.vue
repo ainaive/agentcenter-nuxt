@@ -6,7 +6,7 @@ const { t } = useI18n()
 const route = useRoute()
 const localePath = useLocalePath()
 
-type CategoryKey = "skills" | "mcp" | "slash" | "plugins"
+type CategoryKey = "skills" | "mcp" | "slash" | "plugins" | "cli"
 
 const PRIMARY_ITEMS: { key: CategoryKey; labelKey: string }[] = [
   { key: "skills", labelKey: "sidebar.skills" },
@@ -16,6 +16,7 @@ const PRIMARY_ITEMS: { key: CategoryKey; labelKey: string }[] = [
 const MORE_ITEMS: { key: CategoryKey; labelKey: string }[] = [
   { key: "slash", labelKey: "sidebar.slashCommands" },
   { key: "plugins", labelKey: "sidebar.plugins" },
+  { key: "cli", labelKey: "sidebar.cli" },
 ]
 
 const localeExtensionsPath = computed(() => localePath("/extensions"))
@@ -26,6 +27,7 @@ function hrefFor(key: CategoryKey): RouteLocationRaw {
   if (key === "skills") return localePath("/skills")
   if (key === "slash") return localePath("/commands")
   if (key === "plugins") return localePath("/plugins")
+  if (key === "cli") return localePath("/cli")
   return { path: localeExtensionsPath.value, query: { category: key } }
 }
 
@@ -34,6 +36,7 @@ function isCategoryActive(key: CategoryKey): boolean {
   if (key === "skills") return baseName.value === "skills"
   if (key === "slash") return baseName.value === "commands"
   if (key === "plugins") return baseName.value === "plugins"
+  if (key === "cli") return baseName.value === "cli"
   if (route.path !== localeExtensionsPath.value) return false
   return route.query.category === key
 }

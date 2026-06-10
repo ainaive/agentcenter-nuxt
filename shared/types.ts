@@ -2,7 +2,7 @@ export type Locale = "en" | "zh"
 
 export type Theme = "ivory" | "dark" | "mono"
 
-export type ExtensionCategory = "skills" | "mcp" | "slash" | "plugins"
+export type ExtensionCategory = "skills" | "mcp" | "slash" | "plugins" | "cli"
 export type ExtensionScope = "personal" | "org" | "enterprise"
 export type ExtensionBadge = "official" | "popular" | "new"
 export type FuncCatKey = "workTask" | "business" | "tools"

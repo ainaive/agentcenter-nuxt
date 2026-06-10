@@ -11,7 +11,7 @@ import { FUNC_TAXONOMY } from "~~/shared/taxonomy"
 // relation; non-editable cells render the chip controls in a disabled
 // state and skip the "+ Add" tile.
 
-type ExtensionCategory = "skills" | "mcp" | "slash" | "plugins"
+type ExtensionCategory = "skills" | "mcp" | "slash" | "plugins" | "cli"
 type Tier = "productLine" | "company"
 type CategoryLevel = "all" | "macro" | "micro"
 const EXTENSION_CATEGORIES: readonly ExtensionCategory[] = [
@@ -19,6 +19,7 @@ const EXTENSION_CATEGORIES: readonly ExtensionCategory[] = [
   "mcp",
   "slash",
   "plugins",
+  "cli",
 ] as const
 
 export interface AdminCellRow {
