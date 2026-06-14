@@ -74,19 +74,11 @@ function deptName(d: Department): string {
 
 <template>
   <Popover v-model:open="open">
-    <PopoverTrigger
-      :class="[
-        'inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 text-[12px] transition-colors',
-        activeDept
-          ? 'border-(--color-ink)/20 bg-(--color-card) text-(--color-ink) font-semibold'
-          : 'border-(--color-border) bg-(--color-card) text-(--color-ink-muted) hover:text-(--color-ink)',
-      ]"
-    >
-      <span class="truncate max-w-[180px]">
-        {{ activeDept ? triggerLabel : t("filters.dept.label") }}
-      </span>
-      <ChevronDown :size="12" aria-hidden="true" />
-    </PopoverTrigger>
+    <FilterTrigger
+      :label="activeDept ? triggerLabel : t('filters.dept.label')"
+      :active="!!activeDept"
+      max-width="180px"
+    />
 
     <PopoverContent align="start" :class="'w-[360px] p-0'">
       <div class="flex items-center gap-2 border-b border-(--color-border) px-3 py-2">
