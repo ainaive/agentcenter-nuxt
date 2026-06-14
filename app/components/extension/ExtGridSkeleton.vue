@@ -7,24 +7,20 @@ withDefaults(defineProps<{ count?: number }>(), { count: 8 })
     aria-hidden="true"
     class="grid animate-pulse grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4"
   >
-    <div
-      v-for="i in count"
-      :key="i"
-      class="flex flex-col gap-2 rounded-(--radius-card) border border-(--color-border) bg-(--color-card) p-5"
-    >
+    <Card v-for="i in count" :key="i" padding="md" class="flex flex-col gap-2">
       <div class="flex items-center gap-3">
-        <div class="size-11 shrink-0 rounded-[8px] bg-(--color-border)/40" />
-        <div class="h-[14px] w-2/3 rounded bg-(--color-border)/40" />
+        <Skeleton class="size-11 shrink-0 rounded-[8px]" />
+        <Skeleton class="h-[14px] w-2/3" />
       </div>
       <div class="space-y-1.5">
-        <div class="h-[10px] w-full rounded bg-(--color-border)/35" />
-        <div class="h-[10px] w-4/5 rounded bg-(--color-border)/35" />
+        <Skeleton class="h-[10px] w-full" />
+        <Skeleton class="h-[10px] w-4/5" />
       </div>
       <div class="mt-auto flex items-center gap-2 pt-1">
-        <div class="h-[12px] w-20 rounded bg-(--color-border)/40" />
-        <div class="h-[12px] w-10 rounded bg-(--color-border)/40" />
-        <div class="h-[12px] w-12 rounded bg-(--color-border)/40" />
+        <Skeleton class="h-[12px] w-20" />
+        <Skeleton class="h-[12px] w-10" />
+        <Skeleton class="h-[12px] w-12" />
       </div>
-    </div>
+    </Card>
   </div>
 </template>

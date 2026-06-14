@@ -16,30 +16,26 @@ function statusLabel(status: string | null): string | null {
 
 <template>
   <div>
-    <div
+    <EmptyState
       v-if="rows.length === 0"
-      class="rounded-(--radius-card) border border-dashed border-(--color-border) bg-(--color-card)/40 p-10 text-center"
+      :icon="FileText"
+      :title="t('profile.emptyDrafts.title')"
+      :description="t('profile.emptyDrafts.body')"
     >
-      <FileText class="mx-auto size-8 text-(--color-ink-muted)" aria-hidden="true" />
-      <h3 class="mt-3 font-serif text-lg text-(--color-ink)">
-        {{ t("profile.emptyDrafts.title") }}
-      </h3>
-      <p class="mt-1 text-sm text-(--color-ink-muted)">
-        {{ t("profile.emptyDrafts.body") }}
-      </p>
-      <NuxtLink
-        :to="localePath('/publish/new')"
-        class="mt-4 inline-flex items-center rounded-md bg-(--color-accent) text-(--color-accent-fg) px-3 py-1.5 text-sm hover:opacity-90"
-      >
-        {{ t("profile.publishOne") }}
-      </NuxtLink>
-    </div>
+      <template #cta>
+        <Button as-child size="sm">
+          <NuxtLink :to="localePath('/publish/new')">{{ t("profile.publishOne") }}</NuxtLink>
+        </Button>
+      </template>
+    </EmptyState>
 
     <ul v-else class="space-y-2">
-      <li
+      <Card
         v-for="r in rows"
         :key="r.extensionId"
-        class="flex items-center gap-4 rounded-lg border border-(--color-border) bg-(--color-card) p-4"
+        as="li"
+        padding="sm"
+        class="flex items-center gap-4"
       >
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2">
@@ -59,7 +55,7 @@ function statusLabel(status: string | null): string | null {
         >
           {{ t("profile.continueDraft") }}
         </NuxtLink>
-      </li>
+      </Card>
     </ul>
   </div>
 </template>

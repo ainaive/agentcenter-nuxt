@@ -53,18 +53,12 @@ async function onSubmit(payload: {
       </button>
     </div>
 
-    <div
+    <EmptyState
       v-if="rows.length === 0"
-      class="rounded-(--radius-card) border border-dashed border-(--color-border) bg-(--color-card)/40 p-10 text-center"
-    >
-      <FolderOpen class="mx-auto size-8 text-(--color-ink-muted)" aria-hidden="true" />
-      <h3 class="mt-3 font-serif text-lg text-(--color-ink)">
-        {{ t("profile.emptyCollections.title") }}
-      </h3>
-      <p class="mt-1 text-sm text-(--color-ink-muted)">
-        {{ t("profile.emptyCollections.body") }}
-      </p>
-    </div>
+      :icon="FolderOpen"
+      :title="t('profile.emptyCollections.title')"
+      :description="t('profile.emptyCollections.body')"
+    />
 
     <div v-else class="grid gap-3 sm:grid-cols-2">
       <CollectionCard

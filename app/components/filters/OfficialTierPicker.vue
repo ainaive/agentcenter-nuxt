@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ChevronDown } from "lucide-vue-next"
-
 import type { Filters } from "~~/shared/validators/filters"
 
 // Single popover that owns both the `tier` and `productLineId` filter keys.
@@ -108,17 +106,7 @@ function selectLine(productLineId: string | undefined) {
 
 <template>
   <Popover v-model:open="open">
-    <PopoverTrigger
-      :class="[
-        'inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 text-[12px] transition-colors',
-        hasNarrow
-          ? 'border-(--color-ink)/20 bg-(--color-card) text-(--color-ink) font-semibold'
-          : 'border-(--color-border) bg-(--color-card) text-(--color-ink-muted) hover:text-(--color-ink)',
-      ]"
-    >
-      <span class="truncate max-w-[140px]">{{ triggerLabel }}</span>
-      <ChevronDown :size="12" aria-hidden="true" />
-    </PopoverTrigger>
+    <FilterTrigger :label="triggerLabel" :active="hasNarrow" />
 
     <PopoverContent align="start" :class="'w-[320px] p-3 space-y-3'">
       <!-- Tier row -->
@@ -131,34 +119,17 @@ function selectLine(productLineId: string | undefined) {
           :aria-label="t('filters.tierLabel')"
           class="flex flex-wrap gap-1"
         >
-          <button
-            type="button"
-            :aria-pressed="!activeTier"
-            class="rounded-full border px-2.5 py-0.5 text-[12px] font-semibold transition"
-            :class="
-              !activeTier
-                ? 'bg-(--color-ink)/8 text-(--color-ink) border-(--color-ink)/25'
-                : 'border-(--color-border) text-(--color-ink-muted) hover:text-(--color-ink)'
-            "
-            @click="selectTier(undefined)"
-          >
+          <FilterChip :active="!activeTier" @click="selectTier(undefined)">
             {{ t("filters.tier.all") }}
-          </button>
-          <button
+          </FilterChip>
+          <FilterChip
             v-for="key in TIER_KEYS"
             :key="key"
-            type="button"
-            :aria-pressed="activeTier === key"
-            class="rounded-full border px-2.5 py-0.5 text-[12px] font-semibold transition"
-            :class="
-              activeTier === key
-                ? 'bg-(--color-ink)/8 text-(--color-ink) border-(--color-ink)/25'
-                : 'border-(--color-border) text-(--color-ink-muted) hover:text-(--color-ink)'
-            "
+            :active="activeTier === key"
             @click="selectTier(key)"
           >
             {{ t(`filters.tier.${key}`) }}
-          </button>
+          </FilterChip>
         </div>
       </div>
 
@@ -172,34 +143,17 @@ function selectLine(productLineId: string | undefined) {
           :aria-label="t('filters.productLineLabel')"
           class="flex flex-wrap gap-1"
         >
-          <button
-            type="button"
-            :aria-pressed="!activeLineId"
-            class="rounded-full border px-2.5 py-0.5 text-[12px] font-semibold transition"
-            :class="
-              !activeLineId
-                ? 'bg-(--color-ink)/8 text-(--color-ink) border-(--color-ink)/25'
-                : 'border-(--color-border) text-(--color-ink-muted) hover:text-(--color-ink)'
-            "
-            @click="selectLine(undefined)"
-          >
+          <FilterChip :active="!activeLineId" @click="selectLine(undefined)">
             {{ t("filters.productLine.all") }}
-          </button>
-          <button
+          </FilterChip>
+          <FilterChip
             v-for="line in orderedLines"
             :key="line.id"
-            type="button"
-            :aria-pressed="activeLineId === line.id"
-            class="rounded-full border px-2.5 py-0.5 text-[12px] font-semibold transition"
-            :class="
-              activeLineId === line.id
-                ? 'bg-(--color-ink)/8 text-(--color-ink) border-(--color-ink)/25'
-                : 'border-(--color-border) text-(--color-ink-muted) hover:text-(--color-ink)'
-            "
+            :active="activeLineId === line.id"
             @click="selectLine(line.id)"
           >
             {{ lineLabel(line) }}
-          </button>
+          </FilterChip>
         </div>
       </div>
     </PopoverContent>

@@ -30,10 +30,12 @@ const displayDescription = computed(() => {
 </script>
 
 <template>
-  <NuxtLink
-    :to="localePath(`/collections/${slug}`)"
-    class="flex flex-col gap-2 rounded-(--radius-card) border border-(--color-border) bg-(--color-card) p-4 transition-colors hover:bg-(--color-sidebar)/40"
+  <Card
+    as-child
+    padding="sm"
+    class="flex flex-col gap-2 transition-colors hover:bg-(--color-sidebar)/40"
   >
+    <NuxtLink :to="localePath(`/collections/${slug}`)">
     <div class="flex items-center gap-2.5">
       <component
         :is="systemKind === 'saved' ? Bookmark : FolderOpen"
@@ -74,5 +76,6 @@ const displayDescription = computed(() => {
       </span>
       <span v-if="showOwner && ownerName" class="truncate">{{ ownerName }}</span>
     </div>
-  </NuxtLink>
+    </NuxtLink>
+  </Card>
 </template>

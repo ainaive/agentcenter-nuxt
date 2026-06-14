@@ -34,7 +34,7 @@ const publishedLabel = computed(() => {
 </script>
 
 <template>
-  <div class="rounded-(--radius-card) border border-(--color-border) bg-(--color-card) p-6">
+  <Card padding="lg">
     <h2 class="font-serif text-base font-semibold tracking-tight mb-4 text-(--color-ink)">
       {{ t("extensions.about") }}
     </h2>
@@ -77,5 +77,5 @@ const publishedLabel = computed(() => {
         {{ t("extensions.repository") }}
       </a>
     </div>
-  </div>
+  </Card>
 </template>

@@ -24,8 +24,8 @@ const active = computed(() => props.value === props.current)
     :class="[
       'flex flex-col gap-1 rounded-lg border-2 px-3.5 py-3 text-left transition-all',
       active
-        ? 'border-(--color-accent) bg-(--color-accent)/10'
-        : 'border-(--color-border) bg-(--color-card) hover:border-(--color-accent)/40',
+        ? 'border-(--color-ink) bg-(--color-card)'
+        : 'border-(--color-border) bg-(--color-card) hover:border-(--color-ink)/40',
       disabled && 'cursor-not-allowed opacity-60',
     ]"
     @click="emit('select', value)"
@@ -41,7 +41,7 @@ const active = computed(() => props.value === props.current)
         </span>
         <span
           v-if="active"
-          class="inline-flex size-4 items-center justify-center rounded-full bg-(--color-accent) text-(--color-accent-fg)"
+          class="inline-flex size-4 items-center justify-center rounded-full bg-(--color-ink) text-(--color-bg)"
         >
           <Check aria-hidden="true" :size="10" />
         </span>

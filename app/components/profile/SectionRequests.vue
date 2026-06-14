@@ -55,30 +55,25 @@ async function withdraw(row: ProfileRequestRow) {
 
 <template>
   <div>
-    <div
+    <EmptyState
       v-if="rows.length === 0"
-      class="rounded-(--radius-card) border border-dashed border-(--color-border) bg-(--color-card)/40 p-10 text-center"
+      :icon="Award"
+      :title="t('approvals.emptyRequests.title')"
+      :description="t('approvals.emptyRequests.body')"
     >
-      <Award class="mx-auto size-8 text-(--color-ink-muted)" aria-hidden="true" />
-      <h3 class="mt-3 font-serif text-lg text-(--color-ink)">
-        {{ t("approvals.emptyRequests.title") }}
-      </h3>
-      <p class="mt-1 text-sm text-(--color-ink-muted)">
-        {{ t("approvals.emptyRequests.body") }}
-      </p>
-      <NuxtLink
-        :to="localePath('/publish')"
-        class="mt-4 inline-flex items-center rounded-md border border-(--color-border) bg-(--color-card) px-3 py-1.5 text-sm font-semibold text-(--color-ink) hover:bg-(--color-sidebar)/60"
-      >
-        {{ t("approvals.gotoPublish") }}
-      </NuxtLink>
-    </div>
+      <template #cta>
+        <Button as-child size="sm" variant="outline">
+          <NuxtLink :to="localePath('/publish')">{{ t("approvals.gotoPublish") }}</NuxtLink>
+        </Button>
+      </template>
+    </EmptyState>
 
     <ul v-else class="space-y-2">
-      <li
+      <Card
         v-for="r in rows"
         :key="r.requestId"
-        class="rounded-lg border border-(--color-border) bg-(--color-card) p-4"
+        as="li"
+        padding="sm"
       >
         <div class="flex items-start gap-3">
           <div class="flex-1 min-w-0">
@@ -127,7 +122,7 @@ async function withdraw(row: ProfileRequestRow) {
             {{ t("approvals.withdraw") }}
           </button>
         </div>
-      </li>
+      </Card>
     </ul>
   </div>
 </template>

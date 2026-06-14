@@ -10,30 +10,26 @@ const localePath = useLocalePath()
 
 <template>
   <div>
-    <div
+    <EmptyState
       v-if="rows.length === 0"
-      class="rounded-(--radius-card) border border-dashed border-(--color-border) bg-(--color-card)/40 p-10 text-center"
+      :icon="Download"
+      :title="t('profile.emptyInstalled.title')"
+      :description="t('profile.emptyInstalled.body')"
     >
-      <Download class="mx-auto size-8 text-(--color-ink-muted)" aria-hidden="true" />
-      <h3 class="mt-3 font-serif text-lg text-(--color-ink)">
-        {{ t("profile.emptyInstalled.title") }}
-      </h3>
-      <p class="mt-1 text-sm text-(--color-ink-muted)">
-        {{ t("profile.emptyInstalled.body") }}
-      </p>
-      <NuxtLink
-        :to="localePath('/extensions')"
-        class="mt-4 inline-flex items-center rounded-md border border-(--color-border) px-3 py-1.5 text-sm text-(--color-ink) hover:bg-(--color-sidebar)"
-      >
-        {{ t("profile.browse") }}
-      </NuxtLink>
-    </div>
+      <template #cta>
+        <Button as-child size="sm" variant="outline">
+          <NuxtLink :to="localePath('/extensions')">{{ t("profile.browse") }}</NuxtLink>
+        </Button>
+      </template>
+    </EmptyState>
 
     <ul v-else class="space-y-2">
-      <li
+      <Card
         v-for="r in rows"
         :key="r.extensionId"
-        class="flex items-center gap-4 rounded-lg border border-(--color-border) bg-(--color-card) p-4"
+        as="li"
+        padding="sm"
+        class="flex items-center gap-4"
       >
         <NuxtLink
           :to="localePath(`/extensions/${r.slug}`)"
@@ -49,7 +45,7 @@ const localePath = useLocalePath()
             v{{ r.installedVersion }}
           </div>
         </NuxtLink>
-      </li>
+      </Card>
     </ul>
   </div>
 </template>

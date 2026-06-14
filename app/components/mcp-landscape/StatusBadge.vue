@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { McpStatus } from "~~/shared/data/mcp-landscape"
+import { mcpStatusClasses } from "~/lib/mcp-status"
 
+// Display-only status badge (dot + short label). The interactive filter
+// toggle is StatusChip; both share the palette via mcpStatusClasses().
 const props = withDefaults(
   defineProps<{ status: McpStatus; size?: "sm" | "md" }>(),
   { size: "sm" },
@@ -8,6 +11,7 @@ const props = withDefaults(
 
 const { t } = useI18n()
 const label = computed(() => t(`mcpPanorama.status.${props.status}.short`))
+const classes = computed(() => mcpStatusClasses(props.status))
 </script>
 
 <template>
@@ -15,19 +19,12 @@ const label = computed(() => t(`mcpPanorama.status.${props.status}.short`))
     class="inline-flex items-center font-mono leading-snug whitespace-nowrap rounded-full"
     :class="[
       size === 'sm' ? 'gap-1.5 px-2 py-[2px] text-[11px]' : 'gap-1.5 px-2.5 py-[3px] text-[12px]',
-      status === 'released' && 'bg-(--color-status-released-bg) text-(--color-status-released)',
-      status === 'dev' && 'bg-(--color-status-dev-bg) text-(--color-status-dev)',
-      status === 'none' && 'bg-(--color-status-none-bg) text-(--color-status-none)',
+      classes.surface,
     ]"
   >
     <span
       class="rounded-full"
-      :class="[
-        size === 'sm' ? 'size-[5px]' : 'size-[6px]',
-        status === 'released' && 'bg-(--color-status-released)',
-        status === 'dev' && 'bg-(--color-status-dev)',
-        status === 'none' && 'bg-(--color-status-none)',
-      ]"
+      :class="[size === 'sm' ? 'size-[5px]' : 'size-[6px]', classes.dot]"
     />
     {{ label }}
   </span>

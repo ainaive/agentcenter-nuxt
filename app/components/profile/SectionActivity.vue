@@ -20,18 +20,12 @@ function verbFor(kind: ProfileActivityEvent["kind"]): string {
 
 <template>
   <div>
-    <div
+    <EmptyState
       v-if="rows.length === 0"
-      class="rounded-(--radius-card) border border-dashed border-(--color-border) bg-(--color-card)/40 p-10 text-center"
-    >
-      <Clock class="mx-auto size-8 text-(--color-ink-muted)" aria-hidden="true" />
-      <h3 class="mt-3 font-serif text-lg text-(--color-ink)">
-        {{ t("profile.emptyActivity.title") }}
-      </h3>
-      <p class="mt-1 text-sm text-(--color-ink-muted)">
-        {{ t("profile.emptyActivity.body") }}
-      </p>
-    </div>
+      :icon="Clock"
+      :title="t('profile.emptyActivity.title')"
+      :description="t('profile.emptyActivity.body')"
+    />
 
     <ul v-else class="space-y-1">
       <li

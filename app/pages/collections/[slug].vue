@@ -259,12 +259,10 @@ async function onDelete() {
           {{ t("collections.detail.itemsHeading", { count: data.items.length }) }}
         </h2>
 
-        <div
+        <EmptyState
           v-if="data.items.length === 0"
-          class="rounded-(--radius-card) border border-dashed border-(--color-border) bg-(--color-card)/40 p-10 text-center"
-        >
-          <p class="text-sm text-(--color-ink-muted)">{{ t("collections.detail.empty") }}</p>
-        </div>
+          :description="t('collections.detail.empty')"
+        />
 
         <div
           v-else

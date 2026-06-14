@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ChevronDown } from "lucide-vue-next"
-
 import { SUB_CAT_KEY_LIST } from "~~/shared/validators/approvals"
 
 // SubCat picker — mirrors OfficialTierPicker's affordance (Popover
@@ -56,20 +54,7 @@ function selectSubCat(subCat: string | undefined) {
 
 <template>
   <Popover v-model:open="open">
-    <PopoverTrigger
-      :disabled="disabled"
-      :class="[
-        'inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 text-[12px] transition-colors',
-        disabled
-          ? 'border-(--color-border) bg-(--color-card) text-(--color-ink-muted)/60 cursor-not-allowed'
-          : hasNarrow
-            ? 'border-(--color-ink)/20 bg-(--color-card) text-(--color-ink) font-semibold'
-            : 'border-(--color-border) bg-(--color-card) text-(--color-ink-muted) hover:text-(--color-ink)',
-      ]"
-    >
-      <span class="truncate max-w-[140px]">{{ triggerLabel }}</span>
-      <ChevronDown :size="12" aria-hidden="true" />
-    </PopoverTrigger>
+    <FilterTrigger :label="triggerLabel" :active="hasNarrow" :disabled="disabled" />
 
     <PopoverContent align="start" :class="'w-[320px] p-3'">
       <p class="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-(--color-ink-muted)">
@@ -80,34 +65,17 @@ function selectSubCat(subCat: string | undefined) {
         :aria-label="t('filters.subCatPicker.triggerLabel')"
         class="flex flex-wrap gap-1"
       >
-        <button
-          type="button"
-          :aria-pressed="!activeSubCat"
-          class="rounded-full border px-2.5 py-0.5 text-[12px] font-semibold transition"
-          :class="
-            !activeSubCat
-              ? 'bg-(--color-ink)/8 text-(--color-ink) border-(--color-ink)/25'
-              : 'border-(--color-border) text-(--color-ink-muted) hover:text-(--color-ink)'
-          "
-          @click="selectSubCat(undefined)"
-        >
+        <FilterChip :active="!activeSubCat" @click="selectSubCat(undefined)">
           {{ t("filters.subCat.all") }}
-        </button>
-        <button
+        </FilterChip>
+        <FilterChip
           v-for="key in options"
           :key="key"
-          type="button"
-          :aria-pressed="activeSubCat === key"
-          class="rounded-full border px-2.5 py-0.5 text-[12px] font-semibold transition"
-          :class="
-            activeSubCat === key
-              ? 'bg-(--color-ink)/8 text-(--color-ink) border-(--color-ink)/25'
-              : 'border-(--color-border) text-(--color-ink-muted) hover:text-(--color-ink)'
-          "
+          :active="activeSubCat === key"
           @click="selectSubCat(key)"
         >
           {{ t(`taxonomy.l1.${key}`) }}
-        </button>
+        </FilterChip>
       </div>
     </PopoverContent>
   </Popover>
