@@ -143,7 +143,7 @@ function drillTo(primary: string) {
 }
 
 function filterTo(status: McpStatus) {
-  // Same toggle behavior as the StatusChip buttons in SectionHeader —
+  // Same toggle behavior as the StatusChip buttons in PanoramaPageHeader —
   // clicking the active status flips back to "all".
   toggleStatus(status)
 }
@@ -151,7 +151,7 @@ function filterTo(status: McpStatus) {
 
 <template>
   <div class="px-6 py-8">
-    <SectionHeader
+    <PanoramaPageHeader
       v-if="data"
       :layer="layer"
       :active-primary="activePrimary"
