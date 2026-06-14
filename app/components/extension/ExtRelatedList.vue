@@ -46,9 +46,9 @@ function ratingFor(r: RelatedRow): string | null {
 </script>
 
 <template>
-  <div
+  <Card
     v-if="props.related.length > 0"
-    class="rounded-(--radius-card) border border-(--color-border) bg-(--color-card) p-6"
+    padding="lg"
   >
     <h2 class="font-serif text-base font-semibold tracking-tight mb-4 text-(--color-ink)">
       {{ t("extensions.related") }}
@@ -92,5 +92,5 @@ function ratingFor(r: RelatedRow): string | null {
         </NuxtLink>
       </li>
     </ul>
-  </div>
+  </Card>
 </template>

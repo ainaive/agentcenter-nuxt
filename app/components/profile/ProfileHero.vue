@@ -45,7 +45,7 @@ const fmtCount = computed(() => {
 </script>
 
 <template>
-  <header class="rounded-(--radius-card) border border-(--color-border) bg-(--color-card) p-6">
+  <Card as="header" padding="lg">
     <div class="flex items-center gap-4">
       <div
         class="grid size-[72px] shrink-0 place-items-center rounded-full bg-(--color-accent) text-(--color-accent-fg) font-serif text-2xl font-semibold"
@@ -90,5 +90,5 @@ const fmtCount = computed(() => {
         </dd>
       </div>
     </dl>
-  </header>
+  </Card>
 </template>

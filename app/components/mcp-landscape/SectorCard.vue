@@ -14,7 +14,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <article class="bg-(--color-card) border border-(--color-border) rounded-xl p-3.5 flex flex-col gap-3">
+  <Card as="article" padding="sm" class="flex flex-col gap-3">
     <CardHeader :group="group" @drill="emit('drill', props.group.key)" />
     <div class="bg-(--color-bg) rounded-lg p-2.5 flex flex-col gap-1.5">
       <ToolMcpsCard
@@ -25,5 +25,5 @@ const emit = defineEmits<{
         @pick="(p) => emit('pick', p)"
       />
     </div>
-  </article>
+  </Card>
 </template>

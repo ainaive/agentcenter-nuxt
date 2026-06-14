@@ -52,8 +52,10 @@ const ratingLabel = computed(() => {
 </script>
 
 <template>
-  <article
-    class="group relative flex flex-col gap-2 rounded-(--radius-card) border border-(--color-border) bg-(--color-card) p-5 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-(--color-accent)/30 hover:shadow-[0_2px_10px_-4px_oklch(0_0_0_/_0.08)]"
+  <Card
+    as="article"
+    :interactive="true"
+    class="group relative flex flex-col gap-2"
   >
     <div class="flex items-center gap-3">
       <div
@@ -112,5 +114,5 @@ const ratingLabel = computed(() => {
         <span>{{ formatCount(ext.downloadsCount) }}</span>
       </span>
     </div>
-  </article>
+  </Card>
 </template>
