@@ -89,18 +89,17 @@ function cancelReject() {
 
 <template>
   <div>
-    <div
+    <EmptyState
       v-if="props.rows.length === 0"
-      class="rounded-(--radius-card) border border-dashed border-(--color-border) bg-(--color-card)/40 p-10 text-center"
-    >
-      <p class="text-(--color-ink-muted)">{{ t("admin.approvals.empty") }}</p>
-    </div>
+      :description="t('admin.approvals.empty')"
+    />
 
     <ul v-else class="space-y-2">
-      <li
+      <Card
         v-for="row in props.rows"
         :key="row.id"
-        class="rounded-lg border border-(--color-border) bg-(--color-card) p-4"
+        as="li"
+        padding="sm"
       >
         <div class="flex items-start gap-4">
           <div class="flex-1 min-w-0">
@@ -185,7 +184,7 @@ function cancelReject() {
             </div>
           </div>
         </div>
-      </li>
+      </Card>
     </ul>
   </div>
 </template>

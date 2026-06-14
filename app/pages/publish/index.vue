@@ -85,18 +85,18 @@ function showRevocation(item: Item): boolean {
     </header>
 
     <DashboardSkeleton v-if="pending" :rows="3" />
-    <div
+    <EmptyState
       v-else-if="items.length === 0"
-      class="rounded-lg border border-dashed border-(--color-border) bg-(--color-card)/40 p-10 text-center"
-    >
-      <p class="text-(--color-ink-muted)">{{ t("publish.emptyDashboard") }}</p>
-    </div>
+      :description="t('publish.emptyDashboard')"
+    />
 
     <ul v-else class="space-y-2">
-      <li
+      <Card
         v-for="item in items"
         :key="item.id"
-        class="flex items-center gap-4 rounded-lg border border-(--color-border) bg-(--color-card) p-4"
+        as="li"
+        padding="sm"
+        class="flex items-center gap-4"
       >
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2">
@@ -154,7 +154,7 @@ function showRevocation(item: Item): boolean {
           :current-sub-cat="item.subCat"
           @submitted="refresh"
         />
-      </li>
+      </Card>
     </ul>
   </div>
 </template>

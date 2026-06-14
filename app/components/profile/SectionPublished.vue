@@ -15,30 +15,26 @@ const fmt = computed(() => {
 
 <template>
   <div>
-    <div
+    <EmptyState
       v-if="rows.length === 0"
-      class="rounded-(--radius-card) border border-dashed border-(--color-border) bg-(--color-card)/40 p-10 text-center"
+      :icon="Upload"
+      :title="t('profile.emptyPublished.title')"
+      :description="t('profile.emptyPublished.body')"
     >
-      <Upload class="mx-auto size-8 text-(--color-ink-muted)" aria-hidden="true" />
-      <h3 class="mt-3 font-serif text-lg text-(--color-ink)">
-        {{ t("profile.emptyPublished.title") }}
-      </h3>
-      <p class="mt-1 text-sm text-(--color-ink-muted)">
-        {{ t("profile.emptyPublished.body") }}
-      </p>
-      <NuxtLink
-        :to="localePath('/publish/new')"
-        class="mt-4 inline-flex items-center rounded-md bg-(--color-accent) text-(--color-accent-fg) px-3 py-1.5 text-sm hover:opacity-90"
-      >
-        {{ t("profile.publishOne") }}
-      </NuxtLink>
-    </div>
+      <template #cta>
+        <Button as-child size="sm">
+          <NuxtLink :to="localePath('/publish/new')">{{ t("profile.publishOne") }}</NuxtLink>
+        </Button>
+      </template>
+    </EmptyState>
 
     <ul v-else class="space-y-2">
-      <li
+      <Card
         v-for="r in rows"
         :key="r.extensionId"
-        class="flex items-center gap-4 rounded-lg border border-(--color-border) bg-(--color-card) p-4"
+        as="li"
+        padding="sm"
+        class="flex items-center gap-4"
       >
         <NuxtLink :to="localePath(`/extensions/${r.slug}`)" class="flex-1 min-w-0">
           <div class="flex items-center gap-2">
@@ -53,7 +49,7 @@ const fmt = computed(() => {
             <span v-if="Number(r.starsAvg) > 0">{{ Number(r.starsAvg).toFixed(1) }} ★</span>
           </div>
         </NuxtLink>
-      </li>
+      </Card>
     </ul>
   </div>
 </template>

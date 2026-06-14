@@ -50,15 +50,11 @@ function pageLink(n: number) {
       />
     </div>
 
-    <div
+    <EmptyState
       v-else-if="!data || data.items.length === 0"
-      class="rounded-(--radius-card) border border-dashed border-(--color-border) bg-(--color-card)/40 p-10 text-center"
-    >
-      <FolderOpen class="mx-auto size-8 text-(--color-ink-muted)" aria-hidden="true" />
-      <h3 class="mt-3 font-serif text-lg text-(--color-ink)">
-        {{ t("collections.browse.empty") }}
-      </h3>
-    </div>
+      :icon="FolderOpen"
+      :title="t('collections.browse.empty')"
+    />
 
     <template v-else>
       <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
