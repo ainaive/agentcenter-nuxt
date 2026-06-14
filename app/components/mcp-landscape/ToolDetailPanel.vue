@@ -8,7 +8,7 @@ import {
   type McpDto,
   type ToolDto,
 } from "~~/shared/mcp-panorama"
-import StatusPill from "./StatusPill.vue"
+import StatusBadge from "./StatusBadge.vue"
 
 const props = defineProps<{
   active: { tool: ToolDto; mcp: McpDto } | null
@@ -167,7 +167,7 @@ watch(mcp, () => {
                 <Globe2 v-else :size="10" aria-hidden="true" />
                 {{ t(`mcpPanorama.layer.${ownerLayer}Short`) }}
               </span>
-              <StatusPill :status="mcp.status" size="sm" />
+              <StatusBadge :status="mcp.status" size="sm" />
             </div>
             <div class="font-mono text-[11px] tracking-wide uppercase text-(--color-ink-muted)">
               {{ t("mcpPanorama.detail.toolContext") }}
@@ -278,7 +278,7 @@ watch(mcp, () => {
                 {{ mcpDisplayName(s, locale) }}
               </span>
             </div>
-            <StatusPill :status="s.status" size="sm" />
+            <StatusBadge :status="s.status" size="sm" />
           </button>
         </div>
       </div>
@@ -308,7 +308,7 @@ watch(mcp, () => {
                 </span>
               </div>
             </div>
-            <StatusPill :status="d.mcp.status" size="sm" />
+            <StatusBadge :status="d.mcp.status" size="sm" />
           </div>
         </div>
       </div>

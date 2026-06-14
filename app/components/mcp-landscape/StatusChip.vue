@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { McpStatus } from "~~/shared/data/mcp-landscape"
+import { mcpStatusClasses } from "~/lib/mcp-status"
 
 const props = defineProps<{
   /** Status key, or "all". */
@@ -11,23 +12,17 @@ const props = defineProps<{
 
 const emit = defineEmits<{ click: [] }>()
 
-const dotClass = computed(() => {
-  switch (props.value) {
-    case "released": return "bg-(--color-status-released)"
-    case "dev": return "bg-(--color-status-dev)"
-    case "none": return "bg-(--color-status-none)"
-    default: return ""
-  }
-})
+const dotClass = computed(() =>
+  props.value === "all" ? "" : mcpStatusClasses(props.value).dot,
+)
 
 const activeClass = computed(() => {
   if (!props.active) return "border-(--color-border) bg-(--color-card) text-(--color-ink)"
-  switch (props.value) {
-    case "released": return "border-(--color-status-released) bg-(--color-status-released-bg) text-(--color-status-released)"
-    case "dev": return "border-(--color-status-dev) bg-(--color-status-dev-bg) text-(--color-status-dev)"
-    case "none": return "border-(--color-status-none) bg-(--color-status-none-bg) text-(--color-status-none)"
-    default: return "border-(--color-accent) bg-(--color-accent)/10 text-(--color-accent)"
-  }
+  // The "all" toggle is a filter pill — neutral ink active state, not an
+  // accent fill (locked decision #11). Status pills keep their own colour.
+  if (props.value === "all") return "border-(--color-ink)/25 bg-(--color-ink)/8 text-(--color-ink)"
+  const c = mcpStatusClasses(props.value)
+  return `${c.border} ${c.surface}`
 })
 </script>
 
