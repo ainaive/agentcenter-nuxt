@@ -87,6 +87,32 @@
     "copy": "Copy",
     "copied": "Copied",
     "share": "Share",
+    "install": {
+      "methods": {
+        "agent": "Conversational",
+        "cli": "CLI",
+        "download": "Direct download"
+      },
+      "agent": {
+        "hint": "Paste this to your AI agent (e.g. Claude Code):",
+        "promptTemplate": "Please install the \"{name}\" extension ({category}) from AgentCenter for me.\n\n1. Download the bundle ZIP from this URL (it 302-redirects to a signed file):\n   {bundleUrl}\n2. Unzip it to a temp directory and read `manifest.toml` at the archive root.\n3. Place the unpacked files at: {destPath}\n   (Create parent directories if missing; replace any previous version there.)\n4. Follow any `[install.claude.postInstall].message` in the manifest, if present.\n5. Delete the temp files and confirm it's installed, printing the final path."
+      },
+      "cli": {
+        "hint": "Run this in your terminal (requires the agentcenter CLI):"
+      },
+      "download": {
+        "hint": "Download the bundle and place it manually:",
+        "button": "Download .zip",
+        "destLabel": "Destination",
+        "steps": {
+          "skills": "1. Unzip the archive.\n2. Copy the folder to {destPath}.\n3. Restart your agent if needed.",
+          "cli": "1. Unzip the archive.\n2. Copy it to {destPath}.\n3. Wire the entry point into your PATH per the README.",
+          "plugins": "1. Unzip the archive.\n2. Copy the folder to {destPath}.",
+          "slash": "1. Unzip the archive.\n2. Copy the command file to {destPath}.",
+          "mcp": "1. Unzip the archive.\n2. Add a server entry keyed \"{slug}\" to {destPath}.\n3. Restart Claude Desktop."
+        }
+      }
+    },
     "empty": {
       "noResultsFor": "No results for \"{query}\"",
       "noResultsFiltered": "No {label} match these filters",
