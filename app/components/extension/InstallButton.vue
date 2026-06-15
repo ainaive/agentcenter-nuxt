@@ -6,30 +6,17 @@ const props = defineProps<{ extensionId: string; size?: "sm" | "md" | "lg" }>()
 const { t } = useI18n()
 const router = useRouter()
 const localePath = useLocalePath()
-const auth = useAuth()
 
-const session = auth.useSession()
-const loading = ref(false)
-const installed = ref(false)
+// Shared with the "Direct download" method so the two can't double-count.
+const { installed, pending, isAuthed, record } = useInstallState(props.extensionId)
 
 async function handleClick() {
-  if (loading.value || installed.value) return
-  if (!session.value.data?.user) {
+  if (pending.value || installed.value) return
+  if (!isAuthed.value) {
     await router.push(localePath("/sign-in"))
     return
   }
-  loading.value = true
-  try {
-    await $fetch("/api/internal/installs", {
-      method: "POST",
-      body: { extensionId: props.extensionId },
-    })
-    installed.value = true
-  } catch (err) {
-    console.error("install failed", err)
-  } finally {
-    loading.value = false
-  }
+  await record()
 }
 
 const sizeClass = computed(() => {
@@ -49,13 +36,13 @@ const iconSize = computed(() => (props.size === "lg" ? 14 : 12))
       installed
         ? 'bg-(--color-accent)/10 text-(--color-accent)'
         : 'bg-(--color-accent) text-(--color-accent-fg) hover:opacity-90',
-      loading && 'opacity-60',
+      pending && 'opacity-60',
     ]"
-    :disabled="loading"
+    :disabled="pending"
     @click.stop.prevent="handleClick"
   >
     <Check v-if="installed" :size="iconSize" aria-hidden="true" />
     <Download v-else :size="iconSize" aria-hidden="true" />
-    <span>{{ installed ? t("common.installed") : (loading ? t("common.installing") : t("common.install")) }}</span>
+    <span>{{ installed ? t("common.installed") : (pending ? t("common.installing") : t("common.install")) }}</span>
   </button>
 </template>

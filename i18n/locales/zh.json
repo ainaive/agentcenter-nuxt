@@ -87,6 +87,32 @@
     "copy": "复制",
     "copied": "已复制",
     "share": "分享",
+    "install": {
+      "methods": {
+        "agent": "对话安装",
+        "cli": "命令行",
+        "download": "直接下载"
+      },
+      "agent": {
+        "hint": "把下面这段话发给你的 AI 助手（例如 Claude Code）：",
+        "promptTemplate": "请帮我从 AgentCenter 安装「{name}」扩展（类型：{category}）。\n\n1. 从以下地址下载打包好的 ZIP（该地址会 302 重定向到带签名的文件）：\n   {bundleUrl}\n2. 解压到临时目录，并读取压缩包根目录下的 `manifest.toml`。\n3. 将解压后的文件放置到：{destPath}\n   （如父目录不存在请创建；如该位置已存在旧版本，请替换。）\n4. 如清单中存在 `[install.claude.postInstall].message`，请按其说明执行。\n5. 删除临时文件，确认安装完成，并输出最终的安装路径。"
+      },
+      "cli": {
+        "hint": "在终端中运行（需安装 agentcenter CLI）："
+      },
+      "download": {
+        "hint": "下载压缩包并手动放置：",
+        "button": "下载 .zip",
+        "destLabel": "安装位置",
+        "steps": {
+          "skills": "1. 解压压缩包。\n2. 将文件夹复制到 {destPath}。\n3. 如有需要，重启你的 AI 助手。",
+          "cli": "1. 解压压缩包。\n2. 复制到 {destPath}。\n3. 按 README 将入口加入 PATH。",
+          "plugins": "1. 解压压缩包。\n2. 将文件夹复制到 {destPath}。",
+          "slash": "1. 解压压缩包。\n2. 将命令文件复制到 {destPath}。",
+          "mcp": "1. 解压压缩包。\n2. 在 {destPath} 中添加键名为「{slug}」的服务条目。\n3. 重启 Claude Desktop。"
+        }
+      }
+    },
     "empty": {
       "noResultsFor": "没有\"{query}\"的结果",
       "noResultsFiltered": "没有符合当前筛选条件的{label}",
