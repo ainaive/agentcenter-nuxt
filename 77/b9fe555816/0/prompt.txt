@@ -1,0 +1,1 @@
+I'm thinking about designing multiple installation methods for skills: first, an Agent-driven conversational method using natural language; second, a command-line installation via the AgentCenter CLI; and third, a direct download of a compressed archive. We can model these after the installation workflows provided by skillhub.cn.
