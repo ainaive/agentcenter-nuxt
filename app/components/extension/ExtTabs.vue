@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import type { Locale } from "~~/shared/types"
+import type { ExtensionCategory, Locale } from "~~/shared/types"
 import { tagLabel } from "~~/shared/tags"
 
 const props = defineProps<{
   readmeMd: string | null
   tagIds: string[]
   slug: string
+  name: string
+  category: ExtensionCategory
+  bundleUrl: string
+  extensionId: string
   permissions: Record<string, unknown> | null
 }>()
 
@@ -62,10 +66,13 @@ const permissionEntries = computed(() => {
       <div
         class="mt-4 rounded-(--radius-card) border border-(--color-border) bg-(--color-card) p-6"
       >
-        <p class="mb-3 text-sm text-(--color-ink-muted)">
-          {{ t("extensions.setupHint") }}
-        </p>
-        <InstallCommand :command="installCommand" />
+        <InstallMethods
+          :slug="slug"
+          :name="name"
+          :category="category"
+          :bundle-url="bundleUrl"
+          :extension-id="extensionId"
+        />
       </div>
     </TabsContent>
 

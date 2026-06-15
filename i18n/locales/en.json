@@ -79,7 +79,7 @@
     "related": "Related",
     "tabs": {
       "overview": "Overview",
-      "setup": "Setup",
+      "setup": "Install",
       "permissions": "Permissions"
     },
     "setupHint": "Run this in your terminal once you've signed in:",

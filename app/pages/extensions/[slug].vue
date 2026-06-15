@@ -57,6 +57,10 @@ const permissions = computed(
   () => (ext.value.permissions ?? null) as Record<string, unknown> | null,
 )
 const shareUrl = computed(() => `${requestUrl.origin}/${locale.value}/extensions/${slug.value}`)
+// Absolute so the conversational install prompt is actionable off-host; the
+// direct-download anchor reuses the same value. The bundle endpoint 302s to a
+// signed ZIP and needs no auth.
+const bundleUrl = computed(() => `${requestUrl.origin}/api/v1/extensions/${slug.value}/bundle`)
 
 // Using nuxt-og-image's bundled "Frame" template until we ship brand-matched
 // custom OG components (deferred — Nuxt 4's `app/` layout breaks the
@@ -107,6 +111,10 @@ defineOgImageComponent("Frame", {
           :readme-md="ext.readmeMd"
           :tag-ids="ext.tagIds"
           :slug="ext.slug"
+          :name="name"
+          :category="ext.category"
+          :bundle-url="bundleUrl"
+          :extension-id="ext.id"
           :permissions="permissions"
         />
       </main>
