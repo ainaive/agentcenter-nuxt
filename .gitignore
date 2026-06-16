@@ -25,6 +25,9 @@ node_modules
 .DS_Store
 .claude/settings.local.json
 
+# Local dev object storage (filesystem fallback in server/utils/storage.ts)
+.data
+
 # Tests
 coverage
 .vitest-cache
