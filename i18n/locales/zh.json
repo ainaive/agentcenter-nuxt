@@ -343,7 +343,8 @@
       "settings": "设置",
       "profile": "个人资料",
       "adminApprovals": "审核队列",
-      "adminReviewers": "审核员矩阵"
+      "adminReviewers": "审核员矩阵",
+      "adminPublishQueue": "发布审核"
     }
   },
   "publish": {
@@ -572,6 +573,7 @@
     },
     "draftStatus": {
       "scanning": "等待扫描",
+      "awaitingReview": "等待审核",
       "rejected": "已拒绝"
     },
     "activity": {
@@ -586,6 +588,14 @@
     }
   },
   "admin": {
+    "publishQueue": {
+      "title": "发布审核",
+      "subtitle": "已通过扫描、等待发布的组织与企业范围扩展。",
+      "loading": "加载中…",
+      "empty": "暂无待审核的扩展。",
+      "publish": "发布",
+      "scannedOn": "扫描于 {date}"
+    },
     "approvals": {
       "title": "审核队列",
       "subtitle": "你负责审核的分类中的待处理申请。",

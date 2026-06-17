@@ -9,6 +9,8 @@ const localePath = useLocalePath()
 
 function statusLabel(status: string | null): string | null {
   if (status === "scanning") return t("profile.draftStatus.scanning")
+  // org/enterprise extensions sit at `ready` while a super-admin reviews them.
+  if (status === "ready") return t("profile.draftStatus.awaitingReview")
   if (status === "rejected") return t("profile.draftStatus.rejected")
   return null
 }

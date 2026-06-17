@@ -137,6 +137,15 @@ async function handleSignOut() {
           >
             {{ t("auth.userMenu.adminReviewers") }}
           </NuxtLink>
+          <NuxtLink
+            v-if="adminMe.isSuperAdmin"
+            :to="localePath('/admin/publish-queue')"
+            class="block px-3 py-2 text-sm rounded text-(--color-ink) hover:bg-(--color-sidebar)"
+            role="menuitem"
+            @click="close"
+          >
+            {{ t("auth.userMenu.adminPublishQueue") }}
+          </NuxtLink>
           <div class="my-1 border-t border-(--color-border)" role="separator" />
         </template>
         <button

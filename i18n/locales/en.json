@@ -343,7 +343,8 @@
       "settings": "Settings",
       "profile": "Profile",
       "adminApprovals": "Approval queue",
-      "adminReviewers": "Reviewer matrix"
+      "adminReviewers": "Reviewer matrix",
+      "adminPublishQueue": "Publish review"
     }
   },
   "publish": {
@@ -572,6 +573,7 @@
     },
     "draftStatus": {
       "scanning": "Awaiting scan",
+      "awaitingReview": "Awaiting review",
       "rejected": "Rejected"
     },
     "activity": {
@@ -586,6 +588,14 @@
     }
   },
   "admin": {
+    "publishQueue": {
+      "title": "Publish review",
+      "subtitle": "Org and enterprise extensions that passed the scan, awaiting publish.",
+      "loading": "Loading queue…",
+      "empty": "Nothing waiting for review.",
+      "publish": "Publish",
+      "scannedOn": "scanned {date}"
+    },
     "approvals": {
       "title": "Approval queue",
       "subtitle": "Pending requests in the cells you review.",

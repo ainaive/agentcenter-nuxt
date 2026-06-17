@@ -99,6 +99,8 @@ describe("UserButton — admin row visibility", () => {
     const text = wrapper.text()
     expect(text).toContain("Approval queue")
     expect(text).toContain("Reviewer matrix")
+    // Publish review is super-admin-only.
+    expect(text).not.toContain("Publish review")
   })
 
   it("super-admin: dropdown shows both admin rows", async () => {
@@ -111,6 +113,7 @@ describe("UserButton — admin row visibility", () => {
     const text = wrapper.text()
     expect(text).toContain("Approval queue")
     expect(text).toContain("Reviewer matrix")
+    expect(text).toContain("Publish review")
   })
 
   it("admin rows link to /admin/approvals and /admin/reviewers via localePath", async () => {
@@ -123,6 +126,7 @@ describe("UserButton — admin row visibility", () => {
     const hrefs = wrapper.findAll("a").map((a) => a.attributes("href") ?? "")
     expect(hrefs.some((h) => h.endsWith("/admin/approvals"))).toBe(true)
     expect(hrefs.some((h) => h.endsWith("/admin/reviewers"))).toBe(true)
+    expect(hrefs.some((h) => h.endsWith("/admin/publish-queue"))).toBe(true)
   })
 
   it("re-probes admin/me when the session user id changes after mount", async () => {
