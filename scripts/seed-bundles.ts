@@ -237,10 +237,13 @@ async function main() {
   const client = postgres(url)
   const db = drizzle(client, { schema, casing: "snake_case" })
 
-  console.log("seed-bundles: starting")
-  await seedBundles(db)
-  console.log("seed-bundles: done")
-  await client.end()
+  try {
+    console.log("seed-bundles: starting")
+    await seedBundles(db)
+    console.log("seed-bundles: done")
+  } finally {
+    await client.end()
+  }
 }
 
 const isEntry = import.meta.url === `file://${process.argv[1]}`

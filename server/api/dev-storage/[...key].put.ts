@@ -17,7 +17,9 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readRawBody(event, false)
-  if (!body) throw createError({ statusCode: 400, statusMessage: "empty body" })
+  if (!body || body.length === 0) {
+    throw createError({ statusCode: 400, statusMessage: "empty body" })
+  }
 
   const { mkdir, writeFile } = await import("node:fs/promises")
   const { dirname } = await import("node:path")
