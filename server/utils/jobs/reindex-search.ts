@@ -17,7 +17,7 @@ export interface ReindexStep {
 
 export type ReindexResult =
   | { ok: true; extensionId: string }
-  | { ok: true; gated: true; scope: string | null }
+  | { ok: true; gated: true; scope: string }
   | { ok: false; reason: string }
 
 // The auto-publish step of the publish chain.
@@ -35,6 +35,12 @@ export async function reindexPublish(
     const row = await versionsRepo.findByIdWithScope(useDb(), versionId)
     return row?.scope ?? null
   })
+
+  // Missing/stale version — surface as a failure rather than masking it as a
+  // successful gate (the pre-gate code did this via publishVersion throwing).
+  if (scope === null) {
+    return { ok: false, reason: "version_not_found" }
+  }
 
   if (scope !== "personal") {
     return { ok: true, gated: true, scope }

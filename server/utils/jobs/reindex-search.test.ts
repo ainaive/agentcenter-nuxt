@@ -73,4 +73,15 @@ describe("reindexPublish", () => {
     expect(publishVersion).not.toHaveBeenCalled()
     expect(result).toEqual({ ok: true, gated: true, scope: "enterprise" })
   })
+
+  it("missing version: surfaces a failure (not masked as gated)", async () => {
+    vi.mocked(versionsRepo.findByIdWithScope).mockResolvedValue(null)
+
+    const step = fakeStep()
+    const result = await reindexPublish("ver-gone", step)
+
+    expect(publishVersion).not.toHaveBeenCalled()
+    expect(step.sendEvent).not.toHaveBeenCalled()
+    expect(result).toEqual({ ok: false, reason: "version_not_found" })
+  })
 })
