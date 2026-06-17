@@ -429,7 +429,7 @@ Implementation notes — unchanged from the original:
 
 - Bundle keys: `bundles/<slug>/<version>/bundle.zip` (`bundleKey()` in `server/utils/storage.ts`). `slug` and `version` are locked on the Basics step once a draft has been persisted.
 - `submit(versionId)` is idempotent for `pending|scanning` so retries don't get stuck.
-- `recordScanResult` branches on `extensions.scope`: `personal` auto-publishes; `org|enterprise` waits for admin `publishVersion`.
+- `recordScanResult` branches on `extensions.scope`: `personal` auto-publishes; `org|enterprise` waits for a super-admin. The gate lives in `reindex-search` (`reindexPublish`): personal scope is published + notified; org/enterprise returns early (`gated`), staying `ready`/`draft`. A super-admin then publishes from the **publish-review queue** (`/admin/publish-queue` → `POST /api/internal/publish-review/approve` → `publishVersion`).
 - `extensions.search_vector` is a Postgres `GENERATED ALWAYS ... STORED` column; no application code writes it.
 - `scan-bundle` keeps download + checksum + manifest parsing in a single `step.run` (Buffer doesn't survive step boundaries).
 

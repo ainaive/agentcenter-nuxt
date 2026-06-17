@@ -116,6 +116,20 @@ export interface ProfileDraftRow {
   latestStatus: string | null
 }
 
+// A scanned-but-unpublished org/enterprise extension awaiting a super-admin's
+// publish decision in the review queue (`/admin/publish-queue`).
+export interface PublishReviewRow {
+  extensionId: string
+  slug: string
+  name: string
+  category: string
+  scope: string
+  publisherUserId: string | null
+  versionId: string
+  version: string
+  createdAt: string
+}
+
 export interface ProfilePublishedRow {
   extensionId: string
   slug: string
