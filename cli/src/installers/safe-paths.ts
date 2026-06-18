@@ -1,4 +1,5 @@
-import { resolve, sep } from "path";
+import { homedir } from "os";
+import { isAbsolute, resolve, sep } from "path";
 
 // Mirrors shared/validators/manifest.ts SLUG_PATTERN. Duplicated here to
 // keep the CLI binary self-contained (no cross-package imports into the
@@ -20,4 +21,34 @@ export function resolveInside(baseDir: string, unsafePath: string): string {
     throw new Error(`Path escapes install root: ${unsafePath}`);
   }
   return resolved;
+}
+
+// Expand a manifest `[install.<agent>]` destination template: the manifest
+// tokens ({slug}/{version}/{agent}) and a leading `~` for the home directory.
+export function expandDest(
+  template: string,
+  vars: { slug: string; version: string; agent: string },
+): string {
+  const expanded = template
+    .replaceAll("{slug}", vars.slug)
+    .replaceAll("{version}", vars.version)
+    .replaceAll("{agent}", vars.agent);
+  if (expanded === "~") return homedir();
+  if (expanded.startsWith("~/") || expanded.startsWith("~\\")) {
+    return resolve(homedir(), expanded.slice(2));
+  }
+  return expanded;
+}
+
+// Assert an install destination stays within the user's home directory.
+// Manifest-provided paths are untrusted, so anything resolving outside `~`
+// (absolute escapes, `../` traversal) is rejected; callers fall back to the
+// built-in category default. Returns the absolute path.
+export function safeHomePath(p: string): string {
+  const home = homedir();
+  const abs = isAbsolute(p) ? resolve(p) : resolve(home, p);
+  if (abs !== home && !abs.startsWith(home + sep)) {
+    throw new Error(`Install path escapes home directory: ${p}`);
+  }
+  return abs;
 }
