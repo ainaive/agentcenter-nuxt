@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { join, sep } from "path";
+import { homedir } from "os";
+import { join, resolve, sep } from "path";
 
-import { assertValidSlug, resolveInside } from "./safe-paths";
+import {
+  assertValidSlug,
+  expandDest,
+  resolveInside,
+  safeHomePath,
+} from "./safe-paths";
 
 describe("assertValidSlug", () => {
   it("accepts a lowercase kebab-case slug", () => {
@@ -61,5 +67,43 @@ describe("resolveInside", () => {
     expect(() =>
       resolveInside(root, `..${sep}agentcenter-test-rootEVIL${sep}file.txt`),
     ).toThrow(/escapes/);
+  });
+});
+
+describe("expandDest", () => {
+  const vars = { slug: "my-skill", version: "1.2.0", agent: "claude" };
+
+  it("substitutes {slug}/{version}/{agent} tokens", () => {
+    expect(expandDest("~/.x/{agent}/{slug}/{version}", vars)).toBe(
+      resolve(homedir(), ".x/claude/my-skill/1.2.0"),
+    );
+  });
+
+  it("expands a leading ~ to the home directory", () => {
+    expect(expandDest("~/.claude/skills/{slug}", vars)).toBe(
+      resolve(homedir(), ".claude/skills/my-skill"),
+    );
+    expect(expandDest("~", vars)).toBe(homedir());
+  });
+
+  it("leaves a non-tilde path untouched apart from tokens", () => {
+    expect(expandDest("/opt/{slug}", vars)).toBe("/opt/my-skill");
+  });
+});
+
+describe("safeHomePath", () => {
+  it("accepts a path inside home", () => {
+    const p = join(homedir(), ".claude", "skills", "x");
+    expect(safeHomePath(p)).toBe(p);
+  });
+
+  it("rejects an absolute path outside home", () => {
+    expect(() => safeHomePath("/etc/cron.d/evil")).toThrow(/escapes home/);
+  });
+
+  it("rejects traversal that escapes home", () => {
+    expect(() => safeHomePath(join(homedir(), "..", "evil"))).toThrow(
+      /escapes home/,
+    );
   });
 });

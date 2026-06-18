@@ -206,6 +206,28 @@ Every call records an `installs` row and bumps `downloadsCount`. `isFirstInstall
 - `422 no_published_version` — slug exists but has no `ready` version yet (only possible when `version` is omitted).
 - `500 internal_error` — unhandled server error.
 
+## User
+
+### `GET /api/v1/me`
+
+Return the authenticated user's profile. **Requires** `Authorization: Bearer <token>`. The CLI calls this right after the device-code login to confirm the token and to back `agentcenter whoami`.
+
+**Response**
+
+```json
+{
+  "id": "user-amy",
+  "email": "amy@agentcenter.dev",
+  "name": "Amy Chen"
+}
+```
+
+`name` may be `null`.
+
+**Errors**
+
+- `401 unauthenticated` — missing, invalid, or expired Bearer token.
+
 ## Versioning
 
 The surface above is `/api/v1`. Breaking changes will introduce `/api/v2/...` — the `v1` namespace will not change incompatibly. Additive changes (new optional fields, new endpoints) may land within `v1` without notice.
