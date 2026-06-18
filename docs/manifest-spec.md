@@ -65,7 +65,7 @@ mcpConfig = "~/.claude/claude_desktop_config.json"
 mcpKey    = "{slug}"
 ```
 
-On install, the CLI extracts the bundle's server files to `~/.claude/mcp/{slug}/`, then merges an `mcpServers[{mcpKey}]` entry into the `mcpConfig` JSON (backing it up to `.bak` first and preserving other servers). The run command is auto-detected from the entry file — `server.js`/`index.js` → `node`, `server.py`/`main.py` → `python3`; if neither is present the files are still placed and the CLI prints the entry for you to add manually. `uninstall` removes both the directory and the config entry.
+On install, the CLI extracts the bundle's server files to `~/.claude/mcp/{slug}/`, then merges an `mcpServers[{mcpKey}]` entry into the `mcpConfig` JSON (backing it up to `.bak` first and preserving other servers). The run command is auto-detected from the entry file — `server.js`/`index.js` → `node`, `server.py`/`main.py` → `python3`; if neither is present the files are still placed and the CLI tells you to register the server yourself (pointing at the extracted files). `uninstall` removes both the directory and the config entry.
 
 **Slash Commands** (`category = "slash"`):
 

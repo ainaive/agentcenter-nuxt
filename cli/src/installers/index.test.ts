@@ -121,4 +121,17 @@ describe("uninstallExtension + listInstalled", () => {
     // gone now
     expect(uninstallExtension("askill")).toEqual([]);
   });
+
+  it("uninstall cleans an MCP install registered under a non-default mcpKey", async () => {
+    await installExtension(
+      "ghx",
+      "mcp",
+      bundle({ "manifest.toml": manifest("mcp", `mcpKey = "ghkey"`), "server.js": "x" }),
+    );
+    const cfg = () => JSON.parse(readFileSync(claude("claude_desktop_config.json"), "utf8"));
+    expect(cfg().mcpServers.ghkey).toBeDefined();
+
+    expect(uninstallExtension("ghx")).toEqual(["mcp"]);
+    expect(cfg().mcpServers.ghkey).toBeUndefined(); // recovered via install metadata
+  });
 });

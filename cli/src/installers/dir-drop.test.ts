@@ -44,6 +44,16 @@ describe("writeFilesTo", () => {
     ).rejects.toThrow(/escapes/);
     expect(existsSync(dest)).toBe(false);
   });
+
+  it("preserves the previous install when an update fails mid-write", async () => {
+    const dest = join(base, "z");
+    await writeFilesTo(dest, { "good.txt": strToU8("v1") });
+    // A failing update (rejected traversal entry) must not wipe v1.
+    await expect(
+      writeFilesTo(dest, { "../escape.txt": strToU8("v2") }),
+    ).rejects.toThrow(/escapes/);
+    expect(readFileSync(join(dest, "good.txt"), "utf8")).toBe("v1");
+  });
 });
 
 describe("removeDir / listDirSlugs", () => {

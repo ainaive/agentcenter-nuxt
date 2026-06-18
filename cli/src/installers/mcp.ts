@@ -31,6 +31,10 @@ interface ServerCmd {
   args: string[];
 }
 
+// Records where this mcp install registered itself, so uninstall can clean up
+// a non-default mcpKey / mcpConfig (which it otherwise can't recover).
+const META_FILE = ".agentcenter-install.json";
+
 export async function installMcp(
   slug: string,
   files: Record<string, Uint8Array>,
@@ -38,6 +42,10 @@ export async function installMcp(
 ): Promise<string> {
   assertValidSlug(slug);
   await writeFilesTo(opts.serverDir, files);
+  writeFileSync(
+    join(opts.serverDir, META_FILE),
+    JSON.stringify({ key: opts.key, configPath: opts.configPath }),
+  );
 
   const cmd = detectCommand(opts.serverDir, files);
   if (!cmd) {
@@ -91,12 +99,31 @@ function mergeMcpServer(configPath: string, key: string, cmd: ServerCmd): void {
   writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`);
 }
 
-export function uninstallMcp(slug: string, key: string = slug): boolean {
+export function uninstallMcp(slug: string): boolean {
   assertValidSlug(slug);
-  const removedDir = removeDir(join(mcpServerDir(), slug));
+  const dir = join(mcpServerDir(), slug);
+
+  // Recover the registered key + config path from the install metadata so a
+  // non-default mcpKey / mcpConfig is cleaned up too; fall back to defaults.
+  let key = slug;
+  let configPath = defaultMcpConfigPath();
+  const metaPath = join(dir, META_FILE);
+  if (existsSync(metaPath)) {
+    try {
+      const meta = JSON.parse(readFileSync(metaPath, "utf8")) as {
+        key?: unknown;
+        configPath?: unknown;
+      };
+      if (typeof meta.key === "string") key = meta.key;
+      if (typeof meta.configPath === "string") configPath = meta.configPath;
+    } catch {
+      // malformed metadata — use defaults
+    }
+  }
+
+  const removedDir = removeDir(dir);
 
   let removedEntry = false;
-  const configPath = defaultMcpConfigPath();
   if (existsSync(configPath)) {
     const config = readConfig(configPath);
     const servers = serversOf(config);

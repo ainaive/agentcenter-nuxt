@@ -1,4 +1,12 @@
-import { existsSync, mkdirSync, readdirSync, rmSync, statSync } from "fs";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  renameSync,
+  rmSync,
+  statSync,
+} from "fs";
 import { writeFile } from "fs/promises";
 import { dirname, join } from "path";
 
@@ -8,27 +16,32 @@ import { resolveInside } from "./safe-paths";
 // they differ only in their base directory. `destDir` is the already-resolved,
 // home-constrained install path.
 
-// Drop an unzipped file map into destDir (cleared first). Each entry is guarded
-// with resolveInside so a malicious zip can't escape destDir.
+// Drop an unzipped file map into destDir. Staged into a sibling temp dir and
+// swapped in atomically, so a mid-write failure (or a rejected traversal entry)
+// leaves any existing install untouched rather than wiping it. Each entry is
+// guarded with resolveInside so a malicious zip can't escape the staging dir.
 export async function writeFilesTo(
   destDir: string,
   files: Record<string, Uint8Array>,
 ): Promise<void> {
-  if (existsSync(destDir)) rmSync(destDir, { recursive: true, force: true });
-  mkdirSync(destDir, { recursive: true });
+  const parent = dirname(destDir);
+  mkdirSync(parent, { recursive: true });
+  const staging = mkdtempSync(join(parent, ".ac-stage-"));
   try {
     for (const [entryPath, content] of Object.entries(files)) {
       if (entryPath.endsWith("/")) continue; // skip directory entries
-      const dest = resolveInside(destDir, entryPath);
-      const parent = dirname(dest);
-      if (!existsSync(parent)) mkdirSync(parent, { recursive: true });
+      const dest = resolveInside(staging, entryPath);
+      const p = dirname(dest);
+      if (!existsSync(p)) mkdirSync(p, { recursive: true });
       await writeFile(dest, content);
     }
   } catch (err) {
-    // Don't leave a half-written tree on disk; the next install starts clean.
-    rmSync(destDir, { recursive: true, force: true });
+    // Discard the partial staging dir; the existing install is untouched.
+    rmSync(staging, { recursive: true, force: true });
     throw err;
   }
+  if (existsSync(destDir)) rmSync(destDir, { recursive: true, force: true });
+  renameSync(staging, destDir);
 }
 
 export function removeDir(destDir: string): boolean {
@@ -39,7 +52,8 @@ export function removeDir(destDir: string): boolean {
 
 export function listDirSlugs(baseDir: string): string[] {
   if (!existsSync(baseDir)) return [];
-  return readdirSync(baseDir).filter((name: string) =>
-    statSync(join(baseDir, name)).isDirectory(),
+  return readdirSync(baseDir).filter(
+    (name: string) =>
+      !name.startsWith(".") && statSync(join(baseDir, name)).isDirectory(),
   );
 }
