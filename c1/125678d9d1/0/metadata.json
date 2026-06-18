@@ -1,0 +1,57 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "c1125678d9d1",
+  "session_id": "bbba162e-90dd-42e9-b503-21fe4860c889",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-18T01:08:53.089416Z",
+  "branch": "feat/cli-installer",
+  "checkpoints_count": 1,
+  "files_touched": [],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "7a98593ba3ec",
+  "token_usage": {
+    "input_tokens": 41648,
+    "cache_creation_tokens": 3222953,
+    "cache_read_tokens": 90876103,
+    "output_tokens": 362026,
+    "api_call_count": 265
+  },
+  "skill_events_version": 1,
+  "skill_events": [
+    {
+      "id": "claude-skill-toolu_015xX7f46q8CK3TyPdxvHrEa",
+      "event_type": "tool_invocation",
+      "skill": {
+        "name": "verify"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "skill_tool_use",
+        "confidence": "explicit"
+      },
+      "turn_id": "7a98593ba3ec",
+      "transcript_anchor": {
+        "unit": "line",
+        "start": 432,
+        "end": 433,
+        "entry_ids": [
+          "1d8473d1-bdb1-488d-aa6e-35d8cd409c7d"
+        ],
+        "tool_use_id": "toolu_015xX7f46q8CK3TyPdxvHrEa"
+      },
+      "native": {
+        "tool_name": "Skill",
+        "tool_use_id": "toolu_015xX7f46q8CK3TyPdxvHrEa"
+      },
+      "collapse": {
+        "target": "tool_pair",
+        "label": "Skill: verify",
+        "default_collapsed": true
+      }
+    }
+  ],
+  "session_metrics": {
+    "turn_count": 11
+  }
+}
