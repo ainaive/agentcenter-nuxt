@@ -51,9 +51,9 @@ export function makeInstallCommand(): Command {
         process.exit(1);
       }
 
-      let destDir: string;
+      let result;
       try {
-        destDir = await installExtension(slug, ext.category, zipBuffer);
+        result = await installExtension(slug, ext.category, zipBuffer);
       } catch (err) {
         console.error(`Install failed: ${(err as Error).message}`);
         process.exit(1);
@@ -61,6 +61,7 @@ export function makeInstallCommand(): Command {
 
       await postInstallEvent(slug, ext.version).catch(() => {});
 
-      console.log(`Installed to ${destDir}`);
+      console.log(`Installed to ${result.destDir}`);
+      if (result.postInstall) console.log(`\n${result.postInstall}`);
     });
 }

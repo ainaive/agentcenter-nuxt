@@ -23,16 +23,25 @@ export function resolveInside(baseDir: string, unsafePath: string): string {
   return resolved;
 }
 
-// Expand a manifest `[install.<agent>]` destination template: the manifest
-// tokens ({slug}/{version}/{agent}) and a leading `~` for the home directory.
-export function expandDest(
-  template: string,
-  vars: { slug: string; version: string; agent: string },
-): string {
-  const expanded = template
+export interface ManifestVars {
+  slug: string;
+  version: string;
+  agent: string;
+}
+
+// Substitute the manifest tokens ({slug}/{version}/{agent}) in any string —
+// used for both destination templates and the postInstall message.
+export function expandTokens(template: string, vars: ManifestVars): string {
+  return template
     .replaceAll("{slug}", vars.slug)
     .replaceAll("{version}", vars.version)
     .replaceAll("{agent}", vars.agent);
+}
+
+// Expand a manifest `[install.<agent>]` destination template: the manifest
+// tokens and a leading `~` for the home directory.
+export function expandDest(template: string, vars: ManifestVars): string {
+  const expanded = expandTokens(template, vars);
   if (expanded === "~") return homedir();
   if (expanded.startsWith("~/") || expanded.startsWith("~\\")) {
     return resolve(homedir(), expanded.slice(2));
